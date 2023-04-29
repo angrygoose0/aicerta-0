@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Document{% endblock %}
+
+{% block content %}
+    <div class="title">Your Documents</div>
+    {% include "main/partials/forms.html" %}
+
+    <a class="btn btn-outline-success" href="/app/{{id}}/mark" role="button">Mark</a>
+
+
+    
+{% endblock %}

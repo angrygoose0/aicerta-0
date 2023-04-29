@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <!-- htmx -->
+        <script src="https://unpkg.com/htmx.org@1.9.0"></script>
+
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,700|Lato:400,700&display=swap" rel="stylesheet">
+
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        
+        <style type="text/css">
+            body {
+                font-family: 'Lato', sans-serif;
+                background-color: #f8f9fa;
+            }
+
+            .sidenav {
+                height: 100%;
+                width: 220px;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                background-color: #111;
+                overflow-x: hidden;
+                padding-top: 20px;
+                transition: 0.3s;
+            }
+
+            .sidenav a {
+                padding: 6px 8px 6px 16px;
+                text-decoration: none;
+                font-size: 22px;
+                color: #818181;
+                display: block;
+                transition: 0.3s;
+            }
+
+            .sidenav a:hover {
+                color: #f1f1f1;
+                background-color: #376d4d;
+            }
+            .main {
+                margin-left: 220px;
+                padding: 0px 10px;
+                transition: 0.3s;
+            }
+
+            .cards-container {
+                width: 100%;
+                padding-right: 15px;
+                padding-left: 15px;
+                margin-right: auto;
+                margin-left: auto;
+            }
+
+            .container {
+                max-width: 960px;
+                margin: 30px auto;
+                padding: 20px;
+                background-color: #ffffff;
+                box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-outline-success {
+                border-color: #376d4d;
+                color: #376d4d;
+            }
+
+            .btn-outline-success:hover {
+                background-color: #376d4d;
+                color: #ffffff;
+            }
+
+            .title {
+                font-size: 28px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            .form-control {
+                border-color: #cccccc;
+            }
+
+            .form-control:focus {
+                border-color: #376d4d;
+            }
+
+            .card {
+                border: none;
+                background-color: #ffffff;
+                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+        
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            }
+        
+            .card-title {
+                color: #376d4d;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+        
+            .card-text {
+                color: #333333;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .card-active {
+                border: none;
+                background-color: #376d4d;
+                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+        
+            .btn-outline-success {
+                border-color: #376d4d;
+                color: #376d4d;
+            }
+        
+            .btn-outline-success:hover {
+                background-color: #376d4d;
+                color: #ffffff;
+            }
+            .nav-pills .nav-link {
+                color: #000000;
+                background-color: #ffffff;
+            }
+        
+            .nav-pills .nav-link.active {
+                color: #ffffff;
+                background-color: #376d4d;
+            }
+        
+            .nav-pills .nav-link:hover {
+                background-color: #376d4d;
+                color: #ffffff;
+            }
+        
+            .tab-content {
+                background-color: #ffffff;
+                padding: 20px;
+            }
+            
+
+        </style>
+
+
+        <title>{% block title%} {% endblock %}</title>
+
+        
+    </head>
+    <body>
+
+        <div class="sidenav">
+            <a href="/app/">Home</a>
+            <a href="/app/create">Create</a>
+            <a href="/logout">Logout</a>
+            <a href="/account">Account</a>
+        </div>
+
+
+
+
+        <div id="content", name="content", class="main">
+            <div class="container">
+                {% block content%}
+                {% endblock %}
+            </div>
+        </div>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
+    </body>
+</html>

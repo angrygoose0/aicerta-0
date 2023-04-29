@@ -1,0 +1,32 @@
+<div class="col-md-3 col-sm-6">
+    <div class="card mb-3 box-shadow" id="card-{{ td.id }}" style="width: 100%;">
+        <div class="card-body">
+            <h5 class="card-title">{{ td.name|truncatechars:15 }}</h5>
+            <p class="card-text">{{ td.exam }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                    <a href="/app/{{ td.id }}" class="btn btn-sm btn-outline-success">Edit</a>
+                    
+                    <!-- Add a form element around the delete button -->
+                    <form hx-post="/app/{{ td.id }}/delete/" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
+                        {% csrf_token %}  <!-- Include the CSRF token -->
+                        <button type="submit" class="btn btn-sm btn-outline-danger">X</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add the myResponseHandler JavaScript function -->
+<script>
+    function myResponseHandler(element, event, request, response) {
+        const jsonResponse = JSON.parse(response.responseText);
+        if (jsonResponse.success) {
+            const cardElement = document.getElementById('card-{{ td.id }}');
+            cardElement.remove();
+        } else {
+            console.log('Failed to delete NceaDocument');
+        }
+    }
+</script>
