@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'accounts',
     'django_htmx',
     'website',
-    'plans',
     #'djstripe',
     #"sendemail.apps.SendemailConfig",
 ]
