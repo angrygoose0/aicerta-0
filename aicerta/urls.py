@@ -22,7 +22,6 @@ urlpatterns = [
     path('app/', include("main.urls")), 
     path("", include("allauth.urls")),
     path("", include("website.urls")),
-    path("account/", include("plans.urls"))
 ]
 
 
