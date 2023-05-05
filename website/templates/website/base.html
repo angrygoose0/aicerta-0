@@ -20,8 +20,45 @@
 
         <title>{% block title%} {% endblock %}</title>
 
+        <style>
+            .btn-outline-success {
+                border-color: #376d4d;
+                color: #376d4d;
+            }
+            
+            .btn-outline-success:hover {
+                background-color: #376d4d;
+                color: #ffffff;
+                border-color: #376d4d;
+            }
+        </style>
+
     </head>
     <body>
+
+        <div class="container-fluid text-center px-lg-5">
+            <nav class="navbar navbar-expand-lg custom-navbar">
+                <div class="container" data-aos="fade-up" data-aos-duration="1000">
+                    <a class="navbar-brand accent-color" href="/">AI CERTA</a>
+                    <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/pricing/">Pricing</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/signup/">Sign Up</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/login/">Log In</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
 
 
 
