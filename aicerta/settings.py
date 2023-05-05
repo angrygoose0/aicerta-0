@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'website',
     'djstripe',
     'payment',
-    #"sendemail.apps.SendemailConfig",
 ]
 
 MIDDLEWARE = [
@@ -81,6 +80,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'website.context_processors.contact_forms',
             ],
         },
     },
@@ -156,7 +156,7 @@ LOGOUT_REDIRECT_URL = "/"
 
 #AUTH_USER_MODEL = 'register.CustomUser'
 
-
+DEFAULT_FROM_EMAIL = "kirball125@gmail.com"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
