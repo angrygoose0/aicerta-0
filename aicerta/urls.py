@@ -22,6 +22,8 @@ urlpatterns = [
     path('app/', include("main.urls")), 
     path("", include("allauth.urls")),
     path("", include("website.urls")),
+    path("stripe/", include("djstripe.urls", namespace="djstripe")),
+    path("", include("payment.urls")),
 ]
 
 

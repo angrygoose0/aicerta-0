@@ -6,7 +6,7 @@ from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from.mark import Marking
 from django.contrib.auth.decorators import login_required
-
+from payment.models import Plan
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
@@ -68,52 +68,6 @@ def index(response, id):
 
 
 
-# @login_required(login_url="login/")
-# def index(response, id):
-#     doc = NceaDocument.objects.get(id=id)
-    
-#     if doc in response.user.nceadocument.all():
-        
-#         qs = NceaQuestions.objects.filter(document = doc).order_by('QUESTION', 'primary', 'secondary')
-
-#         question_groups ={}
-#         for q in qs:
-#             if q.QUESTION not in question_groups:
-#                 question_groups[q.QUESTION] = []
-#             question_groups[q.QUESTION].append(q)
-            
-#         formsets=[]
-#         for qqs in question_groups.items():
-#             AnswerFormset = modelformset_factory(NceaQuestions, form=AnswerForm, extra=0)
-#             formset = AnswerFormset(queryset=qqs)
-#             formsets.append(formset)
-    
-
-#         formset = AnswerFormset(queryset=qs,)
-#         context = {
-#             'id': doc.id, 
-#             'formsets': formsets
-#         }
-#         if response.method == "POST":
-
-#             form = AnswerFormset(response.POST or None, queryset=qs)
-#             if form.is_valid():
-                
-#                 form.save()
-#                 print("saved")
-#                 context['message'] = "Data Saved."
-#             else:
-#                 print(form.errors)
-            
-        
-#         if response.htmx:
-#             print("htmx")
-#             return render(response, "main/partials/forms.html", context)    
-            
-#         return render(response, "main/index.html", context)
-    
-        
-#     return HttpResponseRedirect("/")
 
 @login_required(login_url="login/")    
 def marked(response, id):
@@ -174,3 +128,8 @@ def create(response):
     else:
         form = CreateNewDocument(initial = initial_data)
         return render(response, "main/create.html", {"form":form})
+    
+@login_required(login_url="login/")
+def settings(response):
+    plans = Plan.objects.all()
+    return render(response, "main/settings.html", {"plans": plans})

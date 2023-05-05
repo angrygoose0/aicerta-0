@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1, localhost").split(",")
 
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'accounts',
     'django_htmx',
     'website',
-    #'djstripe',
+    'djstripe',
+    'payment',
     #"sendemail.apps.SendemailConfig",
 ]
 
@@ -182,3 +183,11 @@ AUTH_USER_MODEL = 'accounts.CustomUser' # new
 
 CRISPY_TEMPLATE_PACK ='bootstrap4'
 
+
+
+#stripe
+STRIPE_LIVE_SECRET_KEY = os.environ.get("STRIPE_LIVE_SECRET_KEY", "<your secret key>")
+STRIPE_TEST_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY", "<your secret key>")
+STRIPE_LIVE_MODE = False  # Change to True in production
+DJSTRIPE_WEBHOOK_SECRET = "whsec_xxx"  # Get it from the section in the Stripe dashboard where you added the webhook endpoint
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"

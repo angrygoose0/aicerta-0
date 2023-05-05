@@ -2,7 +2,7 @@ import os
 import openai
 import re
 
-openai.api_key = os.environ.get('AI_API')
+openai.api_key = os.getenv('AI_API')
 from .models import NceaDocument, NceaQuestions, NceaOne, NceaTwo, NceaThree
 
 class Marking:

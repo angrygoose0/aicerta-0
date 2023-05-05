@@ -8,5 +8,6 @@ urlpatterns = [
     path("create/", views.create, name="create"),
     path("<int:id>/mark/", views.marked, name="marked"),
     path("<int:id>/delete/", views.delete_ncea_document, name="delete_ncea_document"),
+    path("settings/", views.settings, name="settings")
     
 ]

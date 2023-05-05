@@ -1,62 +1,81 @@
 {% extends 'website/base.html' %}
 {% block title %} AICERTA - Pricing{% endblock %}
 
+{% block style %} 
+    .btn-outline-success {
+        border-color: #376d4d;
+        color: #376d4d;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #376d4d;
+        color: #ffffff;
+        border-color: #376d4d;
+    }
+
+    .nav-pills .nav-link {
+        color: #000000;
+        background-color: #ffffff;
+    }
+        
+    .nav-pills .nav-link.active {
+        color: #ffffff;
+        background-color: #376d4d;
+    }
+        
+    .nav-pills .nav-link:hover {
+        background-color: #376d4d;
+        color: #ffffff;
+    }
+
+    .card-body {
+        line-height: 1.6;
+    }
+    .card-price {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .card-text {
+        margin-bottom: 15px;
+    }
+    .card-small-text {
+        display: block;
+        margin-bottom: 15px;
+    }
+{% endblock %}
+
+
 {% block content %}
-<section class="bg-light text-dark py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h2>Choose Your Plan</h2>
-                <p class="lead">Select the best plan for your needs</p>
-            </div>
-        </div>
-        <div class="row mt-5">
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="card text-center mb-4">
-                    <div class="card-header bg-white text-black" style="background-color: #376d4d">
-                        <h4 class="card-title">Basic</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-price">$9.99</h5>
-                        <p class="card-text">Feature 1</p>
-                        <p class="card-text">Feature 2</p>
-                        <p class="card-text">Feature 3</p>
-                        <a href="#" class="btn btn-outline-success">Get Started</a>
-                    </div>
+    <section class="bg-light text-dark py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h2>Choose a plan.</h2>
+                    <p class="lead">Accelerate your learning now.</p>
                 </div>
             </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="card text-center mb-4">
-                    <div class="card-header bg-white text-black" style="background-color: #376d4d">
-                        <h4 class="card-title">Silver</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-price">$29.99</h5>
-                        <p class="card-text">Feature 1</p>
-                        <p class="card-text">Feature 2</p>
-                        <p class="card-text">Feature 3</p>
-                        <p class="card-text">Feature 4</p>
-                        <a href="#" class="btn btn-outline-success">Get Started</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="card text-center mb-4">
-                    <div class="card-header bg-white text-black" style="background-color: #376d4d">
-                        <h4 class="card-title">Gold</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-price">$59.99</h5>
-                        <p class="card-text">Feature 1</p>
-                        <p class="card-text">Feature 2</p>
-                        <p class="card-text">Feature 3</p>
-                        <p class="card-text">Feature 4</p>
-                        <p class="card-text">Feature 5</p>
-                        <a href="#" class="btn btn-outline-success">Get Started</a>
+            <div class="row mt-5">
+                <div class="col-md-12">
+                    <ul class="nav nav-pills justify-content-center" id="pricingTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="individual-tab" data-bs-toggle="pill" href="#individual" role="tab" aria-controls="individual" aria-selected="true">Individual</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="enterprise-tab" data-bs-toggle="pill" href="#enterprise" role="tab" aria-controls="enterprise" aria-selected="false">Enterprise</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3" id="pricingTabContent">
+                        <div class="tab-pane fade show active" id="individual" role="tabpanel" aria-labelledby="individual-tab">
+                            <!-- Individual plans -->
+                            {% include 'website/partials/individual_plans.html' %}
+                        </div>
+                        <div class="tab-pane fade" id="enterprise" role="tabpanel" aria-labelledby="enterprise-tab">
+                            <!-- Enterprise plans -->
+                            {% include 'website/partials/enterprise_plans.html' %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 {% endblock %}

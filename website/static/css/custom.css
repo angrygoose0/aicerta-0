@@ -131,3 +131,29 @@ h1, h2, h3, h4, h5, h6 {
 .card-content-left {
     text-align: left;
 }
+
+.btn-outline-success {
+    border-color: #376d4d;
+    color: #376d4d;
+}
+
+.btn-outline-success:hover {
+    background-color: #376d4d;
+    color: #ffffff;
+    border-color: #376d4d;
+}
+
+.nav-pills .nav-link {
+    color: #000000;
+    background-color: #ffffff;
+}
+    
+.nav-pills .nav-link.active {
+    color: #ffffff;
+    background-color: #376d4d;
+}
+    
+.nav-pills .nav-link:hover {
+    background-color: #376d4d;
+    color: #ffffff;
+}

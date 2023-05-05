@@ -28,8 +28,13 @@
                                     <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Pricing Monthly: {{ plan.pricing_monthly }}</p>
                                     <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Pricing Yearly: {{ plan.pricing_yearly }}</p>
                                     <div class="btn-group">
-                                        <a href="#" class="btn btn-sm btn-outline-success">Edit</a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger">X</a>
+                                        <a href="#" class="btn btn-sm {% if plan == user.plan %}btn-outline-light{% else %}btn-outline-success{% endif %}">
+                                            {% if plan == user.plan %}
+                                                Edit Plan
+                                            {% else %}
+                                                Buy it
+                                            {% endif %}
+                                        </a>
                                     </div>
                                 </div>
                             </div>

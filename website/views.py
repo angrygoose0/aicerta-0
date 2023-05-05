@@ -5,3 +5,6 @@ from django.shortcuts import render
 def index(response):
     return render(response, "website/index.html")
 
+def pricing(response):
+    return render(response, "website/pricing.html")
+
