@@ -5,28 +5,19 @@ from django.conf import settings
 
 # Create your models here.
 
-class NceaOne(models.Model):
+class NceaExam(models.Model):
     standard = models.IntegerField()
     year = models.IntegerField()
     
     def __str__(self):
         return "%s, %s" % (self.standard, self.year,)
     
-class NceaTwo(models.Model):
-    exam = models.ForeignKey(NceaOne, on_delete=models.CASCADE)
+class NceaQUESTION(models.Model):
+    exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     QUESTION = models.IntegerField()
-    primary = models.IntegerField()
-    secondary = models.IntegerField()
-    achieved = models.TextField()
-    merit = models.TextField()
-    excellence = models.TextField()
     
-    def __str__(self):
-        return "%s, %s, %s, %s" % (self.exam, self.QUESTION, self.primary, self.secondary)
+    system = models.TextField()
     
-class NceaThree(models.Model):
-    exam = models.ForeignKey(NceaOne, on_delete=models.CASCADE)
-    QUESTION = models.IntegerField()
     n0 = models.IntegerField()
     a1 = models.IntegerField()
     n2 = models.IntegerField()
@@ -39,30 +30,45 @@ class NceaThree(models.Model):
     
     def __str__(self):
         return "%s, %s" % (self.exam, self.QUESTION)
-            
+    
+    
 
-class NceaDocument(models.Model):
+class Specifics(models.Model):
+    order = models.IntegerField()
+    type = models.IntegerField() #0 for assistant, 1 for Human
+    text = models.IntegerField()
+
+class NceaSecondaryQuestion(models.Model):
+    QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
+
+    primary = models.IntegerField()
+    secondary = models.IntegerField()
+    
+    specifics = models.ForeignKey(Specifics, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return "%s, %s, %s" % (self.QUESTION, self.primary, self.secondary)
+    
+
+
+
+class NceaUserDocument(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument", null = True, blank = True)
-    exam = models.ForeignKey(NceaOne, on_delete=models.CASCADE)
+    exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     
     mark = models.IntegerField() # out of 24
     
-    
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
     
-class NceaQuestions(models.Model):
-    document = models.ForeignKey(NceaDocument, on_delete=models.CASCADE)
-    QUESTION = models.IntegerField()
-    primary = models.IntegerField()
-    secondary = models.IntegerField()
+class NceaUserQuestions(models.Model):
+    document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
+    question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE)  
     
-    text = models.TextField()
-    
-    mark = models.IntegerField() # 112 = 1 achieved, 1 merit, 2 excellence
+    answer = models.TextField()
     
     def __str__(self):
-        return "%s, %s, %s, %s," % (self.document, self.QUESTION, self.primary, self.secondary)
+        return "%s, %s" % (self.document, self.question,)
     
     
