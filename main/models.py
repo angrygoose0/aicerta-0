@@ -19,7 +19,7 @@ class NceaQUESTION(models.Model):
     system = models.TextField()
     
     n0 = models.IntegerField()
-    a1 = models.IntegerField()
+    n1 = models.IntegerField()
     n2 = models.IntegerField()
     a3 = models.IntegerField()
     a4 = models.IntegerField()
@@ -33,23 +33,26 @@ class NceaQUESTION(models.Model):
     
     
 
-class Specifics(models.Model):
-    order = models.IntegerField()
-    type = models.IntegerField() #0 for assistant, 1 for Human
-    text = models.IntegerField()
 
 class NceaSecondaryQuestion(models.Model):
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
 
     primary = models.IntegerField()
     secondary = models.IntegerField()
-    
-    specifics = models.ForeignKey(Specifics, on_delete=models.CASCADE)
+
     
     def __str__(self):
         return "%s, %s, %s" % (self.QUESTION, self.primary, self.secondary)
     
-
+class Specifics(models.Model):
+    secondaryquestion=models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE, null=True)
+    
+    order = models.IntegerField()
+    type = models.IntegerField() #0 for assistant, 1 for Human
+    text = models.IntegerField()
+    
+    def __str__(self):
+        return "specific %s, %s, %s" % (self.secondaryquestion, self.order, self.type)
 
 
 class NceaUserDocument(models.Model):

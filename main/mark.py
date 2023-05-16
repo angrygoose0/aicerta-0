@@ -3,8 +3,7 @@ import openai
 import re
 
 openai.api_key = os.getenv('AI_API')
-from .models import NceaDocument, NceaQuestions, NceaOne, NceaTwo, NceaThree
-
+from .models import NceaExam, NceaQUESTION, Specifics, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions
 class Marking:
     @staticmethod
     def mark(id):

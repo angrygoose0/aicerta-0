@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from .models import NceaDocument, NceaQuestions, NceaOne, NceaTwo
+from .models import NceaExam, NceaQUESTION, Specifics, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions
 from .forms import CreateNewDocument, AnswerForm
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
@@ -20,10 +20,10 @@ def home(response):
 @login_required(login_url="login/")
 def delete_ncea_document(response, id):
     try:
-        ncea_document = NceaDocument.objects.get(id=id, user=response.user)
+        ncea_document = NceaUserDocument.objects.get(id=id, user=response.user)
         ncea_document.delete()
         data = {'success': True}
-    except NceaDocument.DoesNotExist:
+    except NceaUserDocument.DoesNotExist:
         data = {'success': False}
     return JsonResponse(data)
 
@@ -32,22 +32,22 @@ def delete_ncea_document(response, id):
 
 @login_required(login_url="login/")
 def index(response, id):
-    doc = NceaDocument.objects.get(id=id)
+    doc = NceaUserDocument.objects.get(id=id)
     
-    if doc in response.user.nceadocument.all():
+    if doc in response.user.nceauserdocument.all():
         
-        qs = NceaQuestions.objects.filter(document = doc)
+        UserQuestions = NceaUserQuestions.objects.filter(document = doc)
 
-        AnswerFormset = modelformset_factory(NceaQuestions, form=AnswerForm , extra = 0,)
+        AnswerFormset = modelformset_factory(NceaUserQuestions, form=AnswerForm , extra = 0,)
 
-        form = AnswerFormset(queryset=qs,)
+        form = AnswerFormset(queryset=UserQuestions,)
         context = {
             'id': doc.id, 
             'form': form
         }
         if response.method == "POST":
 
-            form = AnswerFormset(response.POST or None, queryset=qs)
+            form = AnswerFormset(response.POST or None, queryset=UserQuestions)
             if form.is_valid():
                 
                 form.save()
@@ -71,9 +71,9 @@ def index(response, id):
 
 @login_required(login_url="login/")    
 def marked(response, id):
-    doc = NceaDocument.objects.get(id=id)
-    if doc in response.user.nceadocument.all():
-        qs = NceaQuestions.objects.filter(document = doc)
+    doc = NceaUserDocument.objects.get(id=id)
+    if doc in response.user.nceauserdocument.all():
+        qs = NceaUserQuestions.objects.filter(document = doc)
         context ={
             "id" : doc.id,
             "qs" : qs
@@ -106,24 +106,22 @@ def create(response):
             s = form.cleaned_data["standard"]  
             y = form.cleaned_data["year"]
             
-            one = NceaOne.objects.get(standard=s, year=y)
-            two = NceaTwo.objects.filter(exam=one)
+            exam = NceaExam.objects.get(standard=s, year=y)
+            QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
             
-            if one:
-                t = NceaDocument(exam=one, name=n, mark=0)
-                t.save()
-                response.user.nceadocument.add(t)
+            if exam:
+                user_exam = NceaUserDocument(exam=exam, name=n, mark=0)
+                user_exam.save()
+                response.user.nceauserdocument.add(user_exam)
                 
-                for x in range(1,4):
-                    bss = two.filter(QUESTION=x)
+                for QUESTION in QUESTIONS:
+                    SecondaryQuestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION, )
+
+                    for SecondaryQuestion in SecondaryQuestions:
+                        nceauserexamquestion = NceaUserQuestions(document=user_exam, question=SecondaryQuestion, answer="")
+                        nceauserexamquestion.save()
                     
-                    for bs in bss:
-                        
-                        a = bss.filter(primary = bs.primary)
-                        for b in a:
-                            t.nceaquestions_set.create(QUESTION=x, primary=bs.primary, secondary=b.secondary, text="", mark=0)
-        
-        return HttpResponseRedirect("/app/%s" % t.id)
+                    return HttpResponseRedirect("/app/%s" % user_exam.id)
 
     else:
         form = CreateNewDocument(initial = initial_data)

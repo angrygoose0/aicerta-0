@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaQuestions
+from .models import NceaExam, NceaQUESTION, Specifics, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions
 import roman
 
 def int_to_alpha(value):
@@ -14,20 +14,17 @@ class CreateNewDocument(forms.Form):
 class AnswerForm(ModelForm):
 
     class Meta:
-        model = NceaQuestions
-        fields = ['text','mark']
+        model = NceaUserQuestions
+        fields = ['answer']
         
         widgets = {
-            'text': forms.Textarea(attrs={'rows': 4}),
-            'mark': forms.TextInput(attrs={'disabled':True})
+            'answer': forms.Textarea(attrs={'rows': 4}),
             }
         labels = {
-            'text': 'Answer:',
-            'mark': "Mark:"
+            'Answer': 'Answer:',
         }
         required = {
-            'text': False,
-            'mark': False,
+            'Answer': False,
         }
         
 
@@ -35,9 +32,9 @@ class AnswerForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AnswerForm, self).__init__(*args, **kwargs)
         
-        QUESTION = self.instance.QUESTION
-        primary = self.instance.primary
-        secondary = self.instance.secondary
+        QUESTION = self.instance.question.QUESTION
+        primary = self.instance.question.primary
+        secondary = self.instance.question.secondary
         
         primary_alpha = int_to_alpha(primary)
         secondary_roman = roman.toRoman(secondary)

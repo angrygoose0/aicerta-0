@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import pandas as pd
-from main.models import NceaOne
+from main.models import NceaExam
 
 class Command(BaseCommand) :
     help = 'import booms'
@@ -8,10 +8,9 @@ class Command(BaseCommand) :
     def add_arguments(self, parser):
         pass
     def handle(self, *args, **options):
-        df = pd.read_csv('csv/NceaOne.csv')
+        df = pd.read_csv('csv/NceaExam.csv')
         for index, row in df.iterrows():
-            t=NceaOne(
+            NceaExam.objects.update_or_create(
                 standard = row['Standard'],
                 year = row["year"],)
-            t.save()
-            
+            print("updated or created")
