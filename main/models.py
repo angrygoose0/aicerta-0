@@ -32,8 +32,6 @@ class NceaQUESTION(models.Model):
         return "%s, %s" % (self.exam, self.QUESTION)
     
     
-
-
 class NceaSecondaryQuestion(models.Model):
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
 

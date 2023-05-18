@@ -1,11 +1,16 @@
 {% load crispy_forms_tags %}
 <form action = '.' id="answer-formset" method="POST" hx-post="." hx-swap='outerHTML' hx-trigger='change delay:500ms'>
-    {% csrf_token %}
-    
-    {{ form|crispy }}
-        
 
+    {% csrf_token %}
+    {% for question, forms in form_groups.items %}
+        <h2>QUESTION {{ question }}</h2>
+        {% for form in forms %}
+            <!-- Render your form here -->
+            {{ form|crispy }}
+        {% endfor %}
+    {% endfor %}
     <button type="submit" value ="save" class="btn btn-secondary">Save</button>
+    
     <!--div class ='htmx-indicator'>Loading...</div-->
     {% if message %}
         <p>{{ message}} </p>

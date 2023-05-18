@@ -4,7 +4,7 @@ from .models import NceaExam, NceaQUESTION, Specifics, NceaSecondaryQuestion, Nc
 import roman
 
 def int_to_alpha(value):
-    return chr(ord("a") + value - 1) + ")"
+    return chr(ord("a") + int(value) - 1) + ")"
 
 class CreateNewDocument(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
@@ -32,21 +32,16 @@ class AnswerForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AnswerForm, self).__init__(*args, **kwargs)
         
-        QUESTION = self.instance.question.QUESTION
-        primary = self.instance.question.primary
-        secondary = self.instance.question.secondary
+        primary =self.instance.question.primary
+        secondary =self.instance.question.secondary
         
         primary_alpha = int_to_alpha(primary)
         secondary_roman = roman.toRoman(secondary)
 
         
-        self.fields['text'].label = (
-            f" {QUESTION}, {primary_alpha}, {secondary_roman}"
+        self.fields['answer'].label = (
+            f"{primary_alpha}, {secondary_roman})"
         )
-        self.fields['text'].required = False  # Set required to False for the field
-        self.fields['mark'].required = False
-        
-        if self.instance.mark == 0 :
-            self.fields['mark'].widget = forms.HiddenInput()
+        self.fields['answer'].required = False  # Set required to False for the field
             
             
