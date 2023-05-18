@@ -29,43 +29,6 @@ def delete_ncea_document(response, id):
 
 
 
-"""
-@login_required(login_url="/login/")
-def index(response, id):   
-    doc = NceaUserDocument.objects.get(id=id)
-    
-    if doc.user == response.user:
-        
-        qs = NceaUserQuestions.objects.filter(document = doc)
-
-        AnswerFormset = modelformset_factory(NceaUserQuestions, form=AnswerForm , extra = 0,)
-
-        form = AnswerFormset(queryset=qs,)
-        context = {
-            'id': doc.id, 
-            'form': form
-        }
-        if response.method == "POST":
-            
-            form = AnswerFormset(response.POST or None, queryset=qs)
-            if form.is_valid():
-                    
-                form.save()
-                print("saved")
-                context['message'] = "Data Saved."
-            else:
-                print(form.errors)
-            
-        
-        if response.htmx:
-            print("htmx")
-            return render(response, "main/partials/forms.html", context)    
-            
-        return render(response, "main/index.html", context)
-    
-        
-    return HttpResponseRedirect("/")
-"""
 
 @login_required(login_url="/login/")
 def index(response, id):   
@@ -74,12 +37,10 @@ def index(response, id):
     if doc.user == response.user:
         
         qs = NceaUserQuestions.objects.filter(document = doc)
-
         AnswerFormset = modelformset_factory(NceaUserQuestions, form=AnswerForm , extra = 0,)
         formset = AnswerFormset(queryset=qs,)
 
         form_groups = {}
-        primary_groups = {}
         for form in formset:
             question = form.instance.question.QUESTION.QUESTION
             if question not in form_groups:
@@ -87,15 +48,26 @@ def index(response, id):
             form_groups[question].append(form)
         context = {
             'id': doc.id, 
-            'form_groups': form_groups
-        }
-        if response.method == "POST":
+            'formset' : formset,
+            'form_groups': form_groups}
             
-            form = AnswerFormset(response.POST or None, queryset=qs)
+        if response.method == "POST":
+            form = AnswerFormset(response.POST)
             if form.is_valid():
-                    
                 form.save()
-                print("saved")
+
+                # Rebuild formset with the latest queryset
+                qs = NceaUserQuestions.objects.filter(document = doc)
+                formset = AnswerFormset(queryset=qs)
+                form_groups = {}
+                for form in formset:
+                    question = form.instance.question.QUESTION.QUESTION
+                    if question not in form_groups:
+                        form_groups[question] = []
+                    form_groups[question].append(form)
+
+                context['formset'] = formset
+                context['form_groups'] = form_groups
                 context['message'] = "Data Saved."
             else:
                 print(form.errors)
@@ -104,7 +76,7 @@ def index(response, id):
         if response.htmx:
             print("htmx")
             return render(response, "main/partials/forms.html", context)    
-            
+                
         return render(response, "main/index.html", context)
     
         

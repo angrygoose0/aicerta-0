@@ -2,6 +2,7 @@
 <form action = '.' id="answer-formset" method="POST" hx-post="." hx-swap='outerHTML' hx-trigger='change delay:500ms'>
 
     {% csrf_token %}
+    {{ formset.management_form|crispy }}
     {% for question, forms in form_groups.items %}
         <h2>QUESTION {{ question }}</h2>
         {% for form in forms %}
