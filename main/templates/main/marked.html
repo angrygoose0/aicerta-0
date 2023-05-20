@@ -4,7 +4,10 @@
 
 
 {%block content %}
-    <h1>Marked</h1>
+    {{question_groups}}
+
+{% endblock %}
+<h1>Marked</h1>
 
     {% for q in qs %}
         <div class="card" style="width: 18rem;">
@@ -16,7 +19,4 @@
             </div>
         </div>
     {% endfor %}
-
-
-{% endblock %}
 

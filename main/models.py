@@ -42,15 +42,19 @@ class NceaSecondaryQuestion(models.Model):
     def __str__(self):
         return "%s, %s, %s" % (self.QUESTION, self.primary, self.secondary)
     
+    class Meta:
+        ordering = ['primary', 'secondary']
+        
+        
 class Specifics(models.Model):
-    secondaryquestion=models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE, null=True)
+    nceaQUESTION=models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE, null=True)
     
     order = models.IntegerField()
-    type = models.IntegerField() #0 for assistant, 1 for Human
+    type = models.CharField(max_length=100)
     text = models.IntegerField()
     
     def __str__(self):
-        return "specific %s, %s, %s" % (self.secondaryquestion, self.order, self.type)
+        return "specific %s, %s, %s" % (self.nceaQUESTION, self.order, self.type)
 
 
 class NceaUserDocument(models.Model):
@@ -71,5 +75,6 @@ class NceaUserQuestions(models.Model):
     
     def __str__(self):
         return "%s, %s" % (self.document, self.question,)
+    
     
     
