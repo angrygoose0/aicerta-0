@@ -23,10 +23,12 @@ def contact(response):
             from_email = form.cleaned_data["from_email"]
             message = form.cleaned_data['message']
             try:
-                send_mail(subject, message, from_email, ["admin@example.com"])
+                send_mail(subject, message, from_email, ["admin@aicerta.com"])
             except BadHeaderError:
                 return HttpResponse("Invalid header found.")
             return redirect("success")
     else:
         form = ContactForm()
     return render(response, "website/contact.html",  {"form": form})
+
+#sendgrid password: G4`P)3[qk[PGsd6$

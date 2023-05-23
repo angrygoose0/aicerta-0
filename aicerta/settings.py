@@ -103,7 +103,7 @@ elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
     if os.getenv("DATABASE_URL", None) is None:
         raise Exception("DATABASE_URL environment variable not defined")
     DATABASES = {
-        "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+        "default": dj_database_url.parse(os.getenv("DATABASE_URL")),
     }
 
 
@@ -156,8 +156,15 @@ LOGOUT_REDIRECT_URL = "/"
 
 #AUTH_USER_MODEL = 'register.CustomUser'
 
-DEFAULT_FROM_EMAIL = "kirball125@gmail.com"
+DEFAULT_FROM_EMAIL = "admin@aicerta.com"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = "apikey"  # new
+EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API") # new
+EMAIL_PORT = 587  # new
+EMAIL_USE_TLS = True  # new
+
+
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
