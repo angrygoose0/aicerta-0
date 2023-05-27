@@ -80,7 +80,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'website.context_processors.contact_forms',
             ],
         },
     },
@@ -156,13 +155,6 @@ LOGOUT_REDIRECT_URL = "/"
 
 #AUTH_USER_MODEL = 'register.CustomUser'
 
-DEFAULT_FROM_EMAIL = "admin@aicerta.com"
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = "apikey"  # new
-EMAIL_HOST_PASSWORD = os.getenv("SENDGRID_API") # new
-EMAIL_PORT = 587  # new
-EMAIL_USE_TLS = True  # new
 
 
 
