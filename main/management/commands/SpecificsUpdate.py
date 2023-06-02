@@ -7,7 +7,7 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         try:
-            df = pd.read_csv('csv/NceaSpecifics.csv')
+            df = pd.read_csv('.csv/NceaSpecifics.csv')
             for index, row in df.iterrows():
                 standard = row["Standard"]
                 year = row["Year"]
@@ -16,14 +16,14 @@ class Command(BaseCommand):
                     ncea_exam = NceaExam.objects.get(standard=standard, year=year)
                     question = NceaQUESTION.objects.get(exam=ncea_exam, QUESTION=QUESTION)
 
-                    NceaSecondaryQuestion.objects.update_or_create(
-                        QUESTION = question,
+                    Specifics.objects.update_or_create(
+                        nceaQUESTION = question,
                         order = row["order"],
                         type = row["type"],
                         text = row["text"],
                     )
                         
-                    self.stdout.write(self.style.SUCCESS(f'Created NCEA SECONDARIES'))
+                    self.stdout.write(self.style.SUCCESS(f'Created NCEA schedules'))
                 except (NceaExam.DoesNotExist, NceaQUESTION.DoesNotExist):
                     self.stderr.write(self.style.WARNING(f'NceaOne instance with standard={standard}, year={year}, QUESTION={QUESTION} does not exist'))
         except Exception as e:

@@ -51,7 +51,7 @@ class Specifics(models.Model):
     
     order = models.IntegerField()
     type = models.CharField(max_length=100)
-    text = models.IntegerField()
+    text = models.TextField()
     
     def __str__(self):
         return "specific %s, %s, %s" % (self.nceaQUESTION, self.order, self.type)

@@ -1,10 +1,52 @@
 {% extends 'main/base.html' %}
+{% load myfilters %}
 
 {% block title %}marked{% endblock %}
 
 
 {%block content %}
-    {{question_groups}}
+    <div class="bg m-5 p-5">
+        <h1>{{name}}</h1>
+    </div>
+
+    {% for QUESTION in QUESTIONS %}
+        <div class="card" style="width: 40rem;">
+            <h5 class="card-header">QUESTION {{QUESTION.QUESTION}}</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Achieved: 5</li>
+                <li class="list-group-item">Merit: 2</li>
+                <li class="list-group-item">Excellence: 1</li>
+            </ul>
+
+            <div class="card-body">
+                <ul class="nav nav-pills" id="myTabs-{{ forloop.counter }}" role="tablist">
+
+                    {% for userquestion in userquestions %}
+                        {% if userquestion.question.QUESTION == QUESTION%}
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}-tab" data-bs-toggle="tab" href="#tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" role="tab" aria-controls="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" aria-selected="false">{{userquestion.question.primary|to_alphabet}}) {{userquestion.question.secondary|to_roman}})</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                </ul>
+                <div class="tab-content" id="myTabsContent-{{ forloop.counter }}">
+
+                    {% for userquestion in userquestions %}
+                        {% if userquestion.question.QUESTION == QUESTION%}
+                            <div class="tab-pane fade py-5" id="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" role="tabpanel" aria-labelledby="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}-tab">
+                                <p>Content for Tab {{ forloop.counter }} in card {{ forloop.parentloop.counter }} goes here...</p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+
+
 
 {% endblock %}
 <h1>Marked</h1>
@@ -20,3 +62,34 @@
         </div>
     {% endfor %}
 
+
+    <div class="btn-group dropend">
+        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Details
+        </button>
+        <ul class="dropdown-menu">
+            {% for userquestion in userquestions %}
+                {% if userquestion.question.QUESTION == QUESTION%}
+                    <p>{{userquestion.question.primary}}, {{userquestion.question.secondary}}</p>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+
+
+    {% for QUESTION in QUESTIONS %}
+
+        <div class="card" style="width: 40rem;">
+            <h5 class="card-header">QUESTION {{QUESTION.QUESTION}}</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Achieved: 5</li>
+                <li class="list-group-item">Merit: 2</li>
+                <li class="list-group-item">Excellence: 1</li>
+            </ul>
+            
+
+            <div class="card-body">
+                
+            </div>
+        </div>
+    {% endfor %}

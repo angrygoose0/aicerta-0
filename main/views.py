@@ -79,6 +79,7 @@ def index(response, id):
                 form_groups[question] = []
             form_groups[question].append(form)
         context = {
+            'name': doc.name,
             'id': doc.id, 
             'formset' : formset,
             'form_groups': form_groups}
@@ -124,7 +125,6 @@ def marked(response, id):
         #get how many QUESTIONS there are
         QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
         # for each QUESTION, the system message will be the system in the NceaQUESTION
-        
         start_system = """
         You are an AI NCEA exam marking tool.
         Assesment Schedule:
@@ -165,13 +165,13 @@ def marked(response, id):
                 
             user_message = {"role":"user", "content":useranswer}
             messages.append(user_message)
-            print(messages)
             
-            res = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages
-            )
-            print(res)
+            #res = openai.ChatCompletion.create(
+            #model="gpt-3.5-turbo",
+            #messages=messages
+            #)
+            #print(res["choices"][0]["message"]["content"])
+            
                     
                         
         #and then to ensure the answer is spitted out by openai properly, we need a template, so it will have a template as well.
@@ -186,14 +186,25 @@ def marked(response, id):
 
         context ={
             "id" : doc.id,
+            "name" : doc.name,
+            "userquestions" : userquestions,
+            "QUESTIONS" : QUESTIONS,
         }
     
         return render(response, "main/marked.html", context)
 
 def tempmark(response, id):
-    return render(response, "main/tempmark.html")
+        doc = NceaUserDocument.objects.get(id=id)
+        if doc.user == response.user:
+            userquestions = NceaUserQuestions.objects.filter(document = doc)
     
-    
+            context ={
+                    "id" : doc.id,
+                    "name" : doc.name
+                }
+            return render(response, "main/tempmark.html", context)
+            
+            
         
 @login_required(login_url="/login")
 def create(response):
@@ -221,7 +232,6 @@ def create(response):
             user_exam.save()
                 
             for QUESTION in QUESTIONS:
-                print(QUESTION)
                 secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION,)
 
                 for secondaryquestion in secondaryquestions:

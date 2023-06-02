@@ -3,7 +3,9 @@
 {% block title %}Document{% endblock %}
 
 {% block content %}
-    <div class="title">Your Documents</div>
+<div class="bg m-5 p-5">
+    <h1>{{name}}</h1>
+</div>
     {% include "main/partials/forms.html" %}
 
     <a class="btn btn-outline-success" href="/app/{{id}}/mark" role="button">Mark</a>
