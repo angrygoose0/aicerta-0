@@ -5,24 +5,25 @@ homepage
 {% endblock %}
 
 {% block content %}
-<div class="bg m-5 p-5">
-    <h1>Home Page</h1>
-</div>
 
-<div class="bg m-5">
-    <div class="container-lg my-5">
-        <div class="row">
-            <div class="cards-container" style="max-width: 992px;">
-                <div class="row justify-content-center">
-                    {% for td in user.nceadocument.all %}
-                        {% include "main/partials/cards.html" %}
-                    {% endfor %}
+    <div class="py-3">
+        <h1>Homepage</h1>
+    </div>
+
+    <div class="bg m-5">
+        <div class="container-lg my-5">
+            <div class="row">
+                <div class="cards-container" style="max-width: 992px;">
+                    <div class="row justify-content-center">
+                        {% for td in user.nceadocument.all %}
+                            {% include "main/partials/cards.html" %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
+            
         </div>
-        
     </div>
-</div>
 {% endblock %}
 <ul>
     <li>payment page!!!! a new pricing page in the actual website..</li>

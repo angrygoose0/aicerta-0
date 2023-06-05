@@ -4,7 +4,7 @@ from .models import NceaExam, NceaQUESTION, Specifics, NceaSecondaryQuestion, Nc
 import roman
 
 def int_to_alpha(value):
-    return chr(ord("a") + int(value) - 1) + ")"
+    return chr(ord("a") + int(value) - 1)
 
 class CreateNewDocument(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
@@ -36,11 +36,11 @@ class AnswerForm(ModelForm):
         secondary =self.instance.question.secondary
         
         primary_alpha = int_to_alpha(primary)
-        secondary_roman = roman.toRoman(secondary)
+        secondary_roman = roman.toRoman(secondary).lower()
 
         
         self.fields['answer'].label = (
-            f"{primary_alpha}, {secondary_roman})"
+            f"({primary_alpha})({secondary_roman}):"
         )
         self.fields['answer'].required = False  # Set required to False for the field
             

@@ -1,21 +1,31 @@
 {% load crispy_forms_tags %}
-<form action = '.' id="answer-formset" method="POST" hx-post="." hx-swap='outerHTML' hx-trigger='change delay:500ms'>
+{% load myfilters %}
 
-    {% csrf_token %}
-    {{ formset.management_form|crispy }}
-    {% for question, forms in form_groups.items %}
-        <h2>QUESTION {{ question }}</h2>
-        {% for form in forms %}
-            <!-- Render your form here -->
-            {{ form|crispy }}
+
+    <form action = '.' id="answer-formset" method="POST" hx-post="." hx-swap='outerHTML' hx-trigger='change delay:500ms'>
+
+        {% csrf_token %}
+        {{ formset.management_form|crispy }}
+        {% for question, forms in form_groups.items %}
+            <div class="py-4">
+                <ul class="list-group list-group-flush">
+                    <h3 class="py-3">QUESTION {{question|NUMBER}}: <span class="score"></span></h3>
+                    {% for form in forms %}
+                        <!-- Render your form here -->
+                        <li class="list-group-item">
+                            {{ form|crispy }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endfor %}
-    {% endfor %}
-    <button type="submit" value ="save" class="btn btn-secondary">Save</button>
-    
-    <!--div class ='htmx-indicator'>Loading...</div-->
-    {% if message %}
-        <p>{{ message}} </p>
-    {% endif %}
+        <button type="submit" value ="save" class="btn btn-secondary">Save</button>
+        
+        <!--div class ='htmx-indicator'>Loading...</div-->
+        {% if message %}
+            <p>{{ message}} </p>
+        {% endif %}
 
 
-</form>
+    </form>
+</div>

@@ -33,5 +33,30 @@ def number_to_roman(number):
 
     return result
 
+def number_to_word_upper(n):
+    digit_map = {
+        0: "ZERO",
+        1: "ONE",
+        2: "TWO",
+        3: "THREE",
+        4: "FOUR",
+        5: "FIVE",
+        6: "SIX",
+        7: "SEVEN",
+        8: "EIGHT",
+        9: "NINE"
+    }
+
+    # Split the input number into digits
+    digits = [int(digit) for digit in str(n)]
+
+    # Map each digit to its word equivalent using a list comprehension
+    words = [digit_map[digit] for digit in digits]
+
+    # Join the words together and return the result
+    return " ".join(words)
+
+
 register.filter('to_alphabet', number_to_alphabet)
 register.filter('to_roman', number_to_roman)
+register.filter('NUMBER', number_to_word_upper)

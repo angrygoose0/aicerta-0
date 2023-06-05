@@ -4,17 +4,57 @@
 {% block title %}marked{% endblock %}
 
 
-{%block content %}
-    
+{% block content %}
 
-    <div class="exam">
-        <div class="py-3">
-            <h1>{{name}}</h1>
-            <small><b>91164, 2022</b></small>
-        </div>
-
-        <h3 class="py-3">QUESTION ONE : <span class="score">M5</span></h3>
+    <div class="py-3">
+        <h1>{{name}}</h1>
+        <small><b>Standard: 91164</b></small> 
+        <br>
+        <small><b>Year: 2022</b></small>
+    </div>
+        
+    <div class="py-4">
         <ul class="list-group list-group-flush">
+            <h3 class="py-3">QUESTION ONE : <span class="score">M5</span></h3>
+            <li class="list-group-item"><b>(a)(i)</b>: <span class="score">Achievement: 2 | Merit: 1 | Excellence: 2</span>
+                <br>
+                <p>{% lorem 1 b random %}</p>
+            </li>
+            <li class="list-group-item"><b>(a)(ii)</b>:
+                <br>
+                <p>{% lorem 1 b random %}</p>
+            </li>
+            <li class="list-group-item"><b>(b)(i)</b>:
+                <br>
+                <p>{% lorem 1 b random %}</p>
+            </li>
+
+            <h3 class="py-3">Assesment Schedule:</h3>
+            <li class="list-group-item">
+                <b>(a)(i):</b>
+                <p>Model Answer:</p>
+                <p>As the temperature of the vinegar/ acid/ mixture  increases, the particles move faster and have more energy. There are more collisions per second between the reacting particles due to faster speed, and more of these collisions have enough energy to cause a reaction. Therefore, increasing the temperature will cause more successful collisions per second, and the reaction will occur faster.</p>
+                <b>Achievement:</b>
+                <ul>
+                    <li>Increasing temperature causes more (frequent) collisions OR converse.</li>
+                    <li>Increasing temperature means particles have more energy / move faster OR converse.</li>
+                    <li>Reaction occurs when particles collide successfully. OR More (successful) collisions per second cause a faster rate of reaction (or from above).</li>
+                </ul>
+                <b>Merit:</b>
+                <ul>
+                    <li>Explains that the higher temperature causes the particles to move faster; therefore there will be more frequent collisions / more collisions per second / more collisions per unit of time.</li>
+                    <li>Acid particles at higher temperatures will have more energy / force, resulting in more successful collisions.</li>
+            </ul>
+            <b>Excellence:</b>
+            <ul>
+                <li>Fully explains that increased temperature leads to faster particles colliding more often. AND More of these collisions have enough energy / force to cause successful collisions / reactions. Therefore, there will be more successful collisions per second / more successful collisions will happen more frequently so rate of reaction will be faster.</li>
+            </ul>
+        </ul>
+    </div>
+
+    <div class="py-4">
+        <ul class="list-group list-group-flush">
+            <h3 class="py-3">QUESTION ONE : <span class="score">M5</span></h3>
             <li class="list-group-item"><b>(a)(i)</b>:
                 <br>
                 <p>{% lorem 1 b random %}</p>
@@ -48,10 +88,10 @@
                     <li>Fully explains that increased temperature leads to faster particles colliding more often. AND More of these collisions have enough energy / force to cause successful collisions / reactions. Therefore, there will be more successful collisions per second / more successful collisions will happen more frequently so rate of reaction will be faster.</li>
                 </ul>
         </ul>
-        
-        </li>
-        and then the mention will be highlighted as the same color as the bullet point.
     </div>
+        
+    and then the mention will be highlighted as the same color as the bullet point.
+
 
 {% endblock %}
 
