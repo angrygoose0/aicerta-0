@@ -5,6 +5,8 @@ from django.db import models
 class Plan(models.Model):
     name = models.CharField(max_length=100)
     monthly_price = models.IntegerField(default=0)
+    
+    marks_per_day = models.IntegerField
 
     
     

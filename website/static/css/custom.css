@@ -10,9 +10,14 @@ html {
     scroll-behavior: smooth;
 }
 
-section {
-    height: 100vh;
-    overflow: hidden;
+.no-margin {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.no-padding {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .btn:hover,
@@ -165,7 +170,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav-pills .nav-link {
     color: #FFFFFF;
-    background-color: #1B3626;
+    background-color: #000000;
 }
     
 .nav-pills .nav-link.active {

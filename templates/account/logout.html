@@ -9,6 +9,7 @@
         {% csrf_token %}
         {{ form|crispy }}
         <a href="/app">go back?</a>
+        <br>
         <button type="submit" value ="logout" class="btn btn-primary btn-block mt-4">Logout</button>
     </form>
 {% endblock %}

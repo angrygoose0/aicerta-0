@@ -134,7 +134,7 @@ def marked(response, id):
         Use the model answers as a guideline.
         A model answer of {img} means that the question is in the form of a diagram or a table which is not supported.
         Every bullet point correct is a point, if an answer answers the bullet point correctly, then it is a point.
-        If an answer doesnt answer the question, or is gibberish, mark it as incorrect.
+        If an answer doesnt answer the question, or is random, mark it as incorrect.
 
         Give your mark in this format:
         Achieved: _, Merit: _, Excellence: _

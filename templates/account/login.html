@@ -5,15 +5,6 @@
 {% block title%} Login {% endblock %}
 
 {% block content%}
-  <form method="post">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <br>
-    <small>
-      <p style="display: inline-block;">Don't have an account?</p>
-      <a href="/signup/" style="display: inline-block; margin-left: 10px;">Sign up</a>
-    </small>
-
-    <button type="submit" value ="login" class="btn btn-primary btn-block mt-4">Login</button>
-  </form>
+    <small> Login in is diabled at the moment.</small>
+    <a href="/">go back?</a>
 {% endblock %}

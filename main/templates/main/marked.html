@@ -5,91 +5,53 @@
 
 
 {%block content %}
-    <div class="bg m-5 p-5">
-        <h1>{{name}}</h1>
-    </div>
+    
 
-    {% for QUESTION in QUESTIONS %}
-        <div class="card" style="width: 40rem;">
-            <h5 class="card-header">QUESTION {{QUESTION.QUESTION}}</h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Achieved: 5</li>
-                <li class="list-group-item">Merit: 2</li>
-                <li class="list-group-item">Excellence: 1</li>
-            </ul>
-
-            <div class="card-body">
-                <ul class="nav nav-pills" id="myTabs-{{ forloop.counter }}" role="tablist">
-
-                    {% for userquestion in userquestions %}
-                        {% if userquestion.question.QUESTION == QUESTION%}
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}-tab" data-bs-toggle="tab" href="#tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" role="tab" aria-controls="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" aria-selected="false">{{userquestion.question.primary|to_alphabet}}) {{userquestion.question.secondary|to_roman}})</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                </ul>
-                <div class="tab-content" id="myTabsContent-{{ forloop.counter }}">
-
-                    {% for userquestion in userquestions %}
-                        {% if userquestion.question.QUESTION == QUESTION%}
-                            <div class="tab-pane fade py-5" id="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}" role="tabpanel" aria-labelledby="tab-{{ forloop.counter }}-{{ forloop.parentloop.counter }}-tab">
-                                <p>Content for Tab {{ forloop.counter }} in card {{ forloop.parentloop.counter }} goes here...</p>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-
-                </div>
-            </div>
+    <div class="exam">
+        <div class="py-3">
+            <h1>{{name}}</h1>
+            <small><b>91164, 2022</b></small>
         </div>
-    {% endfor %}
 
+        <h3 class="py-3">QUESTION ONE : <span class="score">M5</span></h3>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>(a)(i)</b>:
+                <br>
+                <p>{% lorem 1 b random %}</p>
+            </li>
+            <li class="list-group-item"><b>(a)(ii)</b>:
+                <br>
+                <p>{% lorem 1 b random %}</p>
+            </li>
+            <li class="list-group-item"><b>(b)(i)</b>:
+                <br>
+                <p>{% lorem 1 b random %}</p>
+            </li>
 
-
+            <h3 class="py-3">Assesment Schedule:</h3>
+            <li class="list-group-item">
+                <b>(a)(i):</b>
+                <p>As the temperature of the vinegar/ acid/ mixture  increases, the particles move faster and have more energy. There are more collisions per second between the reacting particles due to faster speed, and more of these collisions have enough energy to cause a reaction. Therefore, increasing the temperature will cause more successful collisions per second, and the reaction will occur faster.</p>
+                <b>Achievement:</b>
+                <ul>
+                    <li>Increasing temperature causes more (frequent) collisions OR converse.</li>
+                    <li>Increasing temperature means particles have more energy / move faster OR converse.</li>
+                    <li>Reaction occurs when particles collide successfully. OR More (successful) collisions per second cause a faster rate of reaction (or from above).</li>
+                </ul>
+                <b>Merit:</b>
+                <ul>
+                    <li>Explains that the higher temperature causes the particles to move faster; therefore there will be more frequent collisions / more collisions per second / more collisions per unit of time.</li>
+                    <li>Acid particles at higher temperatures will have more energy / force, resulting in more successful collisions.</li>
+                </ul>
+                <b>Excellence:</b>
+                <ul>
+                    <li>Fully explains that increased temperature leads to faster particles colliding more often. AND More of these collisions have enough energy / force to cause successful collisions / reactions. Therefore, there will be more successful collisions per second / more successful collisions will happen more frequently so rate of reaction will be faster.</li>
+                </ul>
+        </ul>
+        
+        </li>
+        and then the mention will be highlighted as the same color as the bullet point.
+    </div>
 
 {% endblock %}
-<h1>Marked</h1>
 
-    {% for q in qs %}
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title"> {{q.QUESTION}}, {{q.primary}}, {{q.secondary}}</h5>
-                <h6 class="card-subtitle mb-2 text-body-secondary">{{q.mark}}</h6>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Details</a>
-            </div>
-        </div>
-    {% endfor %}
-
-
-    <div class="btn-group dropend">
-        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            Details
-        </button>
-        <ul class="dropdown-menu">
-            {% for userquestion in userquestions %}
-                {% if userquestion.question.QUESTION == QUESTION%}
-                    <p>{{userquestion.question.primary}}, {{userquestion.question.secondary}}</p>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
-
-
-    {% for QUESTION in QUESTIONS %}
-
-        <div class="card" style="width: 40rem;">
-            <h5 class="card-header">QUESTION {{QUESTION.QUESTION}}</h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Achieved: 5</li>
-                <li class="list-group-item">Merit: 2</li>
-                <li class="list-group-item">Excellence: 1</li>
-            </ul>
-            
-
-            <div class="card-body">
-                
-            </div>
-        </div>
-    {% endfor %}
