@@ -7,7 +7,7 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         try:
-            df = pd.read_csv('csv/NceaSecondaryQuestion.csv')
+            df = pd.read_csv('.csv/NceaSecondary.csv')
             for index, row in df.iterrows():
                 standard = row["Standard"]
                 year = row["Year"]

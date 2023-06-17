@@ -1,30 +1,30 @@
 from django.core.management.base import BaseCommand
 import pandas as pd
-from main.models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, Specifics
+from main.models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, AssesmentSchedule
 
 class Command(BaseCommand):
     help = 'import booms'
     
     def handle(self, *args, **options):
         try:
-            df = pd.read_csv('.csv/NceaSpecifics.csv')
+            df = pd.read_csv('.csv/AssesmentSchedule.csv')
             for index, row in df.iterrows():
                 standard = row["Standard"]
                 year = row["Year"]
-                QUESTION = row["QUESTION"]
+                QQ = row["QUESTION"]
                 try:
                     ncea_exam = NceaExam.objects.get(standard=standard, year=year)
-                    question = NceaQUESTION.objects.get(exam=ncea_exam, QUESTION=QUESTION)
+                    question = NceaQUESTION.objects.get(exam=ncea_exam, QUESTION=QQ)
 
-                    Specifics.objects.update_or_create(
-                        nceaQUESTION = question,
+                    AssesmentSchedule.objects.update_or_create(
+                        QUESTION = question,
+                        text = row["text"],
                         order = row["order"],
                         type = row["type"],
-                        text = row["text"],
                     )
                         
-                    self.stdout.write(self.style.SUCCESS(f'Created NCEA schedules'))
+                    self.stdout.write(self.style.SUCCESS(f'Created NCEA Assesment Schedules'))
                 except (NceaExam.DoesNotExist, NceaQUESTION.DoesNotExist):
-                    self.stderr.write(self.style.WARNING(f'NceaOne instance with standard={standard}, year={year}, QUESTION={QUESTION} does not exist'))
+                    self.stderr.write(self.style.WARNING(f'NceaOne instance with standard={standard}, year={year}, QUESTION={QQ} does not exist'))
         except Exception as e:
             self.stderr.write(self.style.ERROR(f'Error: {e}'))

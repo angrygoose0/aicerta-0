@@ -8,7 +8,7 @@ class Command(BaseCommand) :
     def add_arguments(self, parser):
         pass
     def handle(self, *args, **options):
-        df = pd.read_csv('csv/NceaExam.csv')
+        df = pd.read_csv('.csv/NceaExam.csv')
         for index, row in df.iterrows():
             NceaExam.objects.update_or_create(
                 standard = row['Standard'],

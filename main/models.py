@@ -16,8 +16,6 @@ class NceaQUESTION(models.Model):
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     QUESTION = models.IntegerField()
     
-    system = models.TextField()
-    
     n0 = models.IntegerField()
     n1 = models.IntegerField()
     n2 = models.IntegerField()
@@ -28,9 +26,11 @@ class NceaQUESTION(models.Model):
     e7 = models.IntegerField()
     e8 = models.IntegerField()
     
+    system = models.TextField(null = True, blank = True)
+    system_html = models.TextField(null = True, blank = True)
+    
     def __str__(self):
         return "%s, %s" % (self.exam, self.QUESTION)
-    
     
 class NceaSecondaryQuestion(models.Model):
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
@@ -45,16 +45,20 @@ class NceaSecondaryQuestion(models.Model):
     class Meta:
         ordering = ['primary', 'secondary']
         
-        
-class Specifics(models.Model):
-    nceaQUESTION=models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE, null=True)
     
-    order = models.IntegerField()
-    type = models.CharField(max_length=100)
+class AssesmentSchedule(models.Model):
+    QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
+    
     text = models.TextField()
+    order = models.IntegerField()
     
+    type = models.CharField(max_length=20,) #achievement, merit, or excellence, null means not a bulletpoint.
+    
+    class Meta:
+        ordering = ['QUESTION', 'order']
+        
     def __str__(self):
-        return "specific %s, %s, %s" % (self.nceaQUESTION, self.order, self.type)
+        return "%s, %s" % (self.QUESTION, self.type)
 
 
 class NceaUserDocument(models.Model):
@@ -62,10 +66,13 @@ class NceaUserDocument(models.Model):
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     
-    mark = models.IntegerField() # out of 24
+    mark = models.IntegerField(default=0) # out of 24
     
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
+
+    
+
     
 class NceaUserQuestions(models.Model):
     document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
@@ -73,6 +80,20 @@ class NceaUserQuestions(models.Model):
     
     answer = models.TextField()
     
+    achievement = models.IntegerField(default=0)
+    merit = models.IntegerField(default=0)
+    excellence = models.IntegerField(default=0)
+    
     def __str__(self):
         return "%s, %s" % (self.document, self.question,)
     
+    
+class NceaScores(models.Model):
+    document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
+    QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
+
+    score = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "%s, %s, score: %s" % (self.document, self.QUESTION, self.score)
+

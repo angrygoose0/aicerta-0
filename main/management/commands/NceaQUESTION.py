@@ -7,7 +7,7 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         try:
-            df = pd.read_csv('csv/NceaQUESTION.csv')
+            df = pd.read_csv('.csv/NceaQUESTION.csv')
             for index, row in df.iterrows():
                 standard = row["Standard"]
                 year = row["Year"]
@@ -16,7 +16,6 @@ class Command(BaseCommand):
                     NceaQUESTION.objects.update_or_create(
                         exam=ncea_exam_instance,
                         QUESTION=row["QUESTION"],
-                        system=row["system"],
                         n0 = row["n0"],
                         n1 = row["n1"],
                         n2 = row["n2"],

@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, NceaQUESTION, Specifics, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions
+from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions
 import roman
 
 def int_to_alpha(value):
