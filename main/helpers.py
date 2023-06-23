@@ -43,3 +43,4 @@ def roman_to_number(s):
             total += curr_value
         prev_value = curr_value
     return total
+

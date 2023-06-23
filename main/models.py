@@ -79,6 +79,7 @@ class NceaUserQuestions(models.Model):
     question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE)  
     
     answer = models.TextField()
+    answer_html = models.TextField(null = True, blank = True)
     
     achievement = models.IntegerField(default=0)
     merit = models.IntegerField(default=0)

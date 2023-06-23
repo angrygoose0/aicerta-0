@@ -27,7 +27,7 @@
                         <span class="score">Achievement: {{userquestion.achievement}} | Merit: {{userquestion.merit}} | Excellence: {{userquestion.excellence}}</span>
                         <br>
                         
-                        <p>{{userquestion.answer}}</p>
+                        <p>{{userquestion.answer_html|safe}}</p>
                     </li>
                 {% endfor%}
 

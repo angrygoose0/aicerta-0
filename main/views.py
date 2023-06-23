@@ -14,11 +14,48 @@ import re
 from django.utils.safestring import mark_safe
 import json
 from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
-
+import datetime
 
 openai.api_key = os.getenv('AI_API')
 
 # Create your views here.
+
+
+def mark_text(txt, json_feedback):
+    # Create a dictionary that maps each character in the text to its CSS classes
+    classes_for_each_char = [set() for _ in range(len(txt))]
+
+    # For each feedback item, mark the corresponding characters with the CSS class
+    for feedback in json_feedback:
+        # Check if feedback type is not "Achievement", "Merit", or "Excellence" and skip if so
+        if feedback['type'] not in ["Achievement", "Merit", "Excellence"]:
+            continue
+
+        css_class = "bullet_point" + feedback['bullet_point'].replace("•","_")
+        start_index = txt.index(feedback['answer'])
+        end_index = start_index + len(feedback['answer'])
+        for i in range(start_index, end_index):
+            classes_for_each_char[i].add(css_class)
+
+    # Construct the marked-up text
+    marked_up_text = ""
+    current_classes = set()
+    for i, char in enumerate(txt):
+        if classes_for_each_char[i] != current_classes:
+            # Close the current span(s), if any
+            if current_classes:
+                marked_up_text += "</span>" * len(current_classes)
+            # Open a new span(s) for the new classes
+            for css_class in classes_for_each_char[i]:
+                marked_up_text += f'<span class="{css_class}">'
+            current_classes = classes_for_each_char[i]
+        marked_up_text += char
+    # Close the final span(s), if any
+    if current_classes:
+        marked_up_text += "</span>" * len(current_classes)
+
+    return marked_up_text
+
 
 
 @login_required(login_url="/login/")
@@ -107,7 +144,7 @@ def marked(response, id):
 
         1. Every bullet point in the answer corresponds to a point in the assessment schedule. If an answer correctly addresses a bullet point from the schedule, it receives a point.
         2. If an answer does not answer the question or provides a random response, it should be marked as incorrect.
-        3. An answer containing a diagram or a table represented as {img} should be automatically marked as incorrect since these types of content are not supported in the current context.
+        3. An answer containing a diagram or a table represented as {img} should be automatically marked as correct since these types of content are not supported in the current context.
 
         Your goal is to determine the number of Achievement, Merit, and Excellence marks for each question. If no marks of a certain type are awarded for a question, assign "0" to that mark type. 
 
@@ -115,7 +152,7 @@ def marked(response, id):
 
         The output should be in JSON format and structured as follows:
 
-        {"questions":[{"question":"(a)(i)","feedback":[{"type":"(Achievement/Merit/Excellence)","bullet_point":"•(1,2,5)(the number of the bullet point that the user's answer addresses.)","mention":"(quote from user's answer that addressed the bullet point)"}],"achievement":"(number of Achievement marks)","merit":"(number of Merit marks)","excellence":"(number of Excellence marks)"}]}
+        {"questions":[{"question":"(a)(i)","feedback":[{"type":"(Achievement/Merit/Excellence)","bullet_point":"•(1,2,5) (the number of the bullet point that the user's answer addresses.)","answer":"(quoted from the snippet of the user's answer that addresses the bullet point.( whitespace, punctuation, and capital letters has to be accurate))"}],"achievement":"(number of Achievement marks)","merit":"(number of Merit marks)","excellence":"(number of Excellence marks)"}]}
 
         Note: The number of questions in the 'questions' array will vary based on the number of questions being assessed. Similarly, the number of feedback items for each question will depend on the number of bullet points in the assessment schedule for that question.
 
@@ -195,20 +232,28 @@ def marked(response, id):
             
             res = openai.ChatCompletion.create(
                 model="gpt-4",
-                messages=messages
+                messages=messages,
+                temperature=0
             )
+            
+            filename = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt"
+            with open(filename, 'w') as f:
+                f.write(str(res)) 
             
             
             marks = res["choices"][0]["message"]["content"]
             print(marks)
             
             data = json.loads(marks)
+        
             
             total_a = 0
             total_m = 0
             total_e = 0
             for i, question in enumerate(data['questions']):
                 sec = question['question']
+                feedbacks = question['feedback']
+                print(str(feedbacks))
                 match = re.search(r"\((.*?)\)\((.*?)\)", sec)
                 if match is not None:
                     primary = match.group(1)
@@ -221,7 +266,46 @@ def marked(response, id):
                 
                 sec_question = secondary_questions.get(primary=primary, secondary=secondary)
                 userquestion = userquestions.get(question=sec_question)
+                txt = userquestion.answer
+                
+                
 
+                classes_for_each_char = [set() for _ in range(len(txt))]
+
+                # For each feedback item, mark the corresponding characters with the CSS class
+                for feedback in feedbacks:
+                    # Check if feedback type is not "Achievement", "Merit", or "Excellence" and skip if so
+                    if feedback['type'] in ["Achievement", "Merit", "Excellence"]:
+
+                        css_class = "bullet_point" + feedback['bullet_point'].replace("•","_")
+                        try:
+                            start_index = txt.index(feedback['answer'])
+                            end_index = start_index + len(feedback['answer'])
+                            for i in range(start_index, end_index):
+                                classes_for_each_char[i].add(css_class)
+                                
+                            marked_up_text = ""
+                            current_classes = set()
+                            for i, char in enumerate(txt):
+                                if classes_for_each_char[i] != current_classes:
+                                    # Close the current span(s), if any
+                                    if current_classes:
+                                        marked_up_text += "</div>" * len(current_classes)
+                                    # Open a new span(s) for the new classes
+                                    for css_class in classes_for_each_char[i]:
+                                        marked_up_text += f'<div class="{css_class}">'
+                                    current_classes = classes_for_each_char[i]
+                                marked_up_text += char
+                            # Close the final span(s), if any
+                            if current_classes:
+                                marked_up_text += "</div>" * len(current_classes)
+                                
+                            userquestion.answer_html = mark_safe(marked_up_text)
+                        except:
+                            continue
+
+                    else:
+                        continue
                 # Increment counters
                 total_a += int(question['achievement'])
                 total_m += int(question['merit'])
