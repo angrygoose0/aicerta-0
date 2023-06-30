@@ -12,11 +12,9 @@ class CreateNewDocument(forms.Form):
     year = forms.IntegerField()
     
 class AnswerForm(ModelForm):
-
     class Meta:
         model = NceaUserQuestions
         fields = ['answer']
-        
         widgets = {
             'answer': forms.Textarea(attrs={'rows': 4}),
             }
@@ -26,22 +24,18 @@ class AnswerForm(ModelForm):
         required = {
             'Answer': False,
         }
-        
-
-    
     def __init__(self, *args, **kwargs):
         super(AnswerForm, self).__init__(*args, **kwargs)
-        
         primary =self.instance.question.primary
         secondary =self.instance.question.secondary
-        
         primary_alpha = int_to_alpha(primary)
         secondary_roman = roman.toRoman(secondary).lower()
-
-        
         self.fields['answer'].label = (
             f"({primary_alpha})({secondary_roman}):"
         )
         self.fields['answer'].required = False  # Set required to False for the field
-            
-            
+
+class CreateNewStandard(forms.Form):
+    name = forms.CharField(label="Name", max_length=200)
+    standard = forms.IntegerField()
+    year = forms.IntegerField()

@@ -2,12 +2,12 @@
 {% load crispy_forms_tags %}
 
 {% block title%}
-create new document
+create new standard
 {% endblock %}
 
 {% block content %}
     <div class="py-3">
-        <h1>Create a New Document</h1>
+        <h1>Create a New Standard</h1>
     </div>
     <form method="post" action="">
         {% csrf_token %}
@@ -15,6 +15,6 @@ create new document
         {{ form|crispy }}
         <button type='submit' name = "save" class="btn btn-outline-success">Create New</button>
     </form>
-    <a href="/app/standard/">marking a custom exam?</a>
-{% endblock %}
 
+
+{% endblock %}

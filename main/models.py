@@ -10,7 +10,7 @@ class NceaExam(models.Model):
     year = models.IntegerField()
     
     def __str__(self):
-        return "%s, %s" % (self.standard, self.year,)
+        return "%s - %s" % (self.standard, self.year,)
     
 class NceaQUESTION(models.Model):
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)

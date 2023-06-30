@@ -130,16 +130,8 @@ def index(response, id):
     return HttpResponseRedirect("/")
 
 
-
-@login_required(login_url="/login/")    
-def marked(response, id):
-    doc = NceaUserDocument.objects.get(id=id)
-    if doc.user == response.user:
-        userquestions = NceaUserQuestions.objects.filter(document = doc)
-        #get how many QUESTIONS there are
-        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
-        # for each QUESTION, the system message will be the system in the NceaQUESTION
-        start_system = """
+def get_messages(QUESTION, counter, userquestions, secondary_questions):
+    start_system = """
         You are tasked with marking NCEA Questions based on a provided assessment schedule and model answers. Each question's response should be evaluated on the following criteria:
 
         1. Every bullet point in the answer corresponds to a point in the assessment schedule. If an answer correctly addresses a bullet point from the schedule, it receives a point.
@@ -159,206 +151,212 @@ def marked(response, id):
         Assesment Schedule:
         
         """
+    
+    ass = ""
+    ass_html = '<li class="list-group-item">'
+    schedules = AssesmentSchedule.objects.filter(QUESTION=QUESTION)
+
+    for schedule in schedules:
+        if schedule.type == "n":
+            parts = schedule.text.split(':', 1)
+            bold_part = parts[0].strip()
+            rest = parts[1].strip() if len(parts) > 1 else ''
+            ass += "%s \n \n" % (schedule.text.strip())
+            # Use <p> and <br> to keep line breaks in HTML
+            rest_html = '<br>'.join(rest.split('\n'))
+            ass_html += mark_safe(f"<b>{bold_part}:</b><p>{rest_html}</p>")
+        else:
+            if schedule.type in ["a", "m", "e"]:
+                type_dict = {"a": "Achievement", "m": "Merit", "e": "Excellence"}
+                ass += f"{type_dict[schedule.type]}: \n"
+                ass_html += mark_safe(f"<b>{type_dict[schedule.type]}:</b>")
+
+            bullet_points = schedule.text.split('•')[1:]
+                                
+            for point in bullet_points:
+                formatted_point = f"•{counter} {point.strip()}"
+                ass += "%s \n" % formatted_point.strip()
+
+                    # Add a unique id for each bullet point in ass_html
+                bullet_points_html = f'<li class="bullet_point_{counter}">{point.strip()}</li>'
+                ass_html += mark_safe(f"<ul>{bullet_points_html}</ul>")
+                                    
+                counter += 1
+
+            ass_html += mark_safe("<br>")
+                                
+    ass_html += '</li>'
+    QUESTION.system = ass
+    QUESTION.system_html = ass_html
+    QUESTION.save()
+    
+    messages = []
+    system_message = {"role":"system", "content": 
+        """ 
+        %s
+        
+        %s
+        """ % (start_system, ass)}
+    messages.append(system_message)
+            
+    
+    useranswer = ""
+    for secondary_question in secondary_questions:
+        userquestion = userquestions.get(question=secondary_question)
+        primary = number_to_alphabet(secondary_question.primary)
+        secondary = number_to_roman(secondary_question.secondary)
+        useranswer += "(%s)(%s):\n" % (primary, secondary)
+        useranswer += "%s\n" % (userquestion.answer)
+        useranswer += "\n"
         
         
+    user_message = {"role":"user", "content":useranswer}
+    messages.append(user_message)
+                
+    return messages, counter
+
+def use_message(messages, secondary_questions, userquestions, document_mark, QUESTION, doc):
+    res = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=messages,
+        temperature=0
+    )
+    marks = res["choices"][0]["message"]["content"]
+    print(marks)
+
+    data = json.loads(marks)
+                
+    total_a = 0
+    total_m = 0
+    total_e = 0
+    for i, question in enumerate(data['questions']):
+        sec = question['question']
+        feedbacks = question['feedback']
+        print(str(feedbacks))
+        match = re.search(r"\((.*?)\)\((.*?)\)", sec)
+        if match is not None:
+            primary = match.group(1)
+            secondary=match.group(2)
+            primary= alphabet_to_number(primary)
+            secondary = roman_to_number(secondary)
+        else:
+            primary = 0
+            secondary = 0
+
+        sec_question = secondary_questions.get(primary=primary, secondary=secondary)
+        userquestion = userquestions.get(question=sec_question)
+        txt = userquestion.answer
+
+        classes_for_each_char = [set() for _ in range(len(txt))]
+
+        # For each feedback item, mark the corresponding characters with the CSS class
+        for feedback in feedbacks:
+            # Check if feedback type is not "Achievement", "Merit", or "Excellence" and skip if so
+            if feedback['type'] in ["Achievement", "Merit", "Excellence"]:
+
+                css_class = "bullet_point" + feedback['bullet_point'].replace("•","_")
+                try:
+                    start_index = txt.index(feedback['answer'])
+                    end_index = start_index + len(feedback['answer'])
+                    for i in range(start_index, end_index):
+                        classes_for_each_char[i].add(css_class)
+
+                    marked_up_text = ""
+                    current_classes = set()
+                    for i, char in enumerate(txt):
+                        if classes_for_each_char[i] != current_classes:
+                            # Close the current span(s), if any
+                            if current_classes:
+                                 marked_up_text += "</div>" * len(current_classes)
+                            # Open a new span(s) for the new classes
+                            for css_class in classes_for_each_char[i]:
+                                marked_up_text += f'<div class="{css_class}">'
+                            current_classes = classes_for_each_char[i]
+                        marked_up_text += char
+                    # Close the final span(s), if any
+                    if current_classes:
+                        marked_up_text += "</div>" * len(current_classes)
+
+                    userquestion.answer_html = mark_safe(marked_up_text)
+                except:
+                    continue
+
+            else:
+                continue
+        # Increment counters
+        total_a += int(question['achievement'])
+        total_m += int(question['merit'])
+        total_e += int(question['excellence'])
+
+        userquestion.achievement = int(question['achievement'])
+        userquestion.merit = int(question['merit'])
+        userquestion.excellence = int(question['excellence'])
+        userquestion.save()
+
+    conditions = [
+        (8, 'e', QUESTION.e8),
+        (7, 'e', QUESTION.e7),
+        (6, 'm', QUESTION.m6),
+        (5, 'm', QUESTION.m5),
+        (4, 'a', QUESTION.a4),
+        (3, 'a', QUESTION.a3),
+        (2, 'a', QUESTION.n2),
+        (1, 'a', QUESTION.n1),
+        (0, 'a', QUESTION.n0)
+    ]
+
+    score = 0
+    total_values = {'e': total_e, 'm': total_m, 'a': total_a}
+
+    for s, var, condition in conditions:
+        if total_values[var] >= condition:
+            score = s
+            break
+
+
+    ncea_score = NceaScores.objects.get(document=doc, QUESTION=QUESTION)
+
+    ncea_score.score = score
+    ncea_score.save()
+
+    document_mark += score
+    
+    return document_mark
+
+
+
+@login_required(login_url="/login/")    
+def marked(response, id):
+    doc = NceaUserDocument.objects.get(id=id)
+    if doc.user == response.user:
+        userquestions = NceaUserQuestions.objects.filter(document = doc)
+        #get how many QUESTIONS there are
+        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
+        # for each QUESTION, the system message will be the system in the NceaQUESTION
+    
+
         counter = 1
         document_mark = 0
         for QUESTION in QUESTIONS:
-            ass = ""
-            ass_html = '<li class="list-group-item">'
-            schedules = AssesmentSchedule.objects.filter(QUESTION=QUESTION)
-
-            for schedule in schedules:
-                if schedule.type == "n":
-                    parts = schedule.text.split(':', 1)
-                    bold_part = parts[0].strip()
-                    rest = parts[1].strip() if len(parts) > 1 else ''
-                    ass += "%s \n \n" % (schedule.text.strip())
-                    # Use <p> and <br> to keep line breaks in HTML
-                    rest_html = '<br>'.join(rest.split('\n'))
-                    ass_html += mark_safe(f"<b>{bold_part}:</b><p>{rest_html}</p>")
-                else:
-                    if schedule.type in ["a", "m", "e"]:
-                        type_dict = {"a": "Achievement", "m": "Merit", "e": "Excellence"}
-                        ass += f"{type_dict[schedule.type]}: \n"
-                        ass_html += mark_safe(f"<b>{type_dict[schedule.type]}:</b>")
-
-                    bullet_points = schedule.text.split('•')[1:]
-                            
-                    for point in bullet_points:
-                        formatted_point = f"•{counter} {point.strip()}"
-                        ass += "%s \n" % formatted_point.strip()
-
-                            # Add a unique id for each bullet point in ass_html
-                        bullet_points_html = f'<li class="bullet_point_{counter}">{point.strip()}</li>'
-                        ass_html += mark_safe(f"<ul>{bullet_points_html}</ul>")
-                                
-                        counter += 1
-
-                    ass_html += mark_safe("<br>")
-                            
-            ass_html += '</li>'
-            QUESTION.system = ass
-            QUESTION.system_html = ass_html
-            QUESTION.save()
-
-
-                    
-            messages = []
-            system_message = {"role":"system", "content": 
-                """ 
-                %s
-                
-                %s
-                """ % (start_system, ass)}
-            messages.append(system_message)
-            
             secondary_questions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
             
+            messages, counter = get_messages(QUESTION, counter, userquestions, secondary_questions)
+            document_mark = use_message(messages, secondary_questions, userquestions, document_mark, QUESTION, doc)
             
-            useranswer = ""
-            for secondary_question in secondary_questions:
-                userquestion = userquestions.get(question=secondary_question)
-                primary = number_to_alphabet(secondary_question.primary)
-                secondary = number_to_roman(secondary_question.secondary)
-                useranswer += "(%s)(%s):\n" % (primary, secondary)
-                useranswer += "%s\n" % (userquestion.answer)
-                useranswer += "\n"
-                
-                
-            user_message = {"role":"user", "content":useranswer}
-            messages.append(user_message)
+            
 
-            
-            res = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=messages,
-                temperature=0
-            )
-            
-            filename = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt"
-            with open(filename, 'w') as f:
-                f.write(str(res)) 
-            
-            
-            marks = res["choices"][0]["message"]["content"]
-            print(marks)
-            
-            data = json.loads(marks)
-        
-            
-            total_a = 0
-            total_m = 0
-            total_e = 0
-            for i, question in enumerate(data['questions']):
-                sec = question['question']
-                feedbacks = question['feedback']
-                print(str(feedbacks))
-                match = re.search(r"\((.*?)\)\((.*?)\)", sec)
-                if match is not None:
-                    primary = match.group(1)
-                    secondary=match.group(2)
-                    primary= alphabet_to_number(primary)
-                    secondary = roman_to_number(secondary)
-                else:
-                    primary = 0
-                    secondary = 0
-                
-                sec_question = secondary_questions.get(primary=primary, secondary=secondary)
-                userquestion = userquestions.get(question=sec_question)
-                txt = userquestion.answer
-                
-                
-
-                classes_for_each_char = [set() for _ in range(len(txt))]
-
-                # For each feedback item, mark the corresponding characters with the CSS class
-                for feedback in feedbacks:
-                    # Check if feedback type is not "Achievement", "Merit", or "Excellence" and skip if so
-                    if feedback['type'] in ["Achievement", "Merit", "Excellence"]:
-
-                        css_class = "bullet_point" + feedback['bullet_point'].replace("•","_")
-                        try:
-                            start_index = txt.index(feedback['answer'])
-                            end_index = start_index + len(feedback['answer'])
-                            for i in range(start_index, end_index):
-                                classes_for_each_char[i].add(css_class)
-                                
-                            marked_up_text = ""
-                            current_classes = set()
-                            for i, char in enumerate(txt):
-                                if classes_for_each_char[i] != current_classes:
-                                    # Close the current span(s), if any
-                                    if current_classes:
-                                        marked_up_text += "</div>" * len(current_classes)
-                                    # Open a new span(s) for the new classes
-                                    for css_class in classes_for_each_char[i]:
-                                        marked_up_text += f'<div class="{css_class}">'
-                                    current_classes = classes_for_each_char[i]
-                                marked_up_text += char
-                            # Close the final span(s), if any
-                            if current_classes:
-                                marked_up_text += "</div>" * len(current_classes)
-                                
-                            userquestion.answer_html = mark_safe(marked_up_text)
-                        except:
-                            continue
-
-                    else:
-                        continue
-                # Increment counters
-                total_a += int(question['achievement'])
-                total_m += int(question['merit'])
-                total_e += int(question['excellence'])
-
-                userquestion.achievement = int(question['achievement'])
-                userquestion.merit = int(question['merit'])
-                userquestion.excellence = int(question['excellence'])
-                userquestion.save()
-            
-            if total_e >= QUESTION.e8:
-                score = 8
-            elif total_e >= QUESTION.e7:
-                score = 7
-            elif total_m >= QUESTION.m6:
-                score = 6
-            elif total_m >= QUESTION.m5:
-                score = 5
-            elif total_a >= QUESTION.a4:
-                score = 4
-            elif total_a >= QUESTION.a3:
-                score = 3
-            elif total_a >= QUESTION.n2:
-                score = 2
-            elif total_a >= QUESTION.n1:
-                score = 1
-            elif total_a >= QUESTION.n0:
-                score = 0
-            else:
-                score = 0
-            
-            ncea_score = NceaScores.objects.get(document=doc, QUESTION=QUESTION)
-            
-            ncea_score.score = score
-            ncea_score.save()
-
-            document_mark += score
-                        
         doc.mark = document_mark
         doc.save()
-        
-        
+
+
         userquestion_groups = {}
         for userquestion in userquestions:
             score = NceaScores.objects.get(document=doc, QUESTION=userquestion.question.QUESTION)
-            
+
             question = (userquestion.question.QUESTION.QUESTION, score.score, userquestion.question.QUESTION.system_html)
             if question not in userquestion_groups:
                 userquestion_groups[question] = []
             userquestion_groups[question].append(userquestion)
-                
-        
-        
 
         context ={
             "id" : doc.id,
@@ -372,7 +370,7 @@ def marked(response, id):
         return render(response, "main/marked.html", context)
 
 
-        
+
 @login_required(login_url="/login")
 def create(response):
     initial_data = {
@@ -383,28 +381,26 @@ def create(response):
     if response.method == "POST":
 
         form = CreateNewDocument(response.POST, initial=initial_data, )
-        
+
         if form.is_valid():
-            
-            
             n = form.cleaned_data["name"]
             s = form.cleaned_data["standard"]  
             y = form.cleaned_data["year"]
             
             exam = NceaExam.objects.get(standard=s, year=y)
             QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
-            
+
         
             user_exam = NceaUserDocument(user=response.user, exam=exam, name=n, mark=0)
             user_exam.save()
-                
+
             for QUESTION in QUESTIONS:
                 secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION,)
 
                 for secondaryquestion in secondaryquestions:
                     nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
                     nceauserexamquestion.save()
-                
+
                 scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
                 scores.save()
                     
@@ -419,3 +415,7 @@ def create(response):
 def settings(response):
     plans = Plan.objects.all()
     return render(response, "main/settings.html", {"plans": plans})
+
+@login_required(login_url="login/")
+def standard(response):
+    return render(response, "main/standard.html")
