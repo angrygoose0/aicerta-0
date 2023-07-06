@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions
+from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, AssesmentSchedule
 import roman
 
 def int_to_alpha(value):
@@ -8,8 +8,7 @@ def int_to_alpha(value):
 
 class CreateNewDocument(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
-    standard = forms.IntegerField()
-    year = forms.IntegerField()
+    exam = forms.ModelChoiceField(queryset=NceaExam.objects.all())
     
 class AnswerForm(ModelForm):
     class Meta:
@@ -34,6 +33,19 @@ class AnswerForm(ModelForm):
             f"({primary_alpha})({secondary_roman}):"
         )
         self.fields['answer'].required = False  # Set required to False for the field
+
+class StandardForm(ModelForm):
+    class Meta:
+        model = AssesmentSchedule
+        fields = ['text', 'type']
+        widgets = {
+            'text': forms.Textarea(attrs={'rows': 4}),
+            'type': forms.Select(),
+            }
+        labels = {
+            'text': 'Text:',
+            'type': 'Type:',
+        }
 
 class CreateNewStandard(forms.Form):
     name = forms.CharField(label="Name", max_length=200)

@@ -6,15 +6,19 @@ create new document
 {% endblock %}
 
 {% block content %}
-    <div class="py-3">
-        <h1>Create a New Document</h1>
+    <div class="container">
+        <div class='exam'>
+            <div class="py-3">
+                <h1>Create a New Document</h1>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                
+                {{ form|crispy }}
+                <button type='submit' name = "save" class="btn btn-outline-success">Create New</button>
+            </form>
+            <a href="/app/standard/">marking a custom exam?</a>
+        </div>
     </div>
-    <form method="post" action="">
-        {% csrf_token %}
-        
-        {{ form|crispy }}
-        <button type='submit' name = "save" class="btn btn-outline-success">Create New</button>
-    </form>
-    <a href="/app/standard/">marking a custom exam?</a>
 {% endblock %}
 

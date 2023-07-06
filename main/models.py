@@ -8,23 +8,32 @@ from django.conf import settings
 class NceaExam(models.Model):
     standard = models.IntegerField()
     year = models.IntegerField()
+    exam_name = models.TextField(null = True, blank = True)
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceaexam", null = True, blank = True)
     
     def __str__(self):
-        return "%s - %s" % (self.standard, self.year,)
-    
+        return "%s - %s - %s" % (self.exam_name, self.standard, self.year)
+
+def generate_choices(letter):
+        return [(i, f"{i}{letter}") for i in range(1, 11)]  
 class NceaQUESTION(models.Model):
+    ACHOICES = generate_choices('a')
+    MCHOICES = generate_choices('m')
+    ECHOICES = generate_choices('e')
+
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     QUESTION = models.IntegerField()
     
-    n0 = models.IntegerField()
-    n1 = models.IntegerField()
-    n2 = models.IntegerField()
-    a3 = models.IntegerField()
-    a4 = models.IntegerField()
-    m5 = models.IntegerField()
-    m6 = models.IntegerField()
-    e7 = models.IntegerField()
-    e8 = models.IntegerField()
+    n0 = models.IntegerField(default=0, choices=ACHOICES)
+    n1 = models.IntegerField(default=1, choices=ACHOICES)
+    n2 = models.IntegerField(default=2, choices=ACHOICES)
+    a3 = models.IntegerField(default=3, choices=ACHOICES)
+    a4 = models.IntegerField(default=4, choices=ACHOICES)
+    m5 = models.IntegerField(default=2, choices=MCHOICES)
+    m6 = models.IntegerField(default=3, choices=MCHOICES)
+    e7 = models.IntegerField(default=1, choices=ECHOICES)
+    e8 = models.IntegerField(default=2, choices=ECHOICES)
     
     system = models.TextField(null = True, blank = True)
     system_html = models.TextField(null = True, blank = True)
@@ -46,13 +55,22 @@ class NceaSecondaryQuestion(models.Model):
         ordering = ['primary', 'secondary']
         
     
+
 class AssesmentSchedule(models.Model):
+    CHOICES = (
+    ("n", "QUESTION"),
+    ("a", "Achieved"),
+    ("m", "Merit"),
+    ("e", "Excellence"),
+    )
+    
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
+    secondary_question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE, null = True, blank = True)
     
     text = models.TextField()
     order = models.IntegerField()
     
-    type = models.CharField(max_length=20,) #achievement, merit, or excellence, null means not a bulletpoint.
+    type = models.CharField(max_length=20, choices=CHOICES) #achievement, merit, or excellence, null means not a bulletpoint.
     
     class Meta:
         ordering = ['QUESTION', 'order']

@@ -12,12 +12,20 @@ class Command(BaseCommand):
                 standard = row["Standard"]
                 year = row["Year"]
                 QQ = row["QUESTION"]
+                primary = row["Primary"]
+                secondary = row["Secondary"]
                 try:
                     ncea_exam = NceaExam.objects.get(standard=standard, year=year)
                     question = NceaQUESTION.objects.get(exam=ncea_exam, QUESTION=QQ)
-
+                    type = row["type"]
+                    
+                    if type == "n":
+                        secondary_question = NceaSecondaryQuestion.objects.get(QUESTION=question, primary=primary, secondary=secondary)
+                    else:
+                        secondary_question = None
                     AssesmentSchedule.objects.update_or_create(
                         QUESTION = question,
+                        secondary_question = secondary_question,
                         text = row["text"],
                         order = row["order"],
                         type = row["type"],

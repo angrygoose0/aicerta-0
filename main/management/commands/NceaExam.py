@@ -12,5 +12,6 @@ class Command(BaseCommand) :
         for index, row in df.iterrows():
             NceaExam.objects.update_or_create(
                 standard = row['Standard'],
-                year = row["year"],)
+                year = row["Year"],
+                exam_name = row["Name"])
             print("updated or created")

@@ -1,26 +1,178 @@
 {% extends 'main/base.html' %}
+{% load myfilters %}
 
 {% block title %}marked{% endblock %}
 
 
+{% block content %}
+    <div class="container">
+        <div class='exam'>
+            <div class="py-3">
+                <h1>WonyoungC 91164 practice internal 2023</h1>
+                <small><b>Standard: 91164</b></small> 
+                <br>
+                <small><b>Year: 2023</b></small>
+            </div>
+            <div class="">
+                <div class="py-4">
+                    <ul class="list-group list-group-flush">
+                        <h3 class="py-3">QUESTION {{question.0}} : 
+                            <span class="score">
+                                E8
+                            </span>
+                        </h3>
+                        <ul>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                        </ul>
 
+                
+                        <h3 class="py-3">Assesment Schedule:</h3>
+                        assesment schedule
+                        
+                    </ul>
+                </div>
 
-{%block content %}
-<div class="bg m-5 p-5">
-    <h1>{{name}}</h1>
-</div>
+                <div class="py-4">
+                    <ul class="list-group list-group-flush">
+                        <h3 class="py-3">QUESTION {{question.0}} : 
+                            <span class="score">
+                                E8
+                            </span>
+                        </h3>
+                        <ul>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                        </ul>
 
-<h2>QUESTION ONE</h2>
-<br>
-<small>(a)(i): E7</small>
-<p>answer</p>
-<p>answer     -</p>
+                
+                        <h3 class="py-3">Assesment Schedule:</h3>
+                        assesment schedule
+                        
+                    </ul>
+                </div>
+                
+                <div class="py-4">
+                    <ul class="list-group list-group-flush">
+                        <h3 class="py-3">QUESTION {{question.0}} : 
+                            <span class="score">
+                                E8
+                            </span>
+                        </h3>
+                        <ul>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                            <li class="list-group-item">
+                                <b>(a)(i)</b>: 
+                                <span class="score">Achievement: dllalalla | Merit: lorem ip | Excellence: lorem</span>
+                                <br>
+                                
+                                <p>{hfaiodfahoadoidia</p>
+                            </li>
+                        </ul>
 
+                
+                        <h3 class="py-3">Assesment Schedule:</h3>
+                        assesment schedule
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h2>QUESTION TWO</h2>
-<br>
-<h2>QUESTION THREE</h2>
-<br>
-<h2>QUESTION FOUR</h2>
+    
 {% endblock %}
 
+
+
+{% block scripts%}
+    <script>
+        function getRandomColor() {
+            const letters = 'BCDEF'.split('');
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * letters.length)];
+            }
+            return color;
+        }
+
+        window.onload = function() {
+            const classColorMap = {};
+            const bulletPoints = document.querySelectorAll("[class^='bullet_point_']");
+            bulletPoints.forEach(function(bulletPoint) {
+                if (!classColorMap[bulletPoint.className]) {
+                    classColorMap[bulletPoint.className] = getRandomColor();
+                }
+                bulletPoint.style.backgroundColor = classColorMap[bulletPoint.className];
+
+                // Add event listeners to the bullet points
+                bulletPoint.addEventListener('mouseover', function() {
+                    const sameClassPoints = document.getElementsByClassName(bulletPoint.className);
+                    for(let point of sameClassPoints){
+                        point.style.transform = 'scale(1.02)';
+                        point.style.boxShadow = '0px 0px 8px rgba(0, 0, 0, 0.05)';
+                    }
+                });
+
+                bulletPoint.addEventListener('mouseout', function() {
+                    const sameClassPoints = document.getElementsByClassName(bulletPoint.className);
+                    for(let point of sameClassPoints){
+                        point.style.transform = 'scale(1.0)';
+                        point.style.boxShadow = 'none';
+                    }
+                });
+            });
+        }
+    </script>
+{% endblock %}

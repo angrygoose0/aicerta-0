@@ -2,52 +2,55 @@
 
 {%block content%}
 
-
-    <ul class="nav nav-pills" id="myTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">My Plan</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">Settings</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Tab 3</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="myTabsContent">
-        <div class="tab-pane fade show active py-5" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-                <div class="row">
-                    {% for plan in plans %}
-                        <div class="col-md-4">
-                            <div class="card mt-3 {% if plan == user.plan %}card-active{% endif %}">
-                                <div class="card-body">
-                                    <h5 class="card-title {% if plan == user.plan %}text-white{% endif %}">{{ plan.name }}</h5>
-                                    <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Type: {{ plan.type }}</p>
-                                    <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Monthly Marking: {{ plan.monthly_marking }}</p>
-                                    <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Custom Monthly: {{ plan.custom_monthly }}</p>
-                                    <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Pricing Monthly: {{ plan.pricing_monthly }}</p>
-                                    <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Pricing Yearly: {{ plan.pricing_yearly }}</p>
-                                    <div class="btn-group">
-                                        <a href="#" class="btn btn-sm {% if plan == user.plan %}btn-outline-light{% else %}btn-outline-success{% endif %}">
-                                            {% if plan == user.plan %}
-                                                Edit Plan
-                                            {% else %}
-                                                Buy it
-                                            {% endif %}
-                                        </a>
+    <div class="container">
+        <div class='exam'>
+            <ul class="nav nav-pills" id="myTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">My Plan</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">Settings</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab" aria-controls="tab3" aria-selected="false">Tab 3</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabsContent">
+                <div class="tab-pane fade show active py-5" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                        <div class="row">
+                            {% for plan in plans %}
+                                <div class="col-md-4">
+                                    <div class="card mt-3 {% if plan == user.plan %}card-active{% endif %}">
+                                        <div class="card-body">
+                                            <h5 class="card-title {% if plan == user.plan %}text-white{% endif %}">{{ plan.name }}</h5>
+                                            <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Type: {{ plan.type }}</p>
+                                            <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Monthly Marking: {{ plan.monthly_marking }}</p>
+                                            <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Custom Monthly: {{ plan.custom_monthly }}</p>
+                                            <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Pricing Monthly: {{ plan.pricing_monthly }}</p>
+                                            <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Pricing Yearly: {{ plan.pricing_yearly }}</p>
+                                            <div class="btn-group">
+                                                <a href="#" class="btn btn-sm {% if plan == user.plan %}btn-outline-light{% else %}btn-outline-success{% endif %}">
+                                                    {% if plan == user.plan %}
+                                                        Edit Plan
+                                                    {% else %}
+                                                        Buy it
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                    </div>
+                </div>
+                <div class="tab-pane fade py-5" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+                    <p>Content for Tab 2 goes here...</p>
+                </div>
+                <div class="tab-pane fade py-5" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+                    <p>Content for Tab 3 goes here...</p>
                 </div>
             </div>
-        </div>
-        <div class="tab-pane fade py-5" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-            <p>Content for Tab 2 goes here...</p>
-        </div>
-        <div class="tab-pane fade py-5" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-            <p>Content for Tab 3 goes here...</p>
         </div>
     </div>
 

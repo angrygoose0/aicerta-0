@@ -5,18 +5,22 @@
 
 
 {% block content %}
-    <div class="py-3">
-        <h1>{{name}}</h1>
-        <small><b>Standard: {{standard}}</b></small> 
-        <br>
-        <small><b>Year: {{year}}</b></small>
-    </div>
-    
+    <div class="container">
+        <div class='exam'>
+            <div class="py-3">
+                <h1>{{name}}</h1>
+                <small><b>Standard: {{standard}}</b></small> 
+                <br>
+                <small><b>Year: {{year}}</b></small>
+            </div>
+            
 
-    {% include "main/partials/forms.html" %}
+            {% include "main/partials/forms.html" %}
 
-    <div>
-        <a class="btn btn-outline-success" href="/app/{{id}}/mark" role="button">Mark</a>
+            <div>
+                <a class="btn btn-outline-success" href="/app/{{id}}/mark" role="button">Mark</a>
+            </div>
+        </div>
     </div>
 
     

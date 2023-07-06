@@ -24,19 +24,6 @@
                 background-color: #f8f9fa;
             }
 
-            .sidenav {
-                height: 100%;
-                width: 220px;
-                position: fixed;
-                z-index: 1;
-                top: 0;
-                left: 0;
-                background-color: #111;
-                overflow-x: hidden;
-                padding-top: 20px;
-                transition: 0.3s;
-            }
-
             .sidenav a {
                 padding: 6px 8px 6px 16px;
                 text-decoration: none;
@@ -62,14 +49,6 @@
                 padding-left: 15px;
                 margin-right: auto;
                 margin-left: auto;
-            }
-
-            .container {
-                max-width: 960px;
-                margin: 30px auto;
-                padding: 20px;
-                background-color: #ffffff;
-                box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
             }
 
             .btn-outline-success {
@@ -173,9 +152,7 @@
                 border-radius: 4px; /* Round the corners of the background */
             }
             
-            .exam {
-                margin: 40px; /* Change this value to suit your needs */
-            }
+
 
             label {
                 font-weight: bold;
@@ -188,6 +165,36 @@
             [class^='bullet_point_']:hover {
                 transform: scale(1.02);
                 box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .exam {
+                margin: 40px; /* Change this value to suit your needs */
+            }
+
+            .container {
+                max-width: 960px;
+                margin: 30px auto;
+                padding: 20px;
+                background-color: #ffffff;
+                box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .sidenav {
+                height: 100%;
+                width: 220px;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                left: 0;
+                background-color: #111;
+                overflow-x: hidden;
+                padding-top: 20px;
+                transition: 0.3s;
+            }
+
+            .scrolling-column {
+                height: 100vh; /* this will make the div take the full height of the viewport */
+                overflow-y: auto; /* this will add a scrollbar when needed */
             }
 
         </style>
@@ -205,16 +212,10 @@
             <a href="/logout">Logout</a>
             <a href="/app/settings">Settings</a>
         </div>
-        
 
-
-        <div id="content", name="content", class="main">
-            <div class="container">
-                <div class='exam'>
-                    {% block content%}
-                    {% endblock %}
-                </div>
-            </div>
+        <div id="content", name="content", class="main">      
+            {% block content%}
+            {% endblock %}
         </div>
 
         <!-- Optional JavaScript -->

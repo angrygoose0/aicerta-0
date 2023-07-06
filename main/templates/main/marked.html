@@ -5,51 +5,64 @@
 
 
 {% block content %}
-
-    <div class="py-3">
-        <h1>{{name}}</h1>
-        <small><b>Standard: {{standard}}</b></small> 
-        <br>
-        <small><b>Year: {{year}}</b></small>
-    </div>
-
-    {% for question, userquestions in userquestion_groups.items %}
-        <div class="py-4">
-            <ul class="list-group list-group-flush">
-                <h3 class="py-3">QUESTION {{question.0}} : 
-                    <span class="score">
-                        {{question.1}}
-                    </span>
-                </h3>
-                {% for userquestion in userquestions %}
-                    <li class="list-group-item">
-                        <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 
-                        <span class="score">Achievement: {{userquestion.achievement}} | Merit: {{userquestion.merit}} | Excellence: {{userquestion.excellence}}</span>
+    <div class="row">
+        <div class="col scrolling-column">
+            <div class="container">
+                <div class='exam'>
+                    <div class="py-3">
+                        <h1>{{name}}</h1>
+                        <small><b>Standard: {{standard}}</b></small> 
                         <br>
-                        
-                        <p>{{userquestion.answer_html|safe}}</p>
-                    </li>
-                {% endfor%}
+                        <small><b>Year: {{year}}</b></small>
+                    </div>
+                    {% for question, userquestions in userquestion_groups.items %}
+                        <div class="py-4">
+                            <ul class="list-group list-group-flush">
+                                <h3 class="py-3">QUESTION {{question.0|NUMBER}} : 
+                                    <span class="score">
+                                        {{question.1}}
+                                    </span>
+                                </h3>
+                                <ul>
+                                    {% for userquestion in userquestions %}
+                                        <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 
+                                        <span class="score">Achievement: {{userquestion.achievement}} | Merit: {{userquestion.merit}} | Excellence: {{userquestion.excellence}}</span>
+                                        <br>
+                                        <p>{{userquestion.answer_html|safe}}</p>
+                                    {% endfor%}
+                                </ul>
 
-        
-                <h3 class="py-3">Assesment Schedule:</h3>
-                {{question.2|safe}}
-                
-
-                
-            </ul>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-    {% endfor %}
-
-    {% for score in scores %}
-        {{score}}
-    {% endfor %}
 
 
-        
-    and then the useranswers will be highlighted as the same color as the bullet point.
 
-    
+        {% for score in scores %}
+            {{score}}
+        {% endfor %}
+
+        <div class="col scrolling-column">
+            <div class="container">
+                <div class='exam'>
+                    <h1 class="py-4">Assesment Schedule:</h1>
+
+                    {% for question, userquestions in userquestion_groups.items %}
+
+                        <h3 class="py-3">QUESTION {{question.0|NUMBER}}:</h3>
+                        <div class="py-4">
+                                {{question.2|safe}}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+
 {% endblock %}
 
 {% block scripts%}
@@ -91,10 +104,5 @@
             });
         }
     </script>
-
-
-
-
-
 {% endblock %}
 
