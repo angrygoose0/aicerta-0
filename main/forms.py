@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, AssesmentSchedule
+from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, AssesmentSchedule
 import roman
 
 def int_to_alpha(value):
@@ -45,6 +45,17 @@ class StandardForm(ModelForm):
         labels = {
             'text': 'Text:',
             'type': 'Type:',
+        }
+        
+class SupportForm(forms.ModelForm):
+    class Meta:
+        model = HelpMessage
+        fields = ['message']
+        widgets = {
+            'message': forms.Textarea(attrs={'rows': 4}),
+        }
+        labels = {
+            'message': 'Message:'
         }
 
 class CreateNewStandard(forms.Form):

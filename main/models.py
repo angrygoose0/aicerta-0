@@ -85,6 +85,7 @@ class NceaUserDocument(models.Model):
     name = models.CharField(max_length=100)
     
     mark = models.IntegerField(default=0) # out of 24
+    marked_before = models.IntegerField(default=0) #1 for true, 0 for false
     
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
@@ -116,3 +117,7 @@ class NceaScores(models.Model):
     def __str__(self):
         return "%s, %s, score: %s" % (self.document, self.QUESTION, self.score)
 
+class HelpMessage(models.Model):
+    message = models.TextField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="help", null = True, blank = True)
+    date = models.DateTimeField
