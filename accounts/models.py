@@ -8,8 +8,9 @@ from decimal import Decimal
 
 class CustomUser(AbstractUser):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null = True, blank = True)
-    credits = models.DecimalField(default=Decimal('0.00'), max_digits=8, decimal_places=2)
+    credits = models.IntegerField(default=0) #cents
     def __str__(self):
         return self.email
     
-    
+    def get_display_credits(self):
+        return "{0:2f}".format(self.credits / 100)

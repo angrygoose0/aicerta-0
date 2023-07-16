@@ -16,12 +16,15 @@
                 </li>
             </ul>
             <div class="tab-content" id="myTabsContent">
-                <div class="tab-pane fade show active py-5" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                <div class="tab-pane show active py-5" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
                     <div class="py-4">
                         <h3 class="card-title">Credits: <span class="credits">{{credits}}</span></h3>
                         <a class="" href="/app/support/">What are credits?</a>
                         <br>
-                        <a href="#" class="btn btn-sm btn-outline-success">Buy More</a>
+                        <form action="{% url 'create-checkout-session' credit_price_id %}" method="POST">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">Buy More</button>
+                        </form>
                     </div>
                     <div class="py-4">
                         <h3 class="card-title py-4">Plan:</h3>
@@ -34,7 +37,9 @@
                                             <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Monthly: <b class="credits">${{ plan.monthly_price}}</b></p>
                                             <p class="card-text {% if plan == user.plan %}text-white{% endif %}">{{ plan.description }}</p>
                                                 <a href="#" class="btn btn-sm {% if plan == user.plan %}btn-outline-light{% else %}btn-outline-success{% endif %}">
+
                                                     {% if plan == user.plan %}
+                                                    
                                                         Edit Plan
                                                     {% else %}
                                                         Buy it
@@ -49,10 +54,10 @@
                     </div>
 
                 </div>
-                <div class="tab-pane fade py-5" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+                <div class="tab-pane py-5" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
                     
                 </div>
-                <div class="tab-pane fade py-5" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
+                <div class="tab-pane py-5" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
                     <p>Content for Tab 3 goes here...</p>
                 </div>
             </div>

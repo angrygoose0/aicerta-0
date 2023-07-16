@@ -217,9 +217,12 @@ def create(response):
 def settings(response):
     plans = Plan.objects.all()
     credits = response.user.credits
+    credit_price_id = 1
+    credit_product_id = 1
     context ={
         "plans":plans,
         "credits":credits,
+        "credit_price_id":credit_price_id,
         }
     
     
