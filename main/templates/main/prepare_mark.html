@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}Prepare{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class='exam'>
+        <div class="py-3">
+            <p>Document being Marked:</p>
+            <p>{{doc.name}}</p>
+            <small><b>Standard: {{doc.exam.standard}}</b></small> 
+            <br>
+            <small><b>Year: {{doc.exam.year}}</b></small>
+        </div>
+        <div hx-trigger="every 2s" hx-get="{% url 'check_task' task_id%}?doc_id={{doc.id}}" hx-swap="innerHTML">
+            <!-- This is the loading circle that will be replaced once the request is complete -->
+            <div class="spinner-border custom-spinner" role="status">
+                <span class="sr-only"></span>
+            </div>
+        
+        </div>
+    </div>
+</div>
+{% endblock %}

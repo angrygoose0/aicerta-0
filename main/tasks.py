@@ -6,46 +6,47 @@ import json
 import openai
 import os
 import re
+import tiktoken
+
+start_system = """
+You are tasked with marking NCEA Questions based on a provided assessment schedule and model answers. Each question's response should be evaluated on the following criteria:
+
+1. Every bullet point in the answer corresponds to a point in the assessment schedule. If an answer correctly addresses a bullet point from the schedule, it receives a point.
+2. If an answer does not answer the question or provides a random response, it should be marked as incorrect.
+3. An answer containing a diagram or a table represented as {img} should be automatically marked as correct since these types of content are not supported in the current context.
+
+Your goal is to determine the number of Achievement, Merit, and Excellence marks for each question. If no marks of a certain type are awarded for a question, assign "0" to that mark type. 
+
+For each question, provide feedback. The feedback should include the type of mark (Achievement, Merit, or Excellence), the relevant bullet point from the assessment schedule that the answer addressed correctly, and a quote from the user's answer that correctly addressed the bullet point.
+
+The output should be in JSON format and structured as follows:
+
+{"questions":[{"question":"(a)(i)","feedback":[{"type":"(Achievement/Merit/Excellence)","bullet_point":"•(1,2,5) (the number of the bullet point that the user's answer addresses.)","answer":"(quoted from the snippet of the user's answer that addresses the bullet point.( whitespace, punctuation, and capital letters has to be accurate))"}],"achievement":"(number of Achievement marks)","merit":"(number of Merit marks)","excellence":"(number of Excellence marks)"}]}
+
+Note: The number of questions in the 'questions' array will vary based on the number of questions being assessed. Similarly, the number of feedback items for each question will depend on the number of bullet points in the assessment schedule for that question.
+
+Assesment Schedule:           
+"""
 
 openai.api_key = os.getenv('AI_API')
 
+encoding = tiktoken.encoding_for_model("gpt-4")
 
 
 
 @shared_task
-def mark_document(id): 
-    
+def prepare_document(id):
     try:
         doc = NceaUserDocument.objects.get(id=id)
         userquestions = NceaUserQuestions.objects.filter(document = doc)
         QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
         counter = 1
-        document_mark = 0
         tokens = 0
         
         for QUESTION in QUESTIONS:
             secondary_questions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
             
-            start_system = """
-            You are tasked with marking NCEA Questions based on a provided assessment schedule and model answers. Each question's response should be evaluated on the following criteria:
-
-            1. Every bullet point in the answer corresponds to a point in the assessment schedule. If an answer correctly addresses a bullet point from the schedule, it receives a point.
-            2. If an answer does not answer the question or provides a random response, it should be marked as incorrect.
-            3. An answer containing a diagram or a table represented as {img} should be automatically marked as correct since these types of content are not supported in the current context.
-
-            Your goal is to determine the number of Achievement, Merit, and Excellence marks for each question. If no marks of a certain type are awarded for a question, assign "0" to that mark type. 
-
-            For each question, provide feedback. The feedback should include the type of mark (Achievement, Merit, or Excellence), the relevant bullet point from the assessment schedule that the answer addressed correctly, and a quote from the user's answer that correctly addressed the bullet point.
-
-            The output should be in JSON format and structured as follows:
-
-            {"questions":[{"question":"(a)(i)","feedback":[{"type":"(Achievement/Merit/Excellence)","bullet_point":"•(1,2,5) (the number of the bullet point that the user's answer addresses.)","answer":"(quoted from the snippet of the user's answer that addresses the bullet point.( whitespace, punctuation, and capital letters has to be accurate))"}],"achievement":"(number of Achievement marks)","merit":"(number of Merit marks)","excellence":"(number of Excellence marks)"}]}
-
-            Note: The number of questions in the 'questions' array will vary based on the number of questions being assessed. Similarly, the number of feedback items for each question will depend on the number of bullet points in the assessment schedule for that question.
-
-            Assesment Schedule:
             
-            """
             ass = ""
             ass_html = '<li class="list-group-item">'
             schedules = AssesmentSchedule.objects.filter(QUESTION=QUESTION)
@@ -85,13 +86,46 @@ def mark_document(id):
             QUESTION.system_html = ass_html
             QUESTION.save()
             
+        
+            useranswer = ""
+            for secondary_question in secondary_questions:
+                userquestion = userquestions.get(question=secondary_question)
+                primary = number_to_alphabet(secondary_question.primary)
+                secondary = number_to_roman(secondary_question.secondary)
+                useranswer += "(%s)(%s):\n" % (primary, secondary)
+                useranswer += "%s\n" % (userquestion.answer)
+                useranswer += "\n"
+                
+            
+            text = start_system + "\n" + ass + "\n" + useranswer
+            tokens += len(encoding.encode(text))
+            
+        return tokens
+
+    except Exception as e:
+        print(e)
+        return e
+
+@shared_task
+def mark_document(id): 
+    try:
+        doc = NceaUserDocument.objects.get(id=id)
+        userquestions = NceaUserQuestions.objects.filter(document = doc)
+        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
+        counter = 1
+        document_mark = 0
+        tokens = 0
+        
+        for QUESTION in QUESTIONS:
+            secondary_questions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
+            
             messages = []
             system_message = {"role":"system", "content": 
                 """ 
                 %s
                 
                 %s
-                """ % (start_system, ass)}
+                """ % (start_system, QUESTION.system)}
             messages.append(system_message)
                     
             useranswer = ""

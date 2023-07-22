@@ -6,6 +6,9 @@ import roman
 def int_to_alpha(value):
     return chr(ord("a") + int(value) - 1)
 
+class TriggerMarkForm(forms.Form):
+    pass
+
 class CreateNewDocument(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
     exam = forms.ModelChoiceField(queryset=NceaExam.objects.all())

@@ -1,69 +1,70 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden
 from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule
-from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm
+from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm, TriggerMarkForm
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from payment.models import Plan
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
-import openai
-import os
-import re
-from django.utils.safestring import mark_safe
-import json
-from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
-import datetime
-import tiktoken
-from .tasks import mark_document
+
+from .tasks import mark_document, prepare_document
+from celery.result import AsyncResult
 
 
 
 # Create your views here.
 
 
-def mark_text(txt, json_feedback):
-    # Create a dictionary that maps each character in the text to its CSS classes
-    classes_for_each_char = [set() for _ in range(len(txt))]
-
-    # For each feedback item, mark the corresponding characters with the CSS class
-    for feedback in json_feedback:
-        # Check if feedback type is not "Achievement", "Merit", or "Excellence" and skip if so
-        if feedback['type'] not in ["Achievement", "Merit", "Excellence"]:
-            continue
-
-        css_class = "bullet_point" + feedback['bullet_point'].replace("•","_")
-        start_index = txt.index(feedback['answer'])
-        end_index = start_index + len(feedback['answer'])
-        for i in range(start_index, end_index):
-            classes_for_each_char[i].add(css_class)
-
-    # Construct the marked-up text
-    marked_up_text = ""
-    current_classes = set()
-    for i, char in enumerate(txt):
-        if classes_for_each_char[i] != current_classes:
-            # Close the current span(s), if any
-            if current_classes:
-                marked_up_text += "</span>" * len(current_classes)
-            # Open a new span(s) for the new classes
-            for css_class in classes_for_each_char[i]:
-                marked_up_text += f'<span class="{css_class}">'
-            current_classes = classes_for_each_char[i]
-        marked_up_text += char
-    # Close the final span(s), if any
-    if current_classes:
-        marked_up_text += "</span>" * len(current_classes)
-
-    return marked_up_text
-
-
 
 @login_required(login_url="/login/")
 def home(response):
     return render(response, "main/home.html")
+        
+@login_required(login_url="/login/")
+def prepare_mark(response, id):
+    doc = NceaUserDocument.objects.get(id=id)
+    if doc.user == response.user:
+        task = prepare_document.delay(id)
+        
+        context ={
+            "doc":doc,
+            "task_id": task.id
+        }
+        return render(response, "main/prepare_mark.html", context, status=202)
+    else:
+        return HttpResponseForbidden()
+    
+def check_task(response, task_id,):
+    task = AsyncResult(task_id)
+    if task.ready():
+        form = TriggerMarkForm()
+        doc_id = response.GET.get('doc_id')
+        context ={
+            'result': task.result, 
+            'form': form,
+            'doc_id': doc_id
+            }
+                
+            
+            
+        return render(response, "main/partials/task_completed.html", context)
+        #return JsonResponse({'status': 'READY', 'result': task.result})
+    else:
+        return JsonResponse({'status': 'PENDING'})
+    
+    
+@login_required(login_url="login/")
+def trigger_bulk_mark(response, ids):
+    for id in ids:
+        doc = NceaUserDocument.objects.get(id=id)
+        if doc.user == response.user:
+            mark_document.delay(id)
+    return HttpResponseRedirect("/app/")
+
 
 
 @login_required(login_url="/login/")
@@ -132,16 +133,23 @@ def index(response, id):
 
 
 @login_required(login_url="login/")
+def trigger_bulk_mark(response, ids):
+    for id in ids:
+        doc = NceaUserDocument.objects.get(id=id)
+        if doc.user == response.user:
+            mark_document.delay(id)
+    return HttpResponseRedirect("/app/")
+
+
+@require_POST
+@login_required(login_url="login/")
 def trigger_mark(response, id):
-    credits = response.user.credits
-    if credits < 5.00:
-        pass
     doc = NceaUserDocument.objects.get(id=id)
     if doc.user == response.user:
         mark_document.delay(id)
-        
         return HttpResponseRedirect("/app/")
-
+    else:
+        return HttpResponseForbidden()
 
 
 
