@@ -6,7 +6,7 @@ from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from payment.models import Plan
+from payment.models import Plan, ProductPrice
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
@@ -224,11 +224,13 @@ def create(response):
 @login_required(login_url="login/")
 def settings(response):
     plans = Plan.objects.all()
+    products = ProductPrice.objects.all()
     credits = response.user.credits
     credit_price_id = 1
     credit_product_id = 1
     context ={
         "plans":plans,
+        "products":products,
         "credits":credits,
         "credit_price_id":credit_price_id,
         }

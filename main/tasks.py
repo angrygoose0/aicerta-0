@@ -244,4 +244,4 @@ def mark_document(id):
         doc.save()
     except Exception as e:
         print(e)
-        return e
+        return str(e)

@@ -21,10 +21,11 @@
                         <h3 class="card-title">Credits: <span class="credits">{{credits}}</span></h3>
                         <a class="" href="/app/support/">What are credits?</a>
                         <br>
-                        <form action="{% url 'create-checkout-session' credit_price_id %}" method="POST">
-                            {% csrf_token %}
-                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">Buy More</button>
-                        </form>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Launch demo modal
+                        </button>
+
+                        
                     </div>
                     <div class="py-4">
                         <h3 class="card-title py-4">Plan:</h3>
@@ -58,12 +59,41 @@
                     
                 </div>
                 <div class="tab-pane py-5" id="tab3" role="tabpanel" aria-labelledby="tab3-tab">
-                    <p>Content for Tab 3 goes here...</p>
+                    
                 </div>
             </div>
         </div>
     </div>
 
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-l">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    {% for product in products%}
+                        <div class="col-md-4 col-lg-3">
+                            <div class="card mb-3" style="width: 100%;">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{product.credit}} Credits</h5>
+                                    <p class="card-text">{{product.description}}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <form action="{% url 'create-checkout-session' product.price_key %}" method="POST">
+                                            {% csrf_token %}
+                                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">${{product.price}}</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {%endfor%}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {%endblock%}

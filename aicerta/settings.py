@@ -198,3 +198,5 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_URL = 'amqp://localhost'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

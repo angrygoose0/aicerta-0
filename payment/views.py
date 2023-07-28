@@ -7,6 +7,7 @@ import stripe
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.conf import settings
 
+
 stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
 YOUR_DOMAIN = 'http://127.0.0.1:8000'
 
@@ -75,6 +76,8 @@ def my_webhook_view(request):
             expand=['line_items'],
         )
         print(session)
+        
+        product_id =""
 
         line_items = session.line_items
         # Fulfill the purchase...

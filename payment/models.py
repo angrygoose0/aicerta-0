@@ -17,7 +17,7 @@ class Plan(models.Model):
     def get_display_price(self):
         return "{0:2f}".format(self.monthly_price / 100)
     
-    def get_displayt_credits(self):
+    def get_display_credits(self):
         return "{0:2f}".format(self.monthly_credits / 100)
     
 class Product(models.Model):
@@ -33,5 +33,16 @@ class ProductPrice(models.Model):
     
     price_key = models.CharField(max_length=100)
     
+    price = models.IntegerField(default=0) #cents (1000 = $10.00)
+    credit = models.IntegerField(default=0) #cents
+    
+    description = models.TextField(null=True, blank=True)
+    
+    def get_display_price(self):
+        return "{0:2f}".format(self.price / 100)
+    
+    def get_displayt_credits(self):
+        return "{0:2f}".format(self.credit / 100)
+    
     def __str__(self):
-        return "%s price" % self.product.name
+        return "%s $%s, credits:%s" % (self.product.name, self.price, self.credit)
