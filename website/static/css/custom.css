@@ -6,6 +6,23 @@ body {
 
 }
 
+.green-text {
+    color: #376d4d
+}
+
+.styled-image {
+    border: 2px solid #444;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(68, 68, 68, 0.6), 0 6px 6px rgba(68, 68, 68, 0.23);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.styled-image:hover {
+    box-shadow: 0 14px 28px rgba(68, 68, 68, 0.25), 0 10px 10px rgba(68, 68, 68, 0.22);
+    transform: scale(1.02);
+}
+
+
 html {
     scroll-behavior: smooth;
 }
@@ -18,17 +35,6 @@ html {
 .no-padding {
     padding-top: 0;
     padding-bottom: 0;
-}
-
-.btn:hover,
-.custom-navbar .nav-link:hover {
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
-}
-
-.btn:focus,
-.custom-navbar .nav-link:focus {
-    outline: none;
 }
 
 .py-5 {
@@ -53,11 +59,11 @@ html {
 
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Quicksand', sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Lato', sans-serif;
+    font-family: 'Quicksand', sans-serif;
 }
 
 .card {
@@ -72,7 +78,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .container {
     width: 100%;
-    max-width: 100%;
+    max-width: 60%;
     padding: 0 20px;
     box-sizing: border-box;
 }
@@ -111,9 +117,8 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #0E1B13 !important;
 }
 
-.bg-light{
-    background-color: #1B3626 !important;
-}
+
+
 
 @keyframes gradient {
     0% { background-position: 100% 0%; }
@@ -144,7 +149,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .custom-title {
-    color: #224430; /* Change this to your desired color */
+    color: #fff; /* Change this to your desired color */
 }
 
 .card-content-left {
@@ -166,6 +171,16 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #376d4d;
     color: #ffffff;
     border-color: #376d4d;
+}
+
+.btn-success:hover {
+    background-color: #376d4d;
+    color: #ffffff;
+    border-color: #376d4d;
+}
+
+.nav-link:focus {
+    color: white !important;
 }
 
 .nav-pills .nav-link {
@@ -380,5 +395,54 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 1;
+}
+
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    transition: background-color 0.5s ease; /* smooth transition */
+    z-index: 1000; /* Ensures the navbar stays on top of other elements */
+    background-color: transparent;
+}
+
+.navbar-brand, .nav-link {
+    color: #FFF; /* make sure the text is visible against the dark navbar */
+}
+
+.navbar-brand:hover, .nav-link:hover {
+    color: #376d4d; /* color from .accent-color class for hover effects */
+}
+
+.navbar-toggler-icon {
+    filter: invert(1); /* make the navbar toggler (hamburger menu) icon white */
+}
+
+.bg-color {
+    background-color: #000 !important; /* change "#your-color" to your desired color */
+}
+
+
+.list-group-item {
+    border-left: 5px solid #376d4d; /* Adds the green line */
+    transition: all 0.3s ease; /* Smooth transition for hover effect */
+    color: #FFFFFF; /* Initial color of text */
+    background-color: #000000; /* Initial background color */
+}
+
+.list-group-item:hover {
+    background-color: #376d4d;
+    color: #FFFFFF; /* Changes text color to white on hover */
+}
+
+
+.login-btn {
+    width: 100px; /* adjust as needed */
+    height: 40px; /* adjust as needed */
+}
+
+.text-gray {
+    color: #777;
 }
 
