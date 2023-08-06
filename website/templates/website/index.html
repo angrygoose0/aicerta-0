@@ -1,4 +1,5 @@
 {% extends 'website/base.html' %}
+{% load crispy_forms_tags %}
 {% block title%} AICERTA - Use AI as tool.{% endblock%}
 
 {% block style%} 
@@ -29,16 +30,7 @@
 
     
 
-    <section class="py-5 bg-light text-center text-gray">
-        <h4 class="mb-4">Trusted by educators across NZ.</h4>
-        <div class="d-flex flex-wrap justify-content-center">
-            <img src="logo1.png" alt="Logo 1" class="m-2" style="max-height: 100px; filter: grayscale(100%);">
-            <img src="logo2.png" alt="Logo 2" class="m-2" style="max-height: 100px; filter: grayscale(100%);">
-            <img src="logo3.png" alt="Logo 3" class="m-2" style="max-height: 100px; filter: grayscale(100%);">
-            <!-- Add more logos as needed. -->
-        </div>
-    </section>
-
+    
     
 
     <section id="product" class="py-5 bg-black">
@@ -74,10 +66,9 @@
             <div class="row">
                 <div class="col-lg-4 text-left">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item lead">NCEA-specific grading</li>
-                        <li class="list-group-item lead">Instant Insights</li>
-                        <li class="list-group-item lead">Highlights based on student work</li>
-                        <li class="list-group-item lead">Feedback based on Assesment Schedule</li>
+                        <li class="list-group-item lead">- NCEA-specific grading</li>
+                        <li class="list-group-item lead">- Highlights based on student work</li>
+                        <li class="list-group-item lead">- Feedback based on Assesment Schedule</li>
                     </ul>
                 </div>
                 
@@ -91,14 +82,42 @@
         </div>
     </section>
 
-    <section class="py-5 bg-light text-black">
-        <div class="container">
-            <div class="key-point">
-                <p>"For seniors, the examples we mark against are <strong class="green-text">outdated</strong>."</p>
-                <p>"This leads to a <strong class="green-text">narrow view of what is expected</strong>."</p>
+    <section class="py-5 bg-light text-black text-center">
+        <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="container">
+                        <div class="key-point">
+                            <p>"For seniors, the examples we mark against are <strong class="green-text">outdated</strong>."</p>
+                            <p>"This leads to a <strong class="green-text">narrow view of what is expected</strong>."</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="container">
+                        <div class="key-point">
+                            <p><strong class="green-text">"Teachers are time poor."</strong></p>
+                            <p>"With internal standards, teachers have become NZQA markers <strong class="green-text">without the extra pay</strong>."</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="container">
+                        <div class="key-point">
+                            <p>"New system with more marking leaves <strong class="green-text">less time for curriculum planning</strong>."</p>
+                            <p>"<strong class="green-text">Erosion of personal time, health, and wellbeing</strong>."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleSlidesOnly" data-bs-slide-to="2" aria-label="Slide 3"></button>
             </div>
         </div>
     </section>
+
 
     
 
@@ -110,7 +129,7 @@
                     <p class="lead text-center" style="padding: 50px; opacity: 0; transition: opacity 1s ease-in-out;" id="section-text">AI certa helps you refine future responses with precise, valuable feedback.</p>
                 </div>
                 <div class="col-lg-8 order-lg-1 text-left">
-                    <img src="../static/images/screen.png" alt="Website Screenshot" class="img-fluid my-4">
+                    <img src="../static/images/flowchart.png" alt="Website Screenshot" class="img-fluid my-4 styled-image">
                 </div>
             </div>
         </div>
@@ -128,7 +147,7 @@
 
                 <div class="col-lg-8 text-left">
                     
-                    <img src="../static/images/screen.png" alt="Website Screenshot" class="img-fluid my-4">
+                    <img src="../static/images/screen.png" alt="Website Screenshot" class="img-fluid my-4 styled-image">
                 </div>
 
             </div>
@@ -140,7 +159,7 @@
     
     
 
-    <section id="about" class="bg-black text-white">
+    <section id="about" class="bg-black text-white py-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-8 offset-md-1 py-5">
@@ -162,27 +181,16 @@
         </div>
     </section>
 
-    <section class="py-5 bg-light text-black">
-        <div class="container">
-            <div class="key-point">
-                <p><strong class="green-text">"Teachers are time poor."</strong></p>
-                <p>"With internal standards, teachers have become NZQA markers <strong class="green-text">without the extra pay</strong>."</p>
-                <p>"New system with more marking leaves <strong class="green-text">less time for curriculum planning</strong>."</p>
-                <p>"<strong class="green-text">Erosion of personal time, health, and wellbeing</strong>."</p>
-            </div>
-        </div>
-    </section>
-
     <section id="pricing" class="bg-black text-white mt-0">
         <div class="container py-5">
             <div class="row">
                 <div class="col-md-12 text-center">
                     <h2>Choose a plan.</h2>
-                    <p class="lead">Accelerate your marking now with our versatile plans and credit system.</p>
+                    <p class="lead">Accelerate your marking now with our versatile plans or pay as you go credit system.</p>
                 </div>
             </div>
             <div class="row mt-5 text-black">
-                <div class="col-md-12 py-5">
+                <div class="col-md-12">
                     <ul class="nav nav-pills justify-content-center" id="pricingTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link active" id="plans-tab" data-bs-toggle="pill" href="#plans" role="tab" aria-controls="plans" aria-selected="true">Plans</a>
@@ -203,10 +211,17 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
-                <p>Estimate your usage
+            <div class="text-center">
+                <h3>Estimate your usage:</h3>
+                <p class="">~ 50-100 credits per exam marked.</p>
+                <form method="POST" hx-post="{% url 'calculate' %}" hx-target="#result" hx-trigger="submit">
+                    {% csrf_token %}
+                    {{ form|crispy}}
+                    <br>
+                    <input class="btn btn-outline-success" type="submit" value="Calculate">
+                </form>
+                <div id="result"></div>
             </div>
-            
         </div>
     </section>
 

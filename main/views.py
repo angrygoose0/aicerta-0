@@ -48,22 +48,13 @@ def check_task(response, task_id,):
             'form': form,
             'doc_id': doc_id
             }
-                
-            
+
             
         return render(response, "main/partials/task_completed.html", context)
         #return JsonResponse({'status': 'READY', 'result': task.result})
     else:
         return JsonResponse({'status': 'PENDING'})
     
-    
-@login_required(login_url="login/")
-def trigger_bulk_mark(response, ids):
-    for id in ids:
-        doc = NceaUserDocument.objects.get(id=id)
-        if doc.user == response.user:
-            mark_document.delay(id)
-    return HttpResponseRedirect("/app/")
 
 
 
@@ -132,13 +123,6 @@ def index(response, id):
     return HttpResponseRedirect("/app/")
 
 
-@login_required(login_url="login/")
-def trigger_bulk_mark(response, ids):
-    for id in ids:
-        doc = NceaUserDocument.objects.get(id=id)
-        if doc.user == response.user:
-            mark_document.delay(id)
-    return HttpResponseRedirect("/app/")
 
 
 @require_POST

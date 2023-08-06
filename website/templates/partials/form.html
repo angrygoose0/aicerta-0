@@ -1,0 +1,5 @@
+<form action="{% url 'calculate_credits' %}" method="POST" hx-post="{% url 'calculate_credits' %}" hx-swap="outerHTML">
+    {% csrf_token %}
+    {{ form|crispy}}
+    <input type="submit" value="Calculate">
+</form>

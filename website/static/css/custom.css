@@ -363,22 +363,30 @@ h1, h2, h3, h4, h5, h6 {
     right: auto;
 }
 
-
-
-.carousel-inner {
-    height: 100%;
+.carousel-indicators {
+    position: absolute;
+    bottom: -30px; /* Adjust this value to move the indicators up or down */
 }
 
-.carousel-item {
-    height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+.carousel-indicators button {
+    background-color: #376d4d !important; /* Your chosen color */
 }
 
-.carousel-item img {
-    height: 100%;
-    object-fit: cover; /* This will prevent the images from being distorted */
+.carousel-indicators .active {
+    background-color: #376d4d !important; /* Your chosen color for the active slide indicator */
+}
+
+form input[type="text"], form input[type="number"], form input[type="password"] {
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+}
+
+/* Style the submit button */
+form input[type="submit"] {
+    background-color: white;
+    color: black;
+    border: 1px solid white;
 }
 
 .image-wrapper {
@@ -431,10 +439,7 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #000000; /* Initial background color */
 }
 
-.list-group-item:hover {
-    background-color: #376d4d;
-    color: #FFFFFF; /* Changes text color to white on hover */
-}
+
 
 
 .login-btn {
