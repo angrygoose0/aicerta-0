@@ -7,6 +7,7 @@ import openai
 import os
 import re
 import tiktoken
+from django.conf import settings
 
 start_system = """
 You are tasked with marking NCEA Questions based on a provided assessment schedule and model answers. Each question's response should be evaluated on the following criteria:
@@ -28,7 +29,8 @@ Note: The number of questions in the 'questions' array will vary based on the nu
 Assesment Schedule:           
 """
 
-openai.api_key = os.getenv('AI_API')
+
+openai.api_key = settings.AI_API
 
 encoding = tiktoken.encoding_for_model("gpt-4")
 
