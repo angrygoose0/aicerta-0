@@ -11,7 +11,7 @@ from accounts.models import CustomUser
 
 
 stripe.api_key = settings.STRIPE_TEST_SECRET_KEY
-YOUR_DOMAIN = 'http://127.0.0.1:8000'
+YOUR_DOMAIN = settings.ALLOWED_HOSTS
 
 
 

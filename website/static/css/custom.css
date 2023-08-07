@@ -382,6 +382,21 @@ form input[type="text"], form input[type="number"], form input[type="password"] 
     border: 1px solid white;
 }
 
+.rotate90 {
+    transform: rotate(-90deg);
+    max-width: 100%;
+    height: auto;
+}
+
+.arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid white;
+    margin: 0 auto;
+}
+
 /* Style the submit button */
 form input[type="submit"] {
     background-color: white;
