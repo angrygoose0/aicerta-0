@@ -5,21 +5,31 @@
 
 
 {% block content %}
-<div class="container">
-    <div class='exam'>
-        <div class="py-3">
-            <p>Document being Marked:</p>
-            <p>{{doc.name}}</p>
-            <small><b>Standard: {{doc.exam.standard}}</b></small> 
-            <br>
-            <small><b>Year: {{doc.exam.year}}</b></small>
-        </div>
-        <div hx-trigger="every 2s" hx-get="{% url 'check_task' task_id%}?doc_id={{doc.id}}" hx-swap="innerHTML">
-            <!-- This is the loading circle that will be replaced once the request is complete -->
-            <div class="spinner-border custom-spinner" role="status">
-                <span class="sr-only"></span>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title text-center mb-4">Document Details</h4>
+            <div class="mb-3">
+                <h6><b>Document being Marked:</b></h6>
+                <small>{{doc.name}}</small>
             </div>
-        
+            <div class="mb-2">
+                <h6><b>Standard:</b></h6>
+                <small>{{doc.exam.standard}}</small>
+            </div>
+            <div class="mb-4">
+                <h6><b>Year:</b></h6>
+                <small>{{doc.exam.year}}</small>
+            </div>
+
+            <div class="text-center">
+                <div hx-trigger="every 2s" hx-get="{% url 'check_task' task_id%}?doc_id={{doc.id}}" hx-swap="innerHTML">
+                    <!-- This is the loading circle that will be replaced once the request is complete -->
+                    <div class="spinner-border custom-spinner" role="status">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

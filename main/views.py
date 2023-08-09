@@ -10,6 +10,7 @@ from payment.models import Plan, ProductPrice
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
+from django.template.loader import render_to_string
 
 from .tasks import mark_document, prepare_document
 from celery.result import AsyncResult
@@ -40,11 +41,16 @@ def prepare_mark(response, id):
     
 def check_task(response, task_id,):
     task = AsyncResult(task_id)
+    user = response.user
+    credits = user.credits
+    credits_required = task.result
     if task.ready():
-        form = TriggerMarkForm()
+        
+        form = TriggerMarkForm(initial={'credits_required':credits_required})
         doc_id = response.GET.get('doc_id')
         context ={
-            'result': task.result, 
+            'result': credits_required, 
+            'credits': credits,
             'form': form,
             'doc_id': doc_id
             }
@@ -128,12 +134,25 @@ def index(response, id):
 @require_POST
 @login_required(login_url="login/")
 def trigger_mark(response, id):
-    doc = NceaUserDocument.objects.get(id=id)
-    if doc.user == response.user:
-        mark_document.delay(id)
-        return HttpResponseRedirect("/app/")
-    else:
-        return HttpResponseForbidden()
+    if response.method == "POST":
+        form = TriggerMarkForm(response.POST)
+        if form.is_valid():
+            
+            required_credits = form.cleaned_data["credits_required"]
+        
+            doc = NceaUserDocument.objects.get(id=id)
+            user = response.user
+            credits = user.credits
+            if doc.user != user:
+                return HttpResponseForbidden()
+                    
+            if credits < required_credits:
+                return HttpResponseForbidden()
+
+
+            mark_document.delay(id)
+            return HttpResponseRedirect("/app/")
+
 
 
 
@@ -221,39 +240,7 @@ def settings(response):
     
     
     return render(response, "main/settings.html", context)
-"""
-@login_required(login_url="login/")
-def standard(response):
-    initial_data = {
-    'name': '',
-    'standard': "",
-    'year': "",
-    }
-    if response.method == "POST":
 
-        form = CreateNewStandard(response.POST, initial=initial_data, )
-
-        if form.is_valid():
-            n = form.cleaned_data["name"]
-            s = form.cleaned_data["standard"]
-            y = form.cleaned_data["year"]
-            
-            exam = NceaExam(standard=s, year=y, exam_name=n, user=response.user)
-            exam.save()
-            
-            QUESTION = NceaQUESTION(exam=exam, QUESTION=1)
-            QUESTION.save()
-            
-            secondary = NceaSecondaryQuestion(QUESTION=QUESTION, primary=1, secondary=1)
-            secondary.save()
-            
-            #return HttpResponseRedirect("/standard1")
-            return HttpResponseRedirect("/app/standard1/%s" % exam.id)
-
-    else:
-        form = CreateNewStandard(initial = initial_data)
-        return render(response, "main/standard.html", {"form":form})
-"""
 @login_required(login_url="login/")
 def tempmark(response):
     return render(response, "main/tempmark.html")

@@ -1,7 +1,33 @@
-<p>Credits: {{result}}</p>
-<form method="post" action="{% url 'trigger_mark' doc_id %}">
-    {% csrf_token %}
-    <button class="btn btn-sm btn-outline-success" type="submit" id="triggerButton">Trigger Mark</button>
-</form>
+<div class="my-4">
+    <div class="card-body">
+        <h5 class="text-center">Marking Details</h5>
+        <div class="row my-3">
+            <div class="col-md-6 text-center text-md-start">
+                <h6>CREDIT COST</h6>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <span class="badge bg-danger">{{ result }}</span>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-md-6 text-center text-md-start">
+                <h6>YOUR BALANCE</h6>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <span class="badge bg-success">{{credits}}</span>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <form method="post" action="{% url 'trigger_mark' doc_id %}">
+                {% csrf_token %}
+                {{form}}
+                <button class="btn btn-lg btn-outline-success" type="submit" id="triggerButton">Trigger Mark</button>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+
 
 
