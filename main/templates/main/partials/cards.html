@@ -1,28 +1,42 @@
+
 <div class="col-md-4 col-lg-3">
-    <div class="card mb-3 box-shadow" id="card-{{ td.id }}" style="width: 100%;">
-        <div class="card-body">
-            <h5 class="card-title">{{ td.name|truncatechars:15 }}</h5>
-            <p class="card-text">{{ td.exam }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                    <a href="/app/{{ td.id }}/edit" class="btn btn-sm btn-outline-success">Edit</a>
-                    
-                    {% if td.marked_before == 1 %}
-                        <a href="/app/{{ td.id }}/view" class="btn btn-sm btn-outline-success">View Marks</a>
-                        <a href="{% url 'prepare_mark' td.id %}" class="btn btn-sm btn-outline-primary">Mark</a>
-                    {% elif td.marked_before == 0 %}
-                        <a href="{% url 'prepare_mark' td.id %}" class="btn btn-sm btn-outline-primary">Mark</a>
-                    {% endif %}
-                    <!-- Add a form element around the delete button -->
-                    <form hx-post="/app/{{ td.id }}/delete/" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
-                        {% csrf_token %}  <!-- Include the CSRF token -->
-                        <button type="submit" class="btn btn-sm btn-outline-danger">X</button>
-                    </form>
+    <div class="card mb-3 box-shadow card-hoverable" id="card-{{ td.id }}" style="width: 100%;">
+        <a href="/app/{{ td.id }}/edit" id="card-link-{{ td.id }}" style="text-decoration: none; color: inherit;">
+            <div class="card-body">
+                <h5 class="card-title">{{ td.name|truncatechars:15 }}</h5>
+                <p class="card-text">{{ td.exam }}</p>
+                <div class= "d-flex justify-content-between align-items-center">
+
+                    <div class="dropdown-center">
+                        <a class="btn btn-sm btn-outline-success dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if td.marked_before == 1 %}
+                                <li><a class="dropdown-item btn-sm btn-outline-success" href="/app/{{ td.id }}/view">View Marks</a></li>
+                                <li><a class="dropdown-item btn-sm btn-outline-success" href="{% url 'prepare_mark' td.id %}">Mark</a></li>
+                            {% elif td.marked_before == 0 %}
+
+                                <li><a class="dropdown-item btn-outline-success" href="{% url 'prepare_mark' td.id %}">Mark</a></li>
+                            {% endif %}
+
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form class="dropdown-item" hx-post="/app/{{ td.id }}/delete/" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
+                                    {% csrf_token %}
+                                    <button type="submit" class=" btn-danger btn btn-sm">Delete</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
+        
     </div>
+    
 </div>
+
 
 <!-- Add the myResponseHandler JavaScript function -->
 <script>
@@ -35,4 +49,5 @@
             console.log('Failed to delete NceaDocument');
         }
     }
+
 </script>
