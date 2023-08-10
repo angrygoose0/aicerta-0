@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden
 from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule
-from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm, TriggerMarkForm
+from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.contrib.auth.decorators import login_required
@@ -46,17 +46,20 @@ def check_task(response, task_id,):
     credits_required = task.result
     if task.ready():
         
-        form = TriggerMarkForm(initial={'credits_required':credits_required})
         doc_id = response.GET.get('doc_id')
-        context ={
-            'result': credits_required, 
-            'credits': credits,
-            'form': form,
-            'doc_id': doc_id
-            }
+        
+        doc = NceaUserDocument.objects.get(id=doc_id)
+        doc.credit_price = credits_required
+        doc.save()
+        if doc.user == user:
+            context ={
+                'result': doc.credit_price,
+                'credits': credits,
+                'doc_id': doc_id
+                }
 
             
-        return render(response, "main/partials/task_completed.html", context)
+            return render(response, "main/partials/task_completed.html", context)
         #return JsonResponse({'status': 'READY', 'result': task.result})
     else:
         return JsonResponse({'status': 'PENDING'})
@@ -135,23 +138,20 @@ def index(response, id):
 @login_required(login_url="login/")
 def trigger_mark(response, id):
     if response.method == "POST":
-        form = TriggerMarkForm(response.POST)
-        if form.is_valid():
-            
-            required_credits = form.cleaned_data["credits_required"]
-        
-            doc = NceaUserDocument.objects.get(id=id)
-            user = response.user
-            credits = user.credits
-            if doc.user != user:
-                return HttpResponseForbidden()
+
+        doc = NceaUserDocument.objects.get(id=id)
+        required_credits = doc.credit_price
+        user = response.user
+        credits = user.credits
+        if doc.user != user:
+            return HttpResponseForbidden()
                     
-            if credits < required_credits:
-                return HttpResponseForbidden()
+        if credits < required_credits:
+            return HttpResponseForbidden()
 
 
-            mark_document.delay(id)
-            return HttpResponseRedirect("/app/")
+        mark_document.delay(id)
+        return HttpResponseRedirect("/app/")
 
 
 

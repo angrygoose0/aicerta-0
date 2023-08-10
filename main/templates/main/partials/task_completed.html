@@ -20,7 +20,6 @@
         <div class="text-center mt-4">
             <form method="post" action="{% url 'trigger_mark' doc_id %}">
                 {% csrf_token %}
-                {{form}}
                 <button class="btn btn-lg btn-outline-success" type="submit" id="triggerButton">Trigger Mark</button>
             </form>
             

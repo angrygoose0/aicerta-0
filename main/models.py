@@ -87,6 +87,8 @@ class NceaUserDocument(models.Model):
     mark = models.IntegerField(default=0) # out of 24
     marked_before = models.IntegerField(default=0) #1 for true, 0 for false
     
+    credit_price = models.IntegerField(default=0)
+    
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
 

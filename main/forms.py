@@ -6,8 +6,6 @@ import roman
 def int_to_alpha(value):
     return chr(ord("a") + int(value) - 1)
 
-class TriggerMarkForm(forms.Form):
-    credits_required = forms.IntegerField(widget=forms.HiddenInput())
 
 class CreateNewDocument(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
