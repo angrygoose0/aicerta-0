@@ -1,3 +1,4 @@
+{% load myfilters %}
 <div class="my-4">
     <div class="card-body">
         <h5 class="text-center">Marking Details</h5>
@@ -6,7 +7,7 @@
                 <h6>CREDIT COST</h6>
             </div>
             <div class="col-md-6 text-center text-md-end">
-                <span class="badge bg-danger">{{ result }}</span>
+                <span class="badge bg-danger">{{ result|divide }}</span>
             </div>
         </div>
         <div class="row my-3">

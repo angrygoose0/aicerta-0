@@ -1,14 +1,15 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from payment.models import Plan
+from payment.models import ProductPrice
 from decimal import Decimal
 
 
 
 
 class CustomUser(AbstractUser):
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null = True, blank = True)
+    plan = models.ForeignKey(ProductPrice, on_delete=models.SET_NULL, null = True, blank = True)
     credits = models.IntegerField(default=0) #cents
+    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     def __str__(self):
         return self.email
     

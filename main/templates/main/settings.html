@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load myfilters %}
 
 {%block content%}
 
@@ -18,39 +19,101 @@
                         <h3 class="card-title">Credits: <span class="credits">{{credits}}</span></h3>
                         <a class="" href="/app/support/">What are credits?</a>
                         <br>
-                        <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Deposit
-                        </button>
-
-                        
-                    </div>
-                    <div class="py-4">
-                        <h3 class="card-title py-4">Plan:</h3>
                         <div class="row">
-                            {% for plan in plans %}
-                                <div class="col-md-4">
-                                    <div class="card mt-3 {% if plan == user.plan %}card-active{% endif %}">
+                            {% for product in products%}
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="card mb-3" style="width: 100%;">
                                         <div class="card-body">
-                                            <h5 class="card-title {% if plan == user.plan %}text-white{% endif %}">{{ plan.name }}</h5>
-                                            <p class="card-text {% if plan == user.plan %}text-white{% endif %}">Monthly: <b class="credits">${{ plan.monthly_price}}</b></p>
-                                            <p class="card-text {% if plan == user.plan %}text-white{% endif %}">{{ plan.description }}</p>
-                                                <a href="#" class="btn btn-sm {% if plan == user.plan %}btn-outline-light{% else %}btn-outline-success{% endif %}">
-
-                                                    {% if plan == user.plan %}
-                                                    
-                                                        Edit Plan
-                                                    {% else %}
-                                                        Buy it
-                                                    {% endif %}
-                                                </a>
+                                            <h5 class="card-title">{{product.credit}} Credits</h5>
+                                            <p class="card-text">{{product.description}}</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <form action="{% url 'create-checkout-session' product.price_key %}" method="POST">
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">${{product.price}}</button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            {% endfor %}
+                            {%endfor%}
                         </div>
                     </div>
 
+                    <div class="py-4">
+                        <h3 class="card-title py-4">Plan:</h3>
+
+                        <ul class="nav nav-pills" id="myTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="tab11-tab" data-bs-toggle="tab" href="#tab11" role="tab" aria-controls="tab11" aria-selected="true">Monthly</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="tab22-tab" data-bs-toggle="tab" href="#tab22" role="tab" aria-controls="tab22" aria-selected="false">Yearly</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="myTabsContent">
+                            <div class="tab-pane show active py-5" id="tab11" role="tabpanel" aria-labelledby="tab11-tab">
+                                <div class="row">
+                                    {% for month in monthly %}
+                                        <div class="col-md-6 text-center">
+                                            <div class="card mt-3 {% if month == user.plan %}card-active{% endif %}">
+                                                <div class="card-body">
+                                                    <h5 class="card-title {% if month == user.plan %}text-white{% endif %}">{{ month.product.name }}</h5>
+                                                    <p class="card-text {% if month == user.plan %}text-white{% endif %}"><strong class="display-6 credit">${{ month.price}}</strong>/mo</p>
+                                                    <p class="card-text {% if month == user.plan %}text-white{% endif %}"><strong>{{month.credit}}</strong> credits</p>
+                                                    {% if month == user.plan %}
+                                                        <form action="{% url 'create-portal-session' %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <button class="btn btn-sm btn-outline-light" id="checkout-and-portal-button" type="submit">Manage your Plan</button>
+                                                        </form>
+                                                    {% else %}
+                                                        <form action="{% url 'create-checkout-session' month.price_key %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">Subscribe</button>
+                                                        </form>
+                                                    {% endif %}
+
+
+            
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {%endfor%}
+                                </div>
+
+                            </div>
+                            <div class="tab-pane py-5" id="tab22" role="tabpanel" aria-labelledby="tab22-tab">
+                                <div class="row">
+
+                                    {% for year in yearly %}
+                                        <div class="col-md-6 text-center">
+                                            <div class="card mt-3 {% if year == user.plan %}card-active{% endif %}">
+                                                <div class="card-body">
+                                                    <h5 class="card-title {% if year == user.plan %}text-white{% endif %}">{{ year.product.name }}</h5>
+                                                    <p class="card-text {% if year == user.plan %}text-white{% endif %}"><strong class="display-6 credit">${{ year.price}} </strong>/yr</p>
+                                                    <p class="card-text {% if year == user.plan %}text-white{% endif %}">save <strong>${{year.price|saved}}</strong></p>
+                                                    <p class="card-text {% if year == user.plan %}text-white{% endif %}"><strong>{{year.credit}}</strong> credits</p>
+
+                                                    {% if year == user.plan %}
+                                                        <form action="{% url 'create-portal-session' %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <button class="btn btn-sm btn-outline-light" id="checkout-and-portal-button" type="submit">Manage your Plan</button>
+                                                        </form>
+                                                    {% else %}
+                                                        <form action="{% url 'create-checkout-session' year.price_key %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">Subscribe</button>
+                                                        </form>
+                                                    {% endif %}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {%endfor%}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane py-5" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
                     <a href="/logout" class="btn btn-outline-danger">Logout</a>
@@ -59,36 +122,5 @@
             </div>
         </div>
     </div>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-l">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    {% for product in products%}
-                        <div class="col-md-4 col-lg-3">
-                            <div class="card mb-3" style="width: 100%;">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{product.credit}} Credits</h5>
-                                    <p class="card-text">{{product.description}}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <form action="{% url 'create-checkout-session' product.price_key %}" method="POST">
-                                            {% csrf_token %}
-                                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">${{product.price}}</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {%endfor%}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 {%endblock%}

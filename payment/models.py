@@ -3,22 +3,7 @@ from decimal import Decimal
 
 # Create your models here.
 
-class Plan(models.Model):
-    name = models.CharField(max_length=100)
-    monthly_price = models.IntegerField(default=0)
-    
-    monthly_credits = models.IntegerField(default=0) #cents
 
-    description = models.TextField(null=True, blank=True)
-    
-    def __str__(self):
-        return self.name
-    
-    def get_display_price(self):
-        return "{0:2f}".format(self.monthly_price / 100)
-    
-    def get_display_credits(self):
-        return "{0:2f}".format(self.monthly_credits / 100)
     
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -37,6 +22,9 @@ class ProductPrice(models.Model):
     credit = models.IntegerField(default=0) #cents
     
     description = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length = 100)
+    
+    m_or_y=models.CharField(max_length=50, null=True, blank=True) #m for monthly, y for yearly
     
     def get_display_price(self):
         return "{0:2f}".format(self.price / 100)
