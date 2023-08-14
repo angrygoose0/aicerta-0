@@ -65,9 +65,14 @@ def saved(n):
     x = n // 5
     return x
 
+def times(n):
+    x = n * 100
+    return x
 
 register.filter('to_alphabet', number_to_alphabet)
 register.filter('to_roman', number_to_roman)
 register.filter('NUMBER', number_to_word_upper)
 register.filter('divide', divide)
 register.filter('saved', saved)
+register.filter('times', times)
+

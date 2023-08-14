@@ -21,15 +21,24 @@
                         <br>
                         <div class="row">
                             {% for product in products%}
-                                <div class="col-md-4 col-lg-3">
+                                <div class="col-md-4 text-center col-lg-3">
                                     <div class="card mb-3" style="width: 100%;">
                                         <div class="card-body">
-                                            <h5 class="card-title">{{product.credit}} Credits</h5>
-                                            <p class="card-text">{{product.description}}</p>
-                                            <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title">{{product.name}}</h5>
+                                            <p class="card-text" style="font-size: 1.5rem;">
+                                                <strong>${{ product.price }}</strong>
+                                            </p>
+                                            {% if product.price|times != 2000 %}
+                                                <p class="card-text" style="font-size: 1rem;"><s>{{product.price|times}}</s> <strong>{{product.credit}}</strong> credits</p>
+                                            {% else %}
+                                                <p class="card-text" style="font-size: 1rem;"><strong>{{product.credit}}</strong> credits</p>
+                                            {% endif %}
+                                            <div class="d-flex justify-content-center align-items-center">
                                                 <form action="{% url 'create-checkout-session' product.price_key %}" method="POST">
                                                     {% csrf_token %}
-                                                    <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">${{product.price}}</button>
+                                                    <button class="btn btn-outline-secondary" type="submit">
+                                                        Buy for ${{product.price}}
+                                                    </button>
                                                 </form>
                                             </div>
                                         </div>
@@ -59,17 +68,17 @@
                                             <div class="card mt-3 {% if month == user.plan %}card-active{% endif %}">
                                                 <div class="card-body">
                                                     <h5 class="card-title {% if month == user.plan %}text-white{% endif %}">{{ month.product.name }}</h5>
-                                                    <p class="card-text {% if month == user.plan %}text-white{% endif %}"><strong class="display-6 credit">${{ month.price}}</strong>/mo</p>
-                                                    <p class="card-text {% if month == user.plan %}text-white{% endif %}"><strong>{{month.credit}}</strong> credits</p>
+                                                    <p class="card-text {% if month == user.plan %}text-white{% endif %}"><strong class="display-6 credit">${{ month.price}} </strong>/mo</p>
+                                                    <p class="card-text {% if month == user.plan %}text-white{% endif %}"><s>{{month.price|times}}</s> <strong>{{month.credit}} </strong>credits /mo</p>
                                                     {% if month == user.plan %}
                                                         <form action="{% url 'create-portal-session' %}" method="POST">
                                                             {% csrf_token %}
-                                                            <button class="btn btn-sm btn-outline-light" id="checkout-and-portal-button" type="submit">Manage your Plan</button>
+                                                            <button class="btn btn-outline-light" id="checkout-and-portal-button" type="submit">Manage your Plan</button>
                                                         </form>
                                                     {% else %}
                                                         <form action="{% url 'create-checkout-session' month.price_key %}" method="POST">
                                                             {% csrf_token %}
-                                                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">Subscribe</button>
+                                                            <button class="btn btn-outline-success" type="submit" id="checkout-button">Subscribe</button>
                                                         </form>
                                                     {% endif %}
 
@@ -92,17 +101,17 @@
                                                     <h5 class="card-title {% if year == user.plan %}text-white{% endif %}">{{ year.product.name }}</h5>
                                                     <p class="card-text {% if year == user.plan %}text-white{% endif %}"><strong class="display-6 credit">${{ year.price}} </strong>/yr</p>
                                                     <p class="card-text {% if year == user.plan %}text-white{% endif %}">save <strong>${{year.price|saved}}</strong></p>
-                                                    <p class="card-text {% if year == user.plan %}text-white{% endif %}"><strong>{{year.credit}}</strong> credits</p>
+                                                    <p class="card-text {% if year == user.plan %}text-white{% endif %}"><s>{{year.price|times}}</s> <strong>{{year.credit}}</strong> credits /yr</p>
 
                                                     {% if year == user.plan %}
                                                         <form action="{% url 'create-portal-session' %}" method="POST">
                                                             {% csrf_token %}
-                                                            <button class="btn btn-sm btn-outline-light" id="checkout-and-portal-button" type="submit">Manage your Plan</button>
+                                                            <button class="btn btn-outline-light" id="checkout-and-portal-button" type="submit">Manage your Plan</button>
                                                         </form>
                                                     {% else %}
                                                         <form action="{% url 'create-checkout-session' year.price_key %}" method="POST">
                                                             {% csrf_token %}
-                                                            <button class="btn btn-sm btn-outline-success" type="submit" id="checkout-button">Subscribe</button>
+                                                            <button class="btn btn-outline-success" type="submit" id="checkout-button">Subscribe</button>
                                                         </form>
                                                     {% endif %}
 

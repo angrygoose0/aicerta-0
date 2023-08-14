@@ -1,0 +1,8 @@
+Name,Product,PriceKey,Price,Credit,Type,m_or_y
+Basic,Credit,price_1NWpzZKILxTrdOvGPt5Ydl0S,20,2000,payment,
+Pro,Credit,price_1NWq04KILxTrdOvGIUVzidem,50,5300,payment,
+Elite,Credit,price_1NWpz0KILxTrdOvGmMeP7ShL,100,11100,payment,
+,Starter Plan,price_1Ne6MTKILxTrdOvGPvs5Naci,40,4500,subscription,m
+,Starter Plan,price_1Ne6N8KILxTrdOvGtQEyA3Kr,400,54000,subscription,y
+,Growth Plan,price_1Ne6OFKILxTrdOvGQG1aXbNR,90,10500,subscription,m
+,Growth Plan,price_1Ne6OFKILxTrdOvGTFONAFwm,900,126000,subscription,y

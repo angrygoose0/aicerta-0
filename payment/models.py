@@ -14,6 +14,7 @@ class Product(models.Model):
         return self.name
     
 class ProductPrice(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=100)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     
     price_key = models.CharField(max_length=100)
@@ -21,7 +22,7 @@ class ProductPrice(models.Model):
     price = models.IntegerField(default=0) #cents (1000 = $10.00)
     credit = models.IntegerField(default=0) #cents
     
-    description = models.TextField(null=True, blank=True)
+    
     type = models.CharField(max_length = 100)
     
     m_or_y=models.CharField(max_length=50, null=True, blank=True) #m for monthly, y for yearly
