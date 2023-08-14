@@ -19,7 +19,7 @@ class Command(BaseCommand):
                         price_key=row["PriceKey"],
                         price=row["Price"],
                         credit=row["Credit"],
-                        Type=row["Type"],
+                        type=row["Type"],
                         m_or_y=row["m_or_y"],
 
                         )  
