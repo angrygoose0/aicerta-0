@@ -16,7 +16,7 @@ if settings.DEVELOPMENT_MODE == True:
     
     YOUR_DOMAIN = "http://127.0.0.1:8000"
 else:
-    YOUR_DOMAIN = "aicerta.com"
+    YOUR_DOMAIN = "https://aicerta.com"
 
 
 
