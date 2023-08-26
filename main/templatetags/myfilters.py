@@ -1,5 +1,5 @@
 from django import template
-import math
+
 
 register = template.Library()
 
@@ -57,9 +57,6 @@ def number_to_word_upper(n):
     # Join the words together and return the result
     return " ".join(words)
 
-def divide(n):
-    result = n/100
-    return math.ceil(result)
 
 def saved(n):
     x = n // 5
@@ -72,7 +69,6 @@ def times(n):
 register.filter('to_alphabet', number_to_alphabet)
 register.filter('to_roman', number_to_roman)
 register.filter('NUMBER', number_to_word_upper)
-register.filter('divide', divide)
 register.filter('saved', saved)
 register.filter('times', times)
 

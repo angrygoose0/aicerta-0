@@ -7,7 +7,7 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         try:
-            df = pd.read_csv('.csv/ProductPrice.csv')
+            df = pd.read_csv('.csv/ProductPrice2.csv')
             for index, row in df.iterrows():
                 product_name = row["Product"]
                 try:

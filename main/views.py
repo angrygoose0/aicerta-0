@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.template.loader import render_to_string
+import math
 
 from .tasks import mark_document, prepare_document
 from celery.result import AsyncResult
@@ -49,7 +50,10 @@ def check_task(response, task_id,):
         doc_id = response.GET.get('doc_id')
         
         doc = NceaUserDocument.objects.get(id=doc_id)
-        doc.credit_price = credits_required
+
+        result = credits_required/100
+        required = math.ceil(result)
+        doc.credit_price = required
         doc.save()
         if doc.user == user:
             context ={
@@ -106,6 +110,7 @@ def index(response, id):
             
             
         if response.method == "POST":
+            print(response.POST)
             form = AnswerFormset(response.POST)
             if form.is_valid():
                 form.save()
@@ -143,6 +148,7 @@ def trigger_mark(response, id):
         required_credits = doc.credit_price
         user = response.user
         credits = user.credits
+        
         if doc.user != user:
             return HttpResponseForbidden()
                     

@@ -23,5 +23,87 @@
         </div>
     </div>
 
+    <div class="modal fade" id="latexModal" tabindex="-1" aria-labelledby="latexModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="latexModalLabel">Insert LaTex</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-check-input" type="checkbox" id="inlineToggle" checked>
+                    <p><span id="mathquill" class="mathquill-input"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="insertLatexBtn">Insert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var mathQuillElements = document.querySelectorAll('.mathquill-input');
+            
+            mathQuillElements.forEach(function(span) {
+                var mathField = MQ.MathField(span, {
+                    handlers: {
+                        edit: function() {
+                            var enteredMath = mathField.latex(); // Get entered math in LaTeX format
+                            checkAnswer(enteredMath);
+                        }
+                    }
+                });
+            });
+        });   
+        
+// When a button is clicked to open the modal
+        $('button[data-bs-toggle="modal"]').on('click', function() {
+            var inputId = $(this).data('input-id');
+            $('#latexModal').data('target-input-id', inputId); // Storing the target input ID in the modal's data attribute
+        });
+
+        var MQ = MathQuill.getInterface(2);
+        var mathField = MQ.MathField(document.getElementById('mathquill'));
+
+        $('#insertLatexBtn').on('click', function() {
+            // Get LaTeX from MathQuill
+            var latex = mathField.latex();
+        
+            // Check if the toggle switch is checked (Inline Mode)
+            var isInline = $('#inlineToggle').prop('checked');
+        
+            // Wrap the LaTeX according to the mode
+            if (isInline) {
+                latex = '\\(' + latex + '\\)';
+            } else {
+                latex = '\\[' + latex + '\\]';
+            }
+        
+            // Get the target input ID from the modal's data attribute
+            var targetInputId = $('#latexModal').data('target-input-id');
+        
+            // Append the wrapped LaTeX to the existing content of the form input
+            var existingContent = $('#' + targetInputId).val();
+            $('#' + targetInputId).val(existingContent + latex);
+        
+            // Clear the MathQuill input
+            mathField.latex('');
+        
+            // Close the modal
+            $('#latexModal').modal('hide');
+        });
+        
+        
+        
+        
+
+    </script>
+
+        
+
+
+
     
 {% endblock %}
