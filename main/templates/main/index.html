@@ -62,10 +62,12 @@
         $('button[data-bs-toggle="modal"]').on('click', function() {
             var inputId = $(this).data('input-id');
             $('#latexModal').data('target-input-id', inputId); // Storing the target input ID in the modal's data attribute
+            console.log("Captured input ID:", inputId); // Log the captured input ID
         });
 
         var MQ = MathQuill.getInterface(2);
         var mathField = MQ.MathField(document.getElementById('mathquill'));
+        
 
         $('#insertLatexBtn').on('click', function() {
             // Get LaTeX from MathQuill
@@ -83,7 +85,8 @@
         
             // Get the target input ID from the modal's data attribute
             var targetInputId = $('#latexModal').data('target-input-id');
-        
+            console.log("Retrieved input ID:", targetInputId); // Log the retrieved input ID
+
             // Append the wrapped LaTeX to the existing content of the form input
             var existingContent = $('#' + targetInputId).val();
             $('#' + targetInputId).val(existingContent + latex);
@@ -94,11 +97,14 @@
             // Close the modal
             $('#latexModal').modal('hide');
         });
-        
-        
-        
-        
 
+        // Cleanup when modal is hidden
+        $('#latexModal').on('hidden.bs.modal', function() {
+            $('#latexModal').removeData('target-input-id');
+            if (mathField) {
+                mathField.latex(''); // Reset the MathQuill input
+            }
+        });
     </script>
 
         
