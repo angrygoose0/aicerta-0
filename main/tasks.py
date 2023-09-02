@@ -8,12 +8,15 @@ import os
 import re
 import tiktoken
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 start_system = """
 You are tasked with marking NCEA Questions based on a provided assessment schedule and model answers. Each question's response should be evaluated on the following criteria:
 
 1. Every bullet point in the answer corresponds to a point in the assessment schedule. If an answer correctly addresses a bullet point from the schedule, it receives a point.
-2. If an answer does not answer the question or provides a random response, it should be marked as incorrect.
+2. If an answer does not answer the question or provides a random response, it should be marked as incorrect and therefore no feedback objects.
 3. An answer containing a diagram or a table represented as {img} should be automatically marked as correct since these types of content are not supported in the current context.
 
 When processing the input text, please pay special attention to patterns that match the LaTeX notation for inline and display equations:
@@ -118,7 +121,7 @@ def prepare_document(id):
     except Exception as e:
         print(e)
         return e
-
+     
 @shared_task
 def mark_document(id): 
     try:
@@ -134,7 +137,7 @@ def mark_document(id):
             
             messages = []
             system_message = {"role":"system", "content": 
-                """ 
+                r""" 
                 %s
                 
                 %s
@@ -144,10 +147,12 @@ def mark_document(id):
             useranswer = ""
             for secondary_question in secondary_questions:
                 userquestion = userquestions.get(question=secondary_question)
+                processed_userquestion = userquestion.answer.replace("\\", "\\\\")
+                logger.info("Processed question: %s", processed_userquestion)
                 primary = number_to_alphabet(secondary_question.primary)
                 secondary = number_to_roman(secondary_question.secondary)
                 useranswer += "(%s)(%s):\n" % (primary, secondary)
-                useranswer += "%s\n" % (userquestion.answer)
+                useranswer += "%s\n" % (processed_userquestion)
                 useranswer += "\n"
                 
             user_message = {"role":"user", "content":useranswer}
@@ -159,6 +164,8 @@ def mark_document(id):
                 messages=messages,
                 temperature=0
             )
+            
+            print(res)
             
             marks = res["choices"][0]["message"]["content"]
             tokens += res["usage"]["total_tokens"]

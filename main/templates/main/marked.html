@@ -69,10 +69,13 @@
     <script>
         function getRandomColor() {
             const letters = 'BCDEF'.split('');
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * letters.length)];
+            let color = 'rgba(';
+            for (let i = 0; i < 3; i++) { // Looping only 3 times since we only need R, G, B values
+                // Generate a random number between 0-255 for R, G, and B
+                let rgbValue = Math.floor(Math.random() * 256);
+                color += rgbValue + ',';
             }
+            color += '0.3)'; // Adding the alpha value for 60% opacity. Adjust as needed.
             return color;
         }
 

@@ -138,7 +138,6 @@ def index(response, id):
 
 
 
-
 @require_POST
 @login_required(login_url="login/")
 def trigger_mark(response, id):
@@ -157,6 +156,11 @@ def trigger_mark(response, id):
 
 
         mark_document.delay(id)
+        
+        user.credits -= required_credits
+        user.save()
+        
+        
         return HttpResponseRedirect("/app/")
 
 
