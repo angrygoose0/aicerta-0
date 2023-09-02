@@ -29,8 +29,9 @@
                 </ul>
             </div>
         {% endfor %}
-        <button type="submit" value ="save" class="btn btn-secondary">Save</button>
-        
+        <button type="save" value="save" class="btn btn-secondary" hx-post="{% url 'index' id=id %}" hx-target="#answer-formset" hx-swap="outerHTML">
+            Save
+        </button>
         <!--div class ='htmx-indicator'>Loading...</div-->
         {% if message %}
             <p>{{ message}} </p>

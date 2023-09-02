@@ -21,11 +21,11 @@ You are tasked with marking NCEA Questions based on a provided assessment schedu
 
 When processing the input text, please pay special attention to patterns that match the LaTeX notation for inline and display equations:
 
-If a segment of text is enclosed between the markers "\(" and "\)", treat this as an inline mathematical equation. For example, "\(x = y + z\)" or "\(\frac{x}{y}\)".
+If a segment of text is enclosed between the markers "\\(" and "\\)", treat this as an inline mathematical equation. For example, "\\(x = y + z\\)" or "\\(\\frac{x}{y}\\)".
 
-If a segment of text is enclosed between the markers "\[" and "\]", treat this as a display-style mathematical equation. For example, "\[x = y + z\]" or "\[\frac{x}{y}\]".
+If a segment of text is enclosed between the markers "\\[" and "\\]", treat this as a display-style mathematical equation. For example, "\\[x = y + z\\]" or "\\[\\frac{x}{y}\\]".
 
-Any LaTeX notation that is not enclosed between these markers should be considered as regular text and not a mathematical equation. For instance, the text "x = \frac{-b \pm \sqrt{b^2-4a}}{2a}" without the enclosing markers is just text and should not be interpreted as a mathematical equation.
+Any LaTeX notation that is not enclosed between these markers should be considered as regular text and not a mathematical equation. For instance, the text "x = \\frac{-b \\pm \\sqrt{b^2-4a}}{2a}" without the enclosing markers is just text and should not be interpreted as a mathematical equation.
 
 It's crucial to interpret the enclosed LaTeX correctly to ensure accurate processing of mathematical content.
 
