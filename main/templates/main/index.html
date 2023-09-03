@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 
 {% block title %}Document{% endblock %}
@@ -35,55 +36,59 @@
                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                         <!-- Arithmetic & Basic Algebra Group -->
                         <div class="btn-group me-2" role="group" aria-label="Arithmetic">
-                            <button type="button" class="btn btn-light math-button" data-latex="+">+</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="-">-</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\times">\(\times\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\div">\(\div\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\pm">\(\pm\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\mp">\(\mp\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="+">+</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="-">-</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\times">\(\times\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\div">\(\div\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\pm">\(\pm\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\mp">\(\mp\)</button>
                         </div>
                     
                         <!-- Relations & Equivalents Group -->
                         <div class="btn-group me-2" role="group" aria-label="Relations">
-                            <button type="button" class="btn btn-light math-button" data-latex="=">=</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\neq">\(\neq\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\approx">\(\approx\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\equiv">\(\equiv\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="<"><</button>
-                            <button type="button" class="btn btn-light math-button" data-latex=">">></button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\leq">\(\leq\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\geq">\(\geq\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="=">=</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\neq">\(\neq\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\approx">\(\approx\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\equiv">\(\equiv\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="<"><</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex=">">></button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\leq">\(\leq\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\geq">\(\geq\)</button>
                         </div>
                     
                         <!-- Calculus Group -->
                         <div class="btn-group me-2" role="group" aria-label="Calculus">
-                            <button type="button" class="btn btn-light math-button" data-latex="\int">\(\int\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\partial">\(\partial\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\lim_{x \to a}">\(\lim\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\sum">\(\sum\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\int">\(\int\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\partial">\(\partial\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\lim_{x \to a}">\(\lim\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\sum">\(\sum\)</button>
                         </div>
                     
                         <!-- Greek Letters Group (only a few for the sake of brevity) -->
                         <div class="btn-group me-2" role="group" aria-label="Greek Letters">
-                            <button type="button" class="btn btn-light math-button" data-latex="\alpha">\(\alpha\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\beta">\(\beta\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\gamma">\(\gamma\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\delta">\(\delta\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\lambda">\(\lambda\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\alpha">\(\alpha\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\beta">\(\beta\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\gamma">\(\gamma\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\delta">\(\delta\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\lambda">\(\lambda\)</button>
                         </div>
                     
                         <!-- Miscellaneous Group -->
                         <div class="btn-group" role="group" aria-label="Miscellaneous">
-                            <button type="button" class="btn btn-light math-button" data-latex="\infty">\(\infty\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\sqrt{}">\(\sqrt{}\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\angle">\(\angle\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\therefore">\(\therefore\)</button>
-                            <button type="button" class="btn btn-light math-button" data-latex="\because">\(\because\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\infty">\(\infty\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\sqrt{}">\(\sqrt{}\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\angle">\(\angle\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\therefore">\(\therefore\)</button>
+                            <button type="button" class="btn btn-sm btn-light math-button" data-latex="\because">\(\because\)</button>
                         </div>
                     </div>
                     
-                    <input class="form-check-input" type="checkbox" id="inlineToggle" checked>
-                    <p><span id="mathquill" class="mathquill-input"></span></p>
+                    
+        
+                    <div class="mathquill-container py-2">
+                        <p><span class="mathquill-input"></span></p>
+                        <button type="button" class="btn btn-outline-success add-mathquill-btn">+</button>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-success" id="insertLatexBtn">Insert</button>
@@ -92,81 +97,9 @@
         </div>
     </div>
 
+{% endblock %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var mathQuillElements = document.querySelectorAll('.mathquill-input');
-            
-            mathQuillElements.forEach(function(span) {
-                var mathField = MQ.MathField(span, {
-                    handlers: {
-                        edit: function() {
-                            var enteredMath = mathField.latex(); // Get entered math in LaTeX format
-                            checkAnswer(enteredMath);
-                        }
-                    }
-                });
-            });
-        });   
-        
-// When a button is clicked to open the modal
-        $('button[data-bs-toggle="modal"]').on('click', function() {
-            var inputId = $(this).data('input-id');
-            $('#latexModal').data('target-input-id', inputId); // Storing the target input ID in the modal's data attribute
-            console.log("Captured input ID:", inputId); // Log the captured input ID
-        });
-
-        var MQ = MathQuill.getInterface(2);
-        var mathField = MQ.MathField(document.getElementById('mathquill'));
-        
-
-        $(document).on('click', '.math-button', function() {
-            // Get the LaTeX data attribute from the clicked button
-            var latex = $(this).data('latex');
-            
-            // Insert the LaTeX notation into MathQuill input at the current cursor position
-            mathField.cmd(latex);
-            mathField.focus(); // Set focus back to the MathQuill input
-        });
-
-        $('#insertLatexBtn').on('click', function() {
-            // Get LaTeX from MathQuill
-            var latex = mathField.latex();
-        
-            // Check if the toggle switch is checked (Inline Mode)
-            var isInline = $('#inlineToggle').prop('checked');
-        
-            // Wrap the LaTeX according to the mode
-            if (isInline) {
-                latex = '\\(' + latex + '\\)';
-            } else {
-                latex = '\\[' + latex + '\\]';
-            }
-        
-            // Get the target input ID from the modal's data attribute
-            var targetInputId = $('#latexModal').data('target-input-id');
-            console.log("Retrieved input ID:", targetInputId); // Log the retrieved input ID
-
-            // Append the wrapped LaTeX to the existing content of the form input
-            var existingContent = $('#' + targetInputId).val();
-            $('#' + targetInputId).val(existingContent + latex);
-        
-            // Clear the MathQuill input
-            mathField.latex('');
-        
-            // Close the modal
-            $('#latexModal').modal('hide');
-
-
-        });
-
-        // Cleanup when modal is hidden
-        $('#latexModal').on('hidden.bs.modal', function() {
-            $('#latexModal').removeData('target-input-id');
-            if (mathField) {
-                mathField.latex(''); // Reset the MathQuill input
-            }
-        });
-    </script>
+{% block scripts %}
+    <script src="{% static 'js/index.js' %}"></script>
 
 {% endblock %}
