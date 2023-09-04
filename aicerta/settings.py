@@ -37,6 +37,8 @@ DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,14 +49,15 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'django.contrib.sites',
-    'allauth', # new
-    'allauth.account', # new
-    'allauth.socialaccount', # new
+    'allauth', 
+    'allauth.account', 
+    'allauth.socialaccount',
     'accounts',
     'django_htmx',
     'website',
     'payment',
     'django_celery_results',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +91,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'aicerta.wsgi.application'
 
+ASGI_APPLICATION = "aicerta.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)], #change for production
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
