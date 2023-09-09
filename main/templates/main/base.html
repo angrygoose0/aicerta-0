@@ -47,6 +47,13 @@
         <div id="content", name="content", class="main">      
             {% block content%}
             {% endblock %}
+
+            
+            
+            <div class="toast-container bottom-0 end-0 p-3" id="toast-container">
+                <!-- Dynamically added toasts will appear here -->
+            </div>
+
         </div>
 
         <!-- Optional JavaScript -->
@@ -60,6 +67,21 @@
 
         {% block scripts%}
         {% endblock %}
+        
+<script>
+            document.body.addEventListener('htmx:afterSwap', function(event) {
+                var toasts = document.querySelectorAll('.toast:not(.show)');
+                toasts.forEach(function(toast) {
+                    new bootstrap.Toast(toast).show();
+                });
+            });
+            document.body.addEventListener('hidden.bs.toast', function(event) {
+                event.target.remove();
+            });
+            
+
+
+        </script>
         
     </body>
 </html>
