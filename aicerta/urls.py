@@ -23,7 +23,6 @@ urlpatterns = [
     path("", include("allauth.urls")),
     path("", include("website.urls")),
     path("", include("payment.urls")),
-    path("chat/", include("chat.urls")),
 ]
 
 
