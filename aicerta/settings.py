@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'website',
     'payment',
     'django_celery_results',
-    'chat',
 ]
 
 MIDDLEWARE = [
