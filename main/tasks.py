@@ -1,5 +1,6 @@
-from celery import shared_task
+from celery import shared_task, current_task
 from .models import NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, AssesmentSchedule, NceaScores
+from accounts.models import CustomUser
 from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
 from django.utils.safestring import mark_safe
 import json
@@ -9,6 +10,13 @@ import re
 import tiktoken
 from django.conf import settings
 import logging
+import time
+
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+channel_layer = get_channel_layer()
+
 
 logger = logging.getLogger(__name__)
 
@@ -121,9 +129,95 @@ def prepare_document(id):
     except Exception as e:
         print(e)
         return e
-     
+
+
+def websocket(room_name, task_id, doc, progress, error):
+    async_to_sync(channel_layer.group_send)(
+        room_name,  # Group name
+        {
+            'type': 'notification.message',
+            'task_id': task_id,
+            'user_document_name':doc.name,
+            'exam_name':doc.exam.exam_name,
+            'progress': progress, #0-100%
+            'doc_id':doc.id,
+            'error':error
+        }
+    )
+
+@shared_task
+def test(id, user_id):
+
+    doc = NceaUserDocument.objects.get(id=id)
+    user = CustomUser.objects.get(id=user_id)
+    
+    
+    
+    required_credits = doc.credit_price
+    credits = user.credits
+        
+    
+    
+    room_name = f"user_{user_id}"
+    print(room_name)
+    
+    task_id = current_task.request.id
+    print(f"Current task ID: {task_id}")
+    
+    if doc.user != user:
+        error_message="Unauthorized attempt"
+        # Log the attempt or handle it as you deem appropriate
+        websocket(room_name, task_id, doc, 0, error_message)
+        return error_message
+    
+    if credits < required_credits:
+        return "Unauthorized attempt"
+    
+
+    websocket(room_name, task_id, doc, 0, None)
+    time.sleep(1)
+    
+    websocket(room_name, task_id, doc, 10, None)
+    time.sleep(3)
+    
+    websocket(room_name, task_id, doc, 12, None)
+    time.sleep(4)
+    
+    websocket(room_name, task_id, doc, 34, None)
+    time.sleep(2)
+    
+    websocket(room_name, task_id, doc, 55, None)
+    time.sleep(6)
+    
+    websocket(room_name, task_id, doc, 78, None)
+    time.sleep(5)
+    
+    websocket(room_name, task_id, doc, 82, None)
+    time.sleep(1)
+    
+    websocket(room_name, task_id, doc, 88, None)
+    time.sleep(7)
+    
+    websocket(room_name, task_id, doc, 95, None)
+    time.sleep(2)
+    
+    websocket(room_name, task_id, doc, 100, None)
+
+    
+    
+    
+    
+    
+    
+
+    
+
+    return
+
 @shared_task
 def mark_document(id): 
+    
+    
     try:
         doc = NceaUserDocument.objects.get(id=id)
         userquestions = NceaUserQuestions.objects.filter(document = doc)

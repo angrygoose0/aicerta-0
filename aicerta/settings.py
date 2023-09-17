@@ -88,9 +88,19 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'aicerta.wsgi.application'
 ASGI_APPLICATION = "aicerta.asgi.application"
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -198,6 +208,7 @@ STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
 #celery
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+
 
 AI_API = os.environ.get("AI_API")

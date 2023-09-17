@@ -124,7 +124,3 @@ class HelpMessage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="help", null = True, blank = True)
     date = models.DateTimeField
     
-class ToastMessage(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="toast",)
-    document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)

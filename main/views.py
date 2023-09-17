@@ -12,8 +12,9 @@ from django.contrib import messages
 from django.utils import timezone
 from django.template.loader import render_to_string
 import math
+import json
 
-from .tasks import mark_document, prepare_document
+from .tasks import mark_document, prepare_document, test
 from celery.result import AsyncResult
 
 
@@ -24,6 +25,7 @@ from celery.result import AsyncResult
 
 @login_required(login_url="/login/")
 def home(response):
+
     return render(response, "main/home.html")
         
 @login_required(login_url="/login/")
@@ -34,7 +36,7 @@ def prepare_mark(response, id):
         
         context ={
             "doc":doc,
-            "task_id": task.id
+            "task_id": task.id,
         }
         return render(response, "main/prepare_mark.html", context, status=202)
     else:
@@ -105,7 +107,7 @@ def index(response, id):
             'formset' : formset,
             'form_groups': form_groups,
             'standard' : doc.exam.standard,
-            'year' : doc.exam.year
+            'year' : doc.exam.year,
             }
             
             
@@ -138,6 +140,9 @@ def index(response, id):
 
 
 
+
+
+
 @require_POST
 @login_required(login_url="login/")
 def trigger_mark(response, id):
@@ -154,14 +159,16 @@ def trigger_mark(response, id):
         if credits < required_credits:
             return HttpResponseForbidden()
 
-
-        mark_document.delay(id)
+        user_id = response.user.id
+        #mark_document.delay(id)
+        test.delay(id,user_id)
         
         user.credits -= required_credits
         user.save()
         
         
         return HttpResponseRedirect("/app/")
+        
 
 
 
@@ -202,6 +209,7 @@ def create(response):
     initial_data = {
     'name': '',
     }
+
     if response.method == "POST":
 
         form = CreateNewDocument(response.POST, initial=initial_data, )
@@ -276,6 +284,8 @@ def support(response):
     else:
         form = SupportForm()
         
-    context = {'form': form}
+    context = {
+        'form': form,
+        }
     return render(response, "main/support.html", context)
     

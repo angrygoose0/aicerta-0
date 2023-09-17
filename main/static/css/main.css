@@ -57,6 +57,32 @@ body {
     margin-left: auto;
 }
 
+/* Container for the progress bar */
+.progress {
+    background-color: white; /* White background for the progress container */
+    border: 1px solid #376d4d; /* #376d4d border for the progress container */
+    border-radius: 5px; /* Rounded corners for a smoother look */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* A subtle shadow for some depth */
+    height: 20px; /* You can adjust this based on your design requirements */
+}
+
+/* The actual progress bar */
+.progress-bar {
+    background-color: #376d4d; /* #376d4d color for the filled part */
+    transition: width 0.4s ease-in-out; /* Smooth transition for width changes */
+}
+
+
+/* Text or label on the progress bar (if any) */
+.progress-bar::after {
+    color: black; /* Black color for the text */
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
 .btn-outline-success {
     border-color: #376d4d;
     color: #376d4d;
@@ -183,6 +209,16 @@ body {
     padding: 2px 4px; /* Add some padding around the text */
     border-radius: 4px; /* Round the corners of the background */
 }
+
+
+.toast .btn-outline-success {
+    
+    padding: 0.25rem 0.5rem; /* Adjusted padding */
+    margin: 0.5rem 0;        /* Margin to give some space at the top and bottom */
+    width: 100%;             /* Optional: make the button full width */
+    text-align: center;      /* Center the text if making the button full width */
+}
+
 
 
 
