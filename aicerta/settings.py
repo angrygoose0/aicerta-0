@@ -89,15 +89,6 @@ TEMPLATES = [
 ]
 
 
-ASGI_APPLICATION = "aicerta.asgi.application"
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)], #change for production
-        },
-    },
-}
 
 WSGI_APPLICATION = 'aicerta.wsgi.application'
 ASGI_APPLICATION = "aicerta.asgi.application"
