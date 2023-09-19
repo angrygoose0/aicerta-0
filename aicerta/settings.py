@@ -231,5 +231,7 @@ if DEVELOPMENT_MODE is True:
 else:
     CELERY_BROKER_URL = os.environ.get("REDIS_URL")
 
+print(CELERY_BROKER_URL)
+
 
 AI_API = os.environ.get("AI_API")
