@@ -229,7 +229,7 @@ CELERY_CACHE_BACKEND = 'django-cache'
 if DEVELOPMENT_MODE is True:
     CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 else:
-    CELERY_BROKER_URL = os.getenv("REDIS_URL")
+    CELERY_BROKER_URL = os.environ.get("REDIS_URL")
 
 
 AI_API = os.environ.get("AI_API")
