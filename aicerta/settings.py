@@ -110,7 +110,7 @@ else:
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                "hosts": [(os.getenv("REDIS_URL")],
+                "hosts": [('rediss://default:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061')],
             },
         },
     }
