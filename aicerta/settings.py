@@ -33,6 +33,8 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,127.0.0.1:8000").split(",")
 print(ALLOWED_HOSTS)
 
+CSRF_TRUSTED_ORIGINS = ['https://aicerta.com']
+
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 # Application definition
@@ -108,7 +110,7 @@ else:
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                "hosts": [('rediss://default:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061')],
+                "hosts": [(os.getenv("REDIS_URL")],
             },
         },
     }
@@ -227,7 +229,7 @@ CELERY_CACHE_BACKEND = 'django-cache'
 if DEVELOPMENT_MODE is True:
     CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 else:
-    CELERY_BROKER_URL = 'rediss://default:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061'
+    CELERY_BROKER_URL = os.getenv("REDIS_URL")
 
 
 AI_API = os.environ.get("AI_API")
