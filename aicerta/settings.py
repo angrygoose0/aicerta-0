@@ -107,9 +107,7 @@ else:
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                "hosts": [('db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com', 25061)],
-                "password": 'AVNS_VUYtv_DR7Ky3QNMVHJo',
-                "ssl": False,  # Adjust as necessary.
+                "hosts": [('rediss://default:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061')],
             },
         },
     }
@@ -228,7 +226,7 @@ CELERY_CACHE_BACKEND = 'django-cache'
 if DEVELOPMENT_MODE is True:
     CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 else:
-    CELERY_BROKER_URL = 'redis://:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061/0'
+    CELERY_BROKER_URL = 'rediss://default:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061'
 
 
 AI_API = os.environ.get("AI_API")
