@@ -93,14 +93,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'aicerta.wsgi.application'
 ASGI_APPLICATION = "aicerta.asgi.application"
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+if DEVELOPMENT_MODE is True:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [('127.0.0.1', 6379)],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [('db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com', 25061)],
+                "password": 'AVNS_VUYtv_DR7Ky3QNMVHJo',
+                "ssl": False,  # Adjust as necessary.
+            },
+        },
+    }
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -208,7 +220,15 @@ STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
 #celery
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+
+
+
+
+
+if DEVELOPMENT_MODE is True:
+    CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+else:
+    CELERY_BROKER_URL = 'redis://:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061/0'
 
 
 AI_API = os.environ.get("AI_API")
