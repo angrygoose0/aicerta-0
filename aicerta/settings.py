@@ -31,7 +31,6 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,127.0.0.1:8000").split(",")
-print(ALLOWED_HOSTS)
 
 CSRF_TRUSTED_ORIGINS = ['https://aicerta.com']
 
@@ -226,12 +225,12 @@ CELERY_CACHE_BACKEND = 'django-cache'
 
 
 
+
 if DEVELOPMENT_MODE is True:
     CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 else:
     CELERY_BROKER_URL = os.environ.get("REDIS_URL")
 
-print(CELERY_BROKER_URL)
 
 
 AI_API = os.environ.get("AI_API")
