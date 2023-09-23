@@ -95,6 +95,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'aicerta.wsgi.application'
 ASGI_APPLICATION = "aicerta.asgi.application"
 
+
+
+
 if DEVELOPMENT_MODE is True:
     CHANNEL_LAYERS = {
         'default': {
@@ -109,10 +112,11 @@ else:
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
-                "hosts": [('rediss://default:AVNS_VUYtv_DR7Ky3QNMVHJo@db-redis-syd1-62734-do-user-14671334-0.b.db.ondigitalocean.com:25061')],
+                "hosts": [os.environ.get("REDIS_URL")],
             },
         },
     }
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
