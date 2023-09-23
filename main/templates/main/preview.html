@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+{% load myfilters %}
+
+{% block title %}marked{% endblock %}
+
+
+{% block content %}
+<div class="container position-relative">
+    <!-- Eye Icon Button at the top right -->
+        <a href="/app/{{doc.id}}/edit" class="btn btn-light position-absolute top-0 end-0 m-2" title="View">
+            <i class="fas fa-eye"></i>
+        </a>
+
+        <div class='exam'>
+            <div class="py-3">
+                <h1>{{doc.name}}</h1>
+                <small><b>Standard: {{doc.exam.standard}}</b></small> 
+                <br>
+                <small><b>Year: {{doc.exam.year}}</b></small>
+            </div>
+            {% for question, userquestions in userquestion_groups.items %}
+                <div class="py-4">
+                    <ul class="list-group list-group-flush">
+                        <h3 class="py-3">QUESTION {{question|NUMBER}} : </h3>
+                        <ul>
+                            {% for userquestion in userquestions %}
+                                <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 
+                                <p>{{userquestion.answer}}</p>
+                            {% endfor%}
+                        </ul>
+
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+
+

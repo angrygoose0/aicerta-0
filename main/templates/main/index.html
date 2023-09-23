@@ -6,20 +6,25 @@
 
 
 {% block content %}
-    <div class="container">
+    <div class="container position-relative">
+        <!-- Eye Icon Button at the top right -->
+        <a href="/app/{{doc.id}}/preview" class="btn btn-light position-absolute top-0 end-0 m-2" title="View">
+            <i class="fas fa-eye"></i>
+        </a>
+
+
         <div class='exam'>
             <div class="py-3">
-                <h1>{{name}}</h1>
-                <small><b>Standard: {{standard}}</b></small> 
+                <h1>{{doc.name}}</h1>
+                <small><b>Standard: {{doc.exam.standard}}</b></small> 
                 <br>
-                <small><b>Year: {{year}}</b></small>
+                <small><b>Year: {{doc.exam.year}}</b></small>
             </div>
             
-
             {% include "main/partials/forms.html" %}
 
             <div>
-                <a class="btn btn-outline-success" href="{% url 'prepare_mark' id %}" role="button">Mark</a>
+                <a class="btn btn-outline-success" href="{% url 'prepare_mark' doc.id %}" role="button">Mark</a>
             </div>
         </div>
     </div>

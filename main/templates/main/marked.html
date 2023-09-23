@@ -10,10 +10,10 @@
             <div class="container">
                 <div class='exam'>
                     <div class="py-3">
-                        <h1>{{name}}</h1>
-                        <small><b>Standard: {{standard}}</b></small> 
+                        <h1>{{doc.name}}</h1>
+                        <small><b>Standard: {{doc.exam.standard}}</b></small> 
                         <br>
-                        <small><b>Year: {{year}}</b></small>
+                        <small><b>Year: {{doc.exam.year}}</b></small>
                     </div>
                     {% for question, userquestions in userquestion_groups.items %}
                         <div class="py-4">

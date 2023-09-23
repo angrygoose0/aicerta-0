@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     path("<int:id>/edit", views.index, name="index"),
     path("<int:id>/view", views.viewmarked, name="viewmarked"),
+    path("<int:id>/preview", views.preview, name="preview"),
     path("", views.home, name="home"),
     path("create/", views.create, name="create"),
     path("<int:id>/delete/", views.delete_ncea_document, name="delete_ncea_document"),

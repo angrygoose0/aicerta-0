@@ -2,7 +2,7 @@
 {% load myfilters %}
 
 <div>
-    <form action ="{% url 'index' id=id %}" id="answer-formset" method="POST" hx-post="{% url 'index' id=id %}" hx-swap='outerHTML' hx-trigger='change delay:500ms'>
+    <form action ="{% url 'index' id=doc.id %}" id="answer-formset" method="POST" hx-post="{% url 'index' id=doc.id %}" hx-swap='outerHTML' hx-trigger='change delay:500ms'>
 
         {% csrf_token %}
         {{ formset.management_form|crispy }}
@@ -29,7 +29,7 @@
                 </ul>
             </div>
         {% endfor %}
-        <button type="save" value="save" class="btn btn-secondary" hx-post="{% url 'index' id=id %}" hx-target="#answer-formset" hx-swap="outerHTML">
+        <button type="save" value="save" class="btn btn-secondary" hx-post="{% url 'index' id=doc.id %}" hx-target="#answer-formset" hx-swap="outerHTML">
             Save
         </button>
         <!--div class ='htmx-indicator'>Loading...</div-->

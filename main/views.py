@@ -102,12 +102,9 @@ def index(response, id):
                 form_groups[question] = []
             form_groups[question].append(form)
         context = {
-            'name': doc.name,
-            'id': doc.id, 
+            "doc": doc,
             'formset' : formset,
             'form_groups': form_groups,
-            'standard' : doc.exam.standard,
-            'year' : doc.exam.year,
             }
             
             
@@ -138,7 +135,57 @@ def index(response, id):
         return render(response, "main/index.html", context)
     return HttpResponseRedirect("/app/")
 
+@login_required(login_url="/login/")
+def preview(response, id):
+    doc = NceaUserDocument.objects.get(id=id)
+    if doc.user == response.user:
+        userquestions = NceaUserQuestions.objects.filter(document = doc)
+        #get how many QUESTIONS there are
+        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
+        # for each QUESTION, the system message will be the system in the NceaQUESTION
+    
+        userquestion_groups = {}
+        for userquestion in userquestions:
 
+            question = userquestion.question.QUESTION.QUESTION
+            if question not in userquestion_groups:
+                userquestion_groups[question] = []
+            userquestion_groups[question].append(userquestion)
+
+        context ={
+            "doc": doc,
+            "userquestion_groups" : userquestion_groups,
+            "QUESTIONS" : QUESTIONS,
+        }
+
+        return render(response, "main/preview.html", context)
+
+@login_required(login_url="login/")
+def viewmarked(response, id):
+    doc = NceaUserDocument.objects.get(id=id)
+    if doc.user == response.user:
+        userquestions = NceaUserQuestions.objects.filter(document = doc)
+        #get how many QUESTIONS there are
+        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
+        # for each QUESTION, the system message will be the system in the NceaQUESTION
+    
+        userquestion_groups = {}
+        for userquestion in userquestions:
+            score = NceaScores.objects.get(document=doc, QUESTION=userquestion.question.QUESTION)
+
+            question = (userquestion.question.QUESTION.QUESTION, score.score, userquestion.question.QUESTION.system_html)
+            if question not in userquestion_groups:
+                userquestion_groups[question] = []
+            userquestion_groups[question].append(userquestion)
+
+        context ={
+            "doc": doc,
+            "userquestion_groups" : userquestion_groups,
+            "QUESTIONS" : QUESTIONS,
+        }
+    
+    
+        return render(response, "main/marked.html", context)
 
 
 
@@ -173,35 +220,6 @@ def trigger_mark(response, id):
 
 
 
-@login_required(login_url="login/")
-def viewmarked(response, id):
-    doc = NceaUserDocument.objects.get(id=id)
-    if doc.user == response.user:
-        userquestions = NceaUserQuestions.objects.filter(document = doc)
-        #get how many QUESTIONS there are
-        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
-        # for each QUESTION, the system message will be the system in the NceaQUESTION
-    
-        userquestion_groups = {}
-        for userquestion in userquestions:
-            score = NceaScores.objects.get(document=doc, QUESTION=userquestion.question.QUESTION)
-
-            question = (userquestion.question.QUESTION.QUESTION, score.score, userquestion.question.QUESTION.system_html)
-            if question not in userquestion_groups:
-                userquestion_groups[question] = []
-            userquestion_groups[question].append(userquestion)
-
-        context ={
-            "id" : doc.id,
-            "standard" : doc.exam.standard,
-            "year" : doc.exam.year,
-            "name" : doc.name,
-            "userquestion_groups" : userquestion_groups,
-            "QUESTIONS" : QUESTIONS,
-        }
-    
-    
-        return render(response, "main/marked.html", context)
 
 
 @login_required(login_url="/login")

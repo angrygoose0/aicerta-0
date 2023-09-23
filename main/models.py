@@ -99,7 +99,7 @@ class NceaUserQuestions(models.Model):
     document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
     question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE)  
     
-    answer = models.TextField()
+    answer = models.TextField(max_length=1500)
     answer_html = models.TextField(null = True, blank = True)
     
     achievement = models.IntegerField(default=0)
