@@ -31,7 +31,6 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,127.0.0.1:8000").split(",")
-ALLOWED_HOSTS = os.getenv("ALLOWED_ORIGINS", "127.0.0.1,stingray-app-9djsc.ondigitalocean.app").split(",")
 
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
