@@ -19,9 +19,17 @@
                                 {{ hidden }}
                             {% endfor %}
 
-                            <button type="button" class="btn-icon" data-bs-toggle="modal" data-bs-target="#latexModal" data-input-id="{{form.answer.auto_id}}">
-                                Fx
-                            </button>
+                            
+                            <div class="btn-group me-2" role="group" aria-label="Arithmetic">
+                                <button type="button" class="btn-icon" data-bs-toggle="modal" data-bs-target="#latexModal" data-input-id="{{form.answer.auto_id}}">
+                                    F(x)
+                                </button>
+                                <!--button type="button" class="btn-icon" title="View">
+                                    <i class="fas fa-file-alt"></i>
+                                </button-->
+                                <!--button for inserting OCR-->
+    
+                            </div>
                             
                             
                         </li>
