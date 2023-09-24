@@ -1,38 +1,133 @@
-Standard,Year,QUESTION,Primary,Secondary,text,order,type,
-91173,2020,1,1,1,"\[\frac{1}{R}=\frac{1}{6}+\frac{1}{6}\text{ so }R = 3\text{, or }R=\frac{6\times6}{6+6}=3\]",1,n,"\[\frac{1}{R}=\frac{1}{6}+\frac{1}{6}\text{ so }R = 3\text{, or }R=\frac{6\times6}{6+6}=3])"
-91173,2020,1,,,• Show resistance.,2,a,
-91173,2020,1,2,1,\[R_{t}=3+(\frac{1}{10}+\frac{1}{10})^{-1}=8\Omega\] \[I=\frac{28}{8}=3.5\],3,n,
-91173,2020,1,,,• Finds total R (8). OR 28 / (any calculated R – not 3).,4,a,
-91173,2020,1,,,• 3.5 A,5,m,
-91173,2020,1,3,1,"When the foot heater stops working, this increases the total resistance of the circuit. This reduces the total current in the circuit. This reduces the current in each hand unit.",6,n,
-91173,2020,1,,,• Total resistance increases • Current through hand unit decrease.,7,a,
-91173,2020,1,,,• Correct answer with reasoning. • Must be clear that it’s the current in the hand unit being referred to.,8,m,
-91173,2020,1,4,1,\[P=IV=\frac{V^{2}}{R}\] \[120=\frac{28^{2}}{R}\text{ so }R_{\text{total}}=6.533\Omega\] \[R_{\text{total}}=6.533\Omega=3+(\frac{1}{10}+\frac{1}{10}+\frac{1}{R})^{-1}\rightarrow R=12\Omega\] \[\text{OR }I=\frac{P}{V}=\frac{120}{28}=4.29A\] \[\text{Voltage across hand units }=3\times4.29=12.9V\] \[\text{Voltage across foot units }=28-12.9=15.1V\] \[R_{\text{foot combo}}=\frac{V}{I}=\frac{15.1}{4.29}=3.52\Omega\] \[\text{So }(\frac{1}{10}+\frac{1}{10}+\frac{1}{R})^{-1}=3.52\] \[\text{And }r=12\Omega\],9,n,
-91173,2020,1,,,• \(I=4.29A\),10,a,
-91173,2020,1,,,• \[R_{\text{foot combo}}=3.52\Omega\] \[\text{Or Finds }R_{\text{total}}=6.533\Omega\],11,m,
-91173,2020,1,,,"• \[12.0\Omega\] OR States a correct formula from which R could be calculated, e.g.: \[6.533=3+(\frac{1}{10}+\frac{1}{10}+\frac{1}{R})\] OR equivalent.",12,e,
-91173,2020,2,1,1,\[d=\frac{V}{E}=\frac{1.75\times10^{8}}{8.57\times10^{4}}=2042m\],1,n,
-91173,2020,2,,,• Correct answer.,2,a,
-91173,2020,2,2,1,\[F=Eq=8.57\times10^{4}\times3.7\times10^{-6}=0.317=0.32N\text{ Upwards}\],3,n,
-91173,2020,2,,,• Direction or force.,4,a,
-91173,2020,2,,,• Correct answer and direction.,5,m,
-91173,2020,2,3,1,"The field between the plates is uniform. This means that it has constant strength and direction. F = Eq, the charge and the field are constant, so the force is constant",6,n,
-91173,2020,2,,,• Uniform field or constant force.,7,a,
-91173,2020,2,,,• Constant force and constant/uniform field.,8,m,
-91173,2020,2,4,1,\[\text{Energy Gained}\] \[\frac{1}{2}\times9.1\times10^{-31}\times(4.2\times10^{5})^{2}-\frac{1}{2}\times9.1\times10^{-31}\times(1.2\times10^{5})^{2}\] \[=7.37\times10^{-20}=Eqd=8.57\times10^{4}\times1.6\times10^{-19}\times d\] \[d=5.37\times10^{-6}m/],9,n,
-91173,2020,2,,,• Found one \(E_{k}\). OR • Realised \(\frac{1}{2}mv^{2}=Eqd\) • Calculates a d but writes down the \(E_{k}\) without the v squared,10,a,
-91173,2020,2,,,• Finds d by using either of the given speed ,11,m,
-91173,2020,2,,,• Correct answer. \(5.37\times10^{-6}\) OR \(5.37\times10^{-6}\) (missing the squaring on the energies). ,12,e,
-91173,2020,3,1,1,\[V=BvL=40\times10^{-6}\times236\times68.4=0.646V\],1,n,
-91173,2020,3,,,• This is a show question.,2,a,
-91173,2020,3,2,1,{img},3,n,
-91173,2020,3,,,• TWO correct entries. ,4,a,
-91173,2020,3,,,• FOUR correct entries.,5,m,
-91173,2020,3,,,• FIVE  correct entries. ,6,e,
-91173,2020,3,3,1,\[I=\frac{28}{5}=5.6\text{ and }F=BIL=4\times10^{-5}\times5.6\times5.9=1.32\times10^{-3}N\] \[\text{Direction is left.}\],7,n,
-91173,2020,3,,,• Force OR direction given.,8,a,
-91173,2020,3,,,• Force AND direction given.,9,m,
-91173,2020,3,4,1,"The wire is cutting through the magnetic field, and there is voltage induced on the wire, which is equal to the voltage induced on the wings. This makes the red wing tip and the “red” end of the wire positive and no current flows, meaning the lamp will never go, so the arrangement would be no good as a speed-warning device. ",10,n,
-91173,2020,3,,,• Accept if speed increases induced voltage on plane increases. Or opposite.,11,a,
-91173,2020,3,,,• Voltage induced on wire increases as speed increases or explains how there is a voltage on the wire.,12,m,
-91173,2020,3,,,• The lamp won’t go – with correct reason,13,e,
+Standard,Year,QUESTION,Primary,Secondary,text,order,type
+91173,2020,1,1,1,"\[\frac{1}{R}=\frac{1}{6}+\frac{1}{6}\text{ so }R = 3\text{, or }R=\frac{6\times6}{6+6}=3\]",1,n
+91173,2020,1,,,• Show resistance.,2,a
+91173,2020,1,2,1,\[R_{t}=3+(\frac{1}{10}+\frac{1}{10})^{-1}=8\Omega\] \[I=\frac{28}{8}=3.5\],3,n
+91173,2020,1,,,• Finds total R (8). OR 28 / (any calculated R - not 3).,4,a
+91173,2020,1,,,• 3.5 A,5,m
+91173,2020,1,3,1,"When the foot heater stops working, this increases the total resistance of the circuit. This reduces the total current in the circuit. This reduces the current in each hand unit.",6,n
+91173,2020,1,,,• Total resistance increases • Current through hand unit decrease.,7,a
+91173,2020,1,,,• Correct answer with reasoning. • Must be clear that it's the current in the hand unit being referred to.,8,m
+91173,2020,1,4,1,\[P=IV=\frac{V^{2}}{R}\] \[120=\frac{28^{2}}{R}\text{ so }R_{\text{total}}=6.533\Omega\] \[R_{\text{total}}=6.533\Omega=3+(\frac{1}{10}+\frac{1}{10}+\frac{1}{R})^{-1}\rightarrow R=12\Omega\] \[\text{OR }I=\frac{P}{V}=\frac{120}{28}=4.29A\] \[\text{Voltage across hand units }=3\times4.29=12.9V\] \[\text{Voltage across foot units }=28-12.9=15.1V\] \[R_{\text{foot combo}}=\frac{V}{I}=\frac{15.1}{4.29}=3.52\Omega\] \[\text{So }(\frac{1}{10}+\frac{1}{10}+\frac{1}{R})^{-1}=3.52\] \[\text{And }r=12\Omega\],9,n
+91173,2020,1,,,• \(I=4.29A\),10,a
+91173,2020,1,,,• \[R_{\text{foot combo}}=3.52\Omega\] \[\text{Or Finds }R_{\text{total}}=6.533\Omega\],11,m
+91173,2020,1,,,"• \[12.0\Omega\] OR States a correct formula from which R could be calculated, e.g.: \[6.533=3+(\frac{1}{10}+\frac{1}{10}+\frac{1}{R})\] OR equivalent.",12,e
+91173,2020,2,1,1,\[d=\frac{V}{E}=\frac{1.75\times10^{8}}{8.57\times10^{4}}=2042m\],1,n
+91173,2020,2,,,• Correct answer.,2,a
+91173,2020,2,2,1,\[F=Eq=8.57\times10^{4}\times3.7\times10^{-6}=0.317=0.32N\text{ Upwards}\],3,n
+91173,2020,2,,,• Direction or force.,4,a
+91173,2020,2,,,• Correct answer and direction.,5,m
+91173,2020,2,3,1,"The field between the plates is uniform. This means that it has constant strength and direction. F = Eq, the charge and the field are constant, so the force is constant",6,n
+91173,2020,2,,,• Uniform field or constant force.,7,a
+91173,2020,2,,,• Constant force and constant/uniform field.,8,m
+91173,2020,2,4,1,\[\text{Energy Gained}\] \[\frac{1}{2}\times9.1\times10^{-31}\times(4.2\times10^{5})^{2}-\frac{1}{2}\times9.1\times10^{-31}\times(1.2\times10^{5})^{2}\] \[=7.37\times10^{-20}=Eqd=8.57\times10^{4}\times1.6\times10^{-19}\times d\] \[d=5.37\times10^{-6}m/],9,n
+91173,2020,2,,,• Found one \(E_{k}\). OR • Realised \(\frac{1}{2}mv^{2}=Eqd\) • Calculates a d but writes down the \(E_{k}\) without the v squared,10,a
+91173,2020,2,,,• Finds d by using either of the given speed ,11,m
+91173,2020,2,,,• Correct answer. \(5.37\times10^{-6}\) OR \(5.37\times10^{-6}\) (missing the squaring on the energies). ,12,e
+91173,2020,3,1,1,\[V=BvL=40\times10^{-6}\times236\times68.4=0.646V\],1,n
+91173,2020,3,,,• This is a show question.,2,a
+91173,2020,3,2,1,{img},3,n
+91173,2020,3,,,• TWO correct entries. ,4,a
+91173,2020,3,,,• FOUR correct entries.,5,m
+91173,2020,3,,,• FIVE  correct entries. ,6,e
+91173,2020,3,3,1,\[I=\frac{28}{5}=5.6\text{ and }F=BIL=4\times10^{-5}\times5.6\times5.9=1.32\times10^{-3}N\] \[\text{Direction is left.}\],7,n
+91173,2020,3,,,• Force OR direction given.,8,a
+91173,2020,3,,,• Force AND direction given.,9,m
+91173,2020,3,4,1,"The wire is cutting through the magnetic field, and there is voltage induced on the wire, which is equal to the voltage induced on the wings. This makes the red wing tip and the “red” end of the wire positive and no current flows, meaning the lamp will never go, so the arrangement would be no good as a speed-warning device. ",10,n
+91173,2020,3,,,• Accept if speed increases induced voltage on plane increases. Or opposite.,11,a
+91173,2020,3,,,• Voltage induced on wire increases as speed increases or explains how there is a voltage on the wire.,12,m
+91173,2020,3,,,• The lamp won't go – with correct reason,13,e
+91262,2023,1,1,1,\[f'\left(x\right)=6x-2\] \[f'\left(1\right)=4\] ,1,n
+91262,2023,1,,,• Derivative AND gradient found,2,a
+91262,2023,1,2,1,"\[f'\left(x\right)=12x^2-2x-5\] \[\text{Set}\ f'\left(x\right)=0\] \[x=-0.568\ \text{and}\ 0.734\] \[y=8.784\ \text{and }4.373\] \[\text{Local minimum has lowest y-value, so coordinates are }\left(0.734,\ 4.373\right)\] ",3,n
+91262,2023,1,,,• Correct derivative AND Equated to 0,4,a
+91262,2023,1,,,• Coordinates of local minimum found. ,5,m
+91262,2023,1,3,1,{img},6,n
+91262,2023,1,,,• Negative parabola with x-intercepts at approximately -2 and 3. Turning point must be greater than 0. ,7,a
+91262,2023,1,4,1,\[h'\left(t\right)=\frac{-t}{210}+\frac{11}{21}\] \[\text{Maximum height when }h'\left(t\right)=0\] \[\text{Solving gives}\ t=110\text{ minutes}\] ,8,n
+91262,2023,1,,,• Differentiated to find \(h'(t)\),9,a
+91262,2023,1,,,• Correct time found and units given. ,10,m
+91262,2023,1,4,2,"\[V'\left(t\right)=3t^2-34t+64\] \[\text{Maximum and minimum volumes occur when }V'\left(t\right)=0\] \[3t^2-34t+64=0\] \[t=2.3837,\ 8.9496\ hours\] \[V\left(2.3837\right)\ =\ 531.507\max\] \[V\left(8.9496\right)=389.975\min\] \[\text{Maximum volume of balloon is }531,507\text{ cubic metres.}\] \[\text{Percentage filled when minimum}\] \[\frac{389.975}{531.507}\times100=73.4\%\]",11,n
+91262,2023,1,,,• Derivative found and set equal to 0 ,12,a
+91262,2023,1,,,• Maximum and minimum values found.  ,13,m
+91262,2023,1,,,• Maximum volume correctly interpreted. • Percentage calculated. ,14,e
+91262,2023,2,1,1,\[y=\left(x-3\right)\left(x+4\right)+6\] \[y=x^2+4x-3x-12+6\] \[y=x^{2}+x-6\] \[\frac{dy}{dx}=2x+1\],1,n
+91262,2023,2,,,• Correct derivative ,2,a
+91262,2023,2,2,1,"\[f\left(x\right)=x+2x^3-2x^2+C\] \[f\left(1\right)=0\text{, as x-intercept is at }\left(1,0\right)\] \[0=\left(1\right)+2\left(1\right)^3-2\left(1\right)^2+C\] \[C=-1\] \[f\left(x\right)=x+2x^3-2x^2-1\] ",3,n
+91262,2023,2,,,• Equation of f(x) found. ,4,a
+91262,2023,2,3,1,\[h'\left(t\right)=2.5-t\] \[\text{Maximum height when }h'\left(t\right)=0\] \[0=2.5-t\] \[t=2.5\text{ seconds}\] \[h\left(2.5\right)=2.5\left(2.5\right)-0.5\left(2.5\right)^2+1.375\] \[\text{Height is }4.5m\] ,5,n
+91262,2023,2,,,• Time that dart reaches maximum height is found. ,6,a
+91262,2023,2,,,• Correct height calculated.,7,m
+91262,2023,2,4,1,"\[f'\left(x\right)=\frac{4}{3}x^3-\frac{2}{3}x\] \[f'\left(1\right)=\frac{4}{3}\left(1\right)^3-\frac{2}{3}\left(1\right)=\frac{2}{3}\] \[When\ x=1,\ f\left(1\right)=\frac{1}{3}\left(1\right)^4-\frac{1}{3}\left(1\right)=0\] \[y-f\left(1\right)=m\left(x-x_1\right)\] \[y-0=\frac{2}{3}\left(x-1\right)\] \[y=\frac{2}{3}\left(x-1\right)\text{ OR }y=\frac{2}{3}x-\frac{2}{3}\] ",8,n
+91262,2023,2,,,• Differentiate correctly and gradient found. ,9,a
+91262,2023,2,,,• Coordinates and equation correctly stated.,10,m
+91262,2023,2,5,1,"\[f'\left(x\right)=3x^2-4x-1\] \[\text{When }x=k\text{, the gradient of the tangent is }3k^2-4k-1\] \[\text{If the tangent when }x=k\ \text{goes through the point (4,0), then}\] \[y-0=f'\left(k\right)\left(k-4\right)\] \[y=\left(3k^2-4k-1\right)\left(k-4\right)\] \[y=3k^3-16k^2+15k+4\]\[\text{We know that the three points exist on both the tangent line(s) and the original function, so}\] \[y=f\left(k\right)\] \[3k^3-16k^2+15k+4=k^3-2k^2-k+4\] \[2k^3-14k^2+16k=0\] \[k^3-7k^2+8k=0\] \[k\left(k^2-7k+8\right)=0\] \[k=0,\ 1.4384,\ 5.615\] \[\text{The coordinates of the 3 points are: }\left(0,4\right)\text{ and }\left(1.4384,\ 1.4\right)\text{ and }\left(5.5615,\ 108.6\right)\]",11,n
+91262,2023,2,,,• Finds derivative of f and makes some progress ,12,a
+91262,2023,2,,,• Finds one coordinate that satisfies the requirements.,13,m
+91262,2023,2,,,• Finds all values of k • Finds all the coordinates. ,14,e
+91262,2023,3,1,1,\[a\left(t\right)=2-0.4t\] \[\text{So acceleration is }1.6\ cms^{-2}\] ,1,n
+91262,2023,3,,,• Correct derivative and acceleration found ,2,a
+91262,2023,3,1,2,\[s\left(t\right)=t^2-\frac{1}{15}t^3+C\] \[s\left(17\right)=0\] \[\left(17\right)^2-\frac{1}{15}\left(17\right)^3+C=0\] \[C=38.533\] \[\text{Initially the bus was 38.53m away.}\] ,3,n
+91262,2023,3,,,• Evidence of antidifferentiating v(t) ,4,a
+91262,2023,3,,,"• Constant C calculated and interpreted correctly, units required. ",5,m
+91262,2023,3,2,1,{img},6,n
+91262,2023,3,,,• Positive cubic shape.,7,a
+91262,2023,3,,,• Positive cubic shape and turning points correctly located.,8,m
+91262,2023,3,3,1,\[2100-t^2-10t=1449\] \[0=t^2+10t-651\] \[t=21\ or\ -31\text{ minutes}\] \[t=21\text{ minutes only}\] \[V'\left(t\right)=-2t-10\] \[V'\left(21\right)=-52\] \[\text{The pool is draining out at 52L/min}\] ,9,n
+91262,2023,3,,,• Derivative found  OR   Time calculated ,10,a
+91262,2023,3,,,"• Correct rate of change found, with units or contextual interpretation  ",11,m
+91262,2023,3,4,1,"\[\text{Height}=x\text{, Width}=2x\text{, Length}=y\] \[\text{Edges: }4\left(x\right)+4\left(2x\right)+4\left(y\right)=54m\] \[3x+y=13.5\] \[y=13.5-3x\] \[\text{Volume of cuboid:}=\left(2x\right)\left(x\right)\left(y\right)\] \[V=2x^2y\] \[V=2x^2\left(13.5-3x\right)\] \[V=27x^2-6x^3\] \[\frac{dV}{dx}=54x-18x^2\] \[\text{Maximum volume when derivative}=0\] \[54x-18x^2=0\] \[18x\left(3-x\right)=0\] \[x=3m\text{ only, as }x=0\text{ would give minimum Dimensions: }3m\ x\ 6m\ x\ 4.5m,\ V=81m^3\] ",12,n
+91262,2023,3,,,• Formed incorrect volume function and derived consistently.,13,a
+91262,2023,3,,,• Formed correct volume function and derivative found.,14,m
+91262,2023,3,,,"• Found maximum volume OR dimensions of box using calculus  • Verifies that (3,81) is a maximum. Can use second derivative or other method.",15,e
+91261,2023,1,1,1,"\[6x^2=18-7x\] \[6x^2+7x-18=0\] \[\text{Does not factorise, so use Q.E}\] \[x=\frac{-7\pm\sqrt{7^2-4\times6\times-18}}{2\times6}\] \[x=\frac{-7\pm\sqrt{481}}{12}\] \[x=-2.41,\ 1.24\ \text{(allow answers left in surd form)}\] ",1,n
+91261,2023,1,,,• Correct solutions.,2,a
+91261,2023,1,2,1,\[15ap+6aq-5bp-2bq\] \[=3a\left(5p+2q\right)-b\left(5p+2q\right)\] \[=\left(3a-b\right)\left(5p+2q\right)\] ,3,n
+91261,2023,1,,,• Correct factorisation. ,4,a
+91261,2023,1,3,1,"\[\frac{\left(3x+2\right)\left(4x-3\right)}{\left(3x+2\right)\left(x-6\right)}=-2\] \[\frac{4x-3}{x-6}=-2\] \[4x-3=-2x+12\] \[6x=15\] \[x=\frac{5}{2}\ or\ 2.5\] \[\text{If cross multiply instead, then will end up with a false solution of}\ \frac{2}{3}.\]",5,n
+91261,2023,1,,,• Correct factorisation top and bottom.,6,a
+91261,2023,1,,,• Correct solution.,7,m
+91261,2023,1,4,1,"\[P\left(t\right)=1740000\times1.0112^t\] \[\text{In 2023, }t=13\] \[P\left(13\right)=1740000\times1.0112^{13}\] \[P\left(13\right)=2011987.842\] \[\text{Population in 2023 will be approximately 2012000, or just over 2 million.}\] ",8,n
+91261,2023,1,,,• Formed a successful model for P(t).,9,a
+91261,2023,1,,,• Correct approximate value found.,10,m
+91261,2023,1,4,2,"\[P\left(t\right)=3000000,\ t=78\] \[3000000=1740000\times r^{78}\] \[\left(\frac{3000000}{1740000}\right)=r^{78}\] \[78\log r\ =\ \log\ \left(\frac{3000000}{1740000}\right)\] \[\log\ r\ =\frac{\log\ \left(\frac{3000000}{1740000}\right)}{78}\] \[r=10^{\frac{\log\ \left(\frac{3000000}{1740000}\right)}{78}}\] \[r=1.007008\] \[\text{This is a growth rate of approximately 0.7%. [alternate methods accepted]}\] ",11,n
+91261,2023,1,,,• Set up correct equation to solve.,12,a
+91261,2023,1,,,"• Has made some progress towards answer, has found an equation for either log r or r.",13,m
+91261,2023,1,,,Correct value of r found. Accept \(r=1.007\)  Alternative answer without using logs is \(r=\sqrt[78]{\frac{50}{29}}\),14,e
+91261,2023,1,5,1,\[p^{2x-3}=q^{5x}\] \[\left(2x-3\right)\log p=\left(5x\right)\log q\] \[2x\log p-3\log p=5x\log q\] \[2x\log p-5x\log q=3\log p\] \[x\left(2\log p-5\log q\right)=3\log p\] \[x=\frac{3\log p}{2\log p-5\log q}\] \[OR\ x=\frac{\log p^3}{\log\left(\frac{p^2}{q^5}\right)}\] ,15,n
+91261,2023,1,,,• Takes logs of both sides and multiplies by indices.,16,a
+91261,2023,1,,,• Isolates x terms on one side.,17,m
+91261,2023,1,,,• Correct rearrangement found. Either form is ok.,18,e
+91261,2023,2,1,1,\[\frac{4a^{\frac{5}{4}}}{\sqrt[3]{64a^{12}}}\] \[=\frac{4a^{\frac{5}{4}}}{4a^4}\] \[=a^{-\frac{11}{4}}\] \[=\frac{1}{a^{\frac{11}{4}}}or\ \frac{1}{\sqrt[4]{a^{11}}}\] ,1,n
+91261,2023,2,,,• Correct response.,2,a
+91261,2023,2,2,1,\[\text{Discriminant for }5x^2-mx+4=0\] \[m^2-\left(4\times5\times4\right)\] \[=m^2-80\] ,3,n
+91261,2023,2,2,2,\[\text{No real solutions means the discriminant is less than 0.}\] \[m^2-80<0\] \[m^2<80\] \[\text{This is a positive parabola so the range of solutions will be between the two values for m.}\] \[-\sqrt{80}<m<\sqrt{80}\] ,4,n
+91261,2023,2,,,• Correct expression for the discriminant.   OR  Consistently found a solution based on an incorrect discriminant.,5,a
+91261,2023,2,,,• Algebraic methods used to find solutions of \(\pm\sqrt{80}\).,6,m
+91261,2023,2,,,"• Algebraic methods used to find correct range of solutions, using inequalities.",7,e
+91261,2023,2,3,1,\[\frac{12}{\left(x+4\right)\left(x-4\right)}+\frac{3}{2\left(x+4\right)}\] \[=\frac{24+3\left(x-4\right)}{2\left(x+4\right)\left(x-4\right)}\] \[=\frac{24+3x-12}{2\left(x+4\right)\left(x-4\right)}\] \[=\frac{3x+12}{2\left(x+4\right)\left(x-4\right)}\] \[=\frac{3\left(x+4\right)}{2\left(x+4\right)\left(x-4\right)}\] \[\frac{3}{2\left(x-4\right)}\] \[x\ne4\ or\ -4\] ,8,n
+91261,2023,2,,,• Lowest common denominator found.,9,a
+91261,2023,2,,,• Correct answer is found.  Restrictions on values of x not required.,10,m
+91261,2023,2,4,1,\[V=x\left(x+5\right)\left(x+6\right)\] \[=x\left(x^2+11x+30\right)\] \[V=x^3+11x^2+30x\] ,11,n
+91261,2023,2,,,• Correct simplified answer is found.,12,a
+91261,2023,2,4,2,"\[\text{Volume of cube}=\left(2x\right)^3=8x^3\] \[\text{Volume cube = volume of cuboid}\] \[8x^3=x^3+11x^2+30x\] \[7x^3-11x^2-30x=0\] \[x\left(7x^2-11x-30\right)=0\] \[x\left(7x+10\right)\left(x-3\right)=0\] \[x=0,\ 3,\ or\ -\frac{10}{7}\] ",13,n
+91261,2023,2,,,• Simplified cubic equation found.,14,a
+91261,2023,2,,,"• Factorised and solved, giving 3 solutions for x.",15,m
+91261,2023,2,,,"• Found and communicated volume, eliminating incorrect values of x.",16,e
+91261,2023,3,1,1,\[x^{-2}=\frac{1}{16}\] \[x^2=16\] \[x=\pm4\] \[x=4\ \text{is the only valid solution}\] ,1,n
+91261,2023,3,,,• Correct solution.,2,a
+91261,2023,3,1,2,\[=\log\left(x^2y^2\right)+\log\left(6\right)-\log\left(3y\right)\] \[=\log\left(\frac{6x^2y^2}{3y}\right)\] \[=\log\left(2x^2y\right)\] ,3,n
+91261,2023,3,,,• Correct solution.,4,a
+91261,2023,3,2,1,"\[\text{Using hint: }6y^2+9y-6=0\] \[2y^2+3y-2=0\] \[\left(2y-1\right)\left(y+2\right)=0\] \[y=\frac{1}{2}\text{ or }y=-2\] \[\text{So, }\log_5x=\frac{1}{2}\] \[x=5^{\frac{1}{2}}=\sqrt{5}=2.236\] \[\text{or }\log_5x=-2\] \[x=5^{-2}=\frac{1}{25}=0.04\] ",5,n
+91261,2023,3,,,• Forms factorised equation.,6,a
+91261,2023,3,,,• Uses algebraic methods to get one correct solution.,7,m
+91261,2023,3,,,• Uses algebraic methods to get both correct solutions.,8,e
+91261,2023,3,3,1,"\[\text{Let the roots be }n\text{ and }7n.\] \[\text{Equation is }\left(x-n\right)\left(x-7n\right)\] \[7n^2=k\text{ and }-8n=16\] \[n=-2,\ 7n^2=28,\ k=28\] ",9,n
+91261,2023,3,,,"• Factored form of roots or similar, algebraically shown.",10,a
+91261,2023,3,,,• Value of k is found.,11,m
+91261,2023,3,4,1,\[\text{if }a^3+b^3=27x^3+8\] \[\text{Then }a=3x\text{ and }b=2\] \[27x^3+8=\] \[\left(3x+2\right)\left(9x^2-6x+4\right)\] ,12,n
+91261,2023,3,,,• One bracket correct.,13,a
+91261,2023,3,,,• Correct factored form.,14,m
+91261,2023,3,4,2,"\[\frac{x^3+8}{x^2-4}=k.\text{ Rewriting gives}\] \[\frac{\left(x+2\right)\left(x^2-2x+4\right)}{\left(x+2\right)\left(x-2\right)}=k,\ x\ne2\] \[\frac{x^2-2x+4}{x-2}=k\] \[x^2-2x+4=kx-2k\] \[x^2-2x-kx+4+2k=0\] \[x^2-\left(2+k\right)x+\left(4+2k\right)=0\] \[\text{For two solutions, }b^2-4ac>0\] \[\left(-\left(2+k\right)\right)^2-4\left(4+2k\right)>0\] \[k^2-4k-12>0\] \[k<-2\text{ and }k>6\] ",15,n
+91261,2023,3,,,• Simplified rational expression is found.,16,a
+91261,2023,3,,,• Correct use of discriminant and quadratic for k is found.,17,m
+91261,2023,3,,,• Correct ranges for k are provided. ,18,e
