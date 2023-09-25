@@ -33,6 +33,7 @@ function initializeMathQuill() {
         $(this).hide();
     });
 
+    let formElement = document.getElementById("answer-formset");
     // Initialize other functionalities
     $('#insertLatexBtn').on('click', function() {
         var latexArray = [];
@@ -40,16 +41,19 @@ function initializeMathQuill() {
             var currentLatex = MQ.MathField(this).latex();
             if (currentLatex) latexArray.push(currentLatex);
         });
-
+    
         var formattedLatex = latexArray.length === 1 ? '\\(' + latexArray[0] + '\\)' :
             latexArray.map(latex => '\\[' + latex + '\\] ').join('');
-
+    
         console.log("Retrieved input ID:", $('#latexModal').data('target-input-id'));
-        $('#' + $('#latexModal').data('target-input-id')).val(function(i, val) {
+        var targetInput = $('#' + $('#latexModal').data('target-input-id'));
+        targetInput.val(function(i, val) {
             return val + formattedLatex;
         });
+        formElement.submit();
         $('#latexModal').modal('hide');
     });
+    
 
     $('#latexModal').on('hidden.bs.modal', function() {
         $('.mathquill-container:not(:first)').remove();
