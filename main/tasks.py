@@ -144,34 +144,32 @@ def websocket(room_name, task_id, doc, progress, error):
             'error':error
         }
     )
-
 @shared_task
 def test(id, user_id):
+    try:   
+        doc = NceaUserDocument.objects.get(id=id)
+        user = CustomUser.objects.get(id=user_id)
 
-    doc = NceaUserDocument.objects.get(id=id)
-    user = CustomUser.objects.get(id=user_id)
-    
-    
-    
-    required_credits = doc.credit_price
-    credits = user.credits
+        required_credits = doc.credit_price
+        credits = user.credits
+
+        room_name = f"user_{user_id}"
+        task_id = current_task.request.id
+
+        if doc.user != user:
+            error_message="Unauthorized attempt"
+            websocket(room_name, task_id, doc, 0, error_message)
+            return error_message
+
+        if credits < required_credits:
+            error_message="Not enough credits"
+            websocket(room_name, task_id, doc, 0, error_message)
+            return error_message
         
+    except Exception as e:
+        print(e)
+        return str(e)
     
-    
-    room_name = f"user_{user_id}"
-    print(room_name)
-    
-    task_id = current_task.request.id
-    print(f"Current task ID: {task_id}")
-    
-    if doc.user != user:
-        error_message="Unauthorized attempt"
-        # Log the attempt or handle it as you deem appropriate
-        websocket(room_name, task_id, doc, 0, error_message)
-        return error_message
-    
-    if credits < required_credits:
-        return "Unauthorized attempt"
     
 
     websocket(room_name, task_id, doc, 0, None)
@@ -203,28 +201,49 @@ def test(id, user_id):
     
     websocket(room_name, task_id, doc, 100, None)
 
-    
-    
-    
-    
-    
-    
-
-    
-
     return
 
 @shared_task
-def mark_document(id): 
-    
+def mark_document(id, user_id): 
+    try:   
+        doc = NceaUserDocument.objects.get(id=id)
+        user = CustomUser.objects.get(id=user_id)
+
+        required_credits = doc.credit_price
+        credits = user.credits
+
+        room_name = f"user_{user_id}"
+        task_id = current_task.request.id
+
+        if doc.user != user:
+            error_message="Unauthorized attempt"
+            websocket(room_name, task_id, doc, 0, error_message)
+            return error_message
+
+        if credits < required_credits:
+            error_message="Not enough credits"
+            websocket(room_name, task_id, doc, 0, error_message)
+            return error_message
+        
+    except Exception as e:
+        print(e)
+        return str(e)
+
+
     
     try:
-        doc = NceaUserDocument.objects.get(id=id)
+        websocket(room_name, task_id, doc, 0, None)
+        
         userquestions = NceaUserQuestions.objects.filter(document = doc)
         QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
+        
         counter = 1
         document_mark = 0
         tokens = 0
+        
+        number_of_questions = QUESTIONS.count()
+        processed_questions = 0
+        
         
         for QUESTION in QUESTIONS:
             secondary_questions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
@@ -237,6 +256,7 @@ def mark_document(id):
                 %s
                 """ % (start_system, QUESTION.system)}
             messages.append(system_message)
+            
                     
             useranswer = ""
             for secondary_question in secondary_questions:
@@ -248,6 +268,7 @@ def mark_document(id):
                 useranswer += "(%s)(%s):\n" % (primary, secondary)
                 useranswer += "%s\n" % (processed_userquestion)
                 useranswer += "\n"
+                
                 
             user_message = {"role":"user", "content":useranswer}
             messages.append(user_message)
@@ -353,9 +374,18 @@ def mark_document(id):
             ncea_score.save()
             document_mark += score
             
+            processed_questions += 1
+            progress_percentage = (processed_questions / number_of_questions) * 90
+            rounded_progress = round(progress_percentage)
+            websocket(room_name, task_id, doc, rounded_progress, None)
+            
         doc.mark = document_mark
         doc.marked_before = 1
         doc.save()
+        websocket(room_name, task_id, doc, 100, None)
     except Exception as e:
         print(e)
+        error_message=str(e)
+        websocket(room_name, task_id, doc, 0, error_message)
+
         return str(e)

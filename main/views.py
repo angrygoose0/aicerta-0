@@ -207,8 +207,9 @@ def trigger_mark(response, id):
             return HttpResponseForbidden()
 
         user_id = response.user.id
-        #mark_document.delay(id)
-        test.delay(id,user_id)
+        mark_document.delay(id, user_id)
+        #test.delay(id,user_id)
+
         
         user.credits -= required_credits
         user.save()

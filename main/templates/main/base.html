@@ -91,7 +91,7 @@
         <script>
             
             const socket = new WebSocket(
-                'wss://' + window.location.host + '/ws/notifications/'
+                'ws://' + window.location.host + '/ws/notifications/'
             );
         
             // Function to store toast data in localStorage
@@ -216,19 +216,27 @@
             
             
         
+                        // Render stored toasts from localStorage on page load
+            $(document).ready(function() {
+                let storedToasts = JSON.parse(localStorage.getItem('toasts')) || [];
+                storedToasts.forEach(renderToast);
+            });
+
+            // Handle the event when a toast is hidden
             $(document).on('hidden.bs.toast', '.toast', function() {
                 let toastId = $(this).attr('id').replace('toast-', '');
                 let toasts = JSON.parse(localStorage.getItem('toasts')) || [];
                 let dismissedToasts = JSON.parse(localStorage.getItem('dismissedToasts')) || [];
-            
+
                 toasts = toasts.filter(toast => toast.task_id !== toastId);
                 localStorage.setItem('toasts', JSON.stringify(toasts));
-            
+
                 if (!dismissedToasts.includes(toastId)) {
                     dismissedToasts.push(toastId);
                     localStorage.setItem('dismissedToasts', JSON.stringify(dismissedToasts));
                 }
             });
+
         
             // Event listeners for htmx and toast
             document.body.addEventListener('htmx:afterSwap', function(event) {
