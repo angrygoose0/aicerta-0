@@ -21,7 +21,7 @@
             {% for question, userquestions in userquestion_groups.items %}
                 <div class="py-4">
                     <ul class="list-group list-group-flush">
-                        <h3 class="py-3">QUESTION {{question|NUMBER}} : </h3>
+                        <h3 class="py-3">QUESTION {{question|NUMBER}}: </h3>
                         <ul>
                             {% for userquestion in userquestions %}
                                 <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 

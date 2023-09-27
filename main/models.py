@@ -124,3 +124,11 @@ class HelpMessage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="help", null = True, blank = True)
     date = models.DateTimeField
     
+
+class File(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    file = models.FileField()
+    
+    def __str__(self):
+        return "%s - %s" % (self.name, self.user)

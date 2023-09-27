@@ -11,6 +11,13 @@
         <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
             <i class="fas fa-eye"></i>
         </a>
+        <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
+            <i class="fas fa-upload"></i>
+        </button>
+        
+        
+        
+
 
         
         <div class='exam'>
@@ -100,6 +107,53 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade modal-lg" id="OCRModal" tabindex="-1" aria-labelledby="OCRModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="OCRModalLabel">OCR</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div class="row">
+                        {% for file in files %}
+                            <div class="col-2">
+                                <div class="card box-shadow card-hoverable mb-2">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ file.name|truncatechars:15}}</h5>
+                                        <p class="card-text">{{file.file|truncatechars:15}}</p>
+                                        <!-- You can add more details of the file here -->
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        
+                        <div class="col-2">
+                            <a href="/app/{{doc.id}}/upload" class="card mb-2" style="text-decoration: none;">
+                                <div class="card-body d-flex justify-content-center align-items-center" style="height: 100%;">
+                                    <span style="font-size: 3rem; color: #376d4d;">+</span>
+                                </div>
+                            </a>
+                        </div>
+
+                    <div>
+                </div>
+                
+
+
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success">Close or Save or whatever action you need</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
 
 {% endblock %}
 

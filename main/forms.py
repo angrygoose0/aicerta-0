@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, AssesmentSchedule
+from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, AssesmentSchedule, File
 import roman
 
 def int_to_alpha(value):
@@ -10,6 +10,12 @@ def int_to_alpha(value):
 class CreateNewDocument(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
     exam = forms.ModelChoiceField(queryset=NceaExam.objects.all())
+    
+class FileForm(ModelForm):
+    class Meta:
+        model = File
+        fields = ['name', 'file']
+
     
 class AnswerForm(ModelForm):
     class Meta:

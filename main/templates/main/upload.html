@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %}
+{% load myfilters %}
+{% load crispy_forms_tags %}
+
+{% block title %}marked{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class='exam'>
+        <div class="py-3">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy}}
+                <button type='submit' name = "save" class="btn btn-outline-success">submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

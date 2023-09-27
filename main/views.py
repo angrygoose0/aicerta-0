@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden
-from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule
-from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm
+from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule, File
+from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm, FileForm
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.contrib.auth.decorators import login_required
@@ -87,6 +87,28 @@ def delete_ncea_document(response, id):
 
 
 @login_required(login_url="/login/")
+def upload(response, id):
+    
+    if response.method == "POST":
+        form = FileForm(response.POST, response.FILES)
+        if form.is_valid():
+            # Automatically set the user from the request
+            file_instance = form.save(commit=False)
+            file_instance.user = response.user
+            file_instance.save()
+            return HttpResponseRedirect("/app/%s/edit" % id)
+    else:
+        form = FileForm()
+    
+    context = {
+        'form': form
+    }
+    return render(response, "main/upload.html", context)
+
+
+
+
+@login_required(login_url="/login/")
 def index(response, id):   
     doc = NceaUserDocument.objects.get(id=id)
     if doc.user == response.user:
@@ -101,13 +123,16 @@ def index(response, id):
             if question not in form_groups:
                 form_groups[question] = []
             form_groups[question].append(form)
+            
+        files = File.objects.filter(user=response.user)
+        
         context = {
             "doc": doc,
             'formset' : formset,
             'form_groups': form_groups,
+            'files': files,
             }
-            
-            
+
         if response.method == "POST":
             print(response.POST)
             form = AnswerFormset(response.POST)
