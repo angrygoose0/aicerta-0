@@ -250,13 +250,13 @@ def trigger_mark(response, id):
 
 @login_required(login_url="/login")
 def create(response):
-    initial_data = {
-    'name': '',
-    }
+    
+    form = CreateNewDocument(user=response.user)
+        
 
     if response.method == "POST":
 
-        form = CreateNewDocument(response.POST, initial=initial_data, )
+        form = CreateNewDocument(response.POST, user=response.user)
 
         if form.is_valid():
             n = form.cleaned_data["name"]
@@ -281,10 +281,14 @@ def create(response):
                     
             return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
             #return HttpResponse("hooray")
+        else:
+            print(form.errors)
+            form = CreateNewDocument(user=response.user)
+            print("lala")
+            return render(response, "main/create.html", {"form":form})
 
-    else:
-        form = CreateNewDocument(initial=initial_data, user=response.user)
-        return render(response, "main/create.html", {"form":form})
+    return render(response, "main/create.html", {"form":form})
+        
     
 @login_required(login_url="login/")
 def settings(response):
