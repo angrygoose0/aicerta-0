@@ -8,10 +8,14 @@ from django.conf import settings
 class NceaExam(models.Model):
     standard = models.IntegerField()
     year = models.IntegerField()
-    exam_name = models.TextField(null = True, blank = True)
-    
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceaexam", null = True, blank = True)
-    
+    exam_name = models.TextField(null=True, blank=True)
+
+    # Many-to-Many relationship with users
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="nceaexams", blank=True)
+
+    # Boolean field to determine if the exam is visible to everyone
+    is_public = models.BooleanField(default=False)
+
     def __str__(self):
         return "%s - %s - %s" % (self.exam_name, self.standard, self.year)
 
@@ -81,8 +85,8 @@ class AssesmentSchedule(models.Model):
 
 class NceaUserDocument(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument", null = True, blank = True)
-    exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     
     mark = models.IntegerField(default=0) # out of 24
     marked_before = models.IntegerField(default=0) #1 for true, 0 for false

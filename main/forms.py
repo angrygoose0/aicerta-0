@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django import forms
 from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, AssesmentSchedule, File
 import roman
+from django.db.models import Q
 
 def int_to_alpha(value):
     return chr(ord("a") + int(value) - 1)
@@ -9,7 +10,14 @@ def int_to_alpha(value):
 
 class CreateNewDocument(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
-    exam = forms.ModelChoiceField(queryset=NceaExam.objects.all())
+    exam = forms.ModelChoiceField(queryset=NceaExam.objects.none())  # start with an empty queryset
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            # Query for exams the user can see
+            self.fields['exam'].queryset = NceaExam.objects.filter(Q(is_public=True) | Q(users=user))
+
     
 class FileForm(ModelForm):
     class Meta:

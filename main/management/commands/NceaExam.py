@@ -6,9 +6,12 @@ class Command(BaseCommand) :
     help = 'import booms'
     
     def add_arguments(self, parser):
-        pass
+        parser.add_argument('csv_number', type=int, help='CSV file number to import (e.g., 2 for NceaQUESTION2.csv)')
+
     def handle(self, *args, **options):
-        df = pd.read_csv('.csv/NceaExam2.csv')
+        csv_number = options['csv_number']
+        df = pd.read_csv(f'.csv/NceaExam{csv_number}.csv')
+
         for index, row in df.iterrows():
             NceaExam.objects.update_or_create(
                 standard = row['Standard'],

@@ -283,7 +283,7 @@ def create(response):
             #return HttpResponse("hooray")
 
     else:
-        form = CreateNewDocument(initial = initial_data)
+        form = CreateNewDocument(initial=initial_data, user=response.user)
         return render(response, "main/create.html", {"form":form})
     
 @login_required(login_url="login/")
