@@ -160,6 +160,24 @@ def index(response, id):
         return render(response, "main/index.html", context)
     return HttpResponseRedirect("/app/")
 
+
+@login_required(login_url="/login/")
+def ocrpdf(response, id, ocr):
+    doc = NceaUserDocument.objects.get(id=id)
+    ocrpdf = File.objects.get(id=ocr)
+    
+    context ={
+            "doc": doc,
+            "ocrpdf" : ocrpdf,
+        }
+    
+    
+    
+    return render(response, "main/ocrpdf.html", context)
+
+
+
+
 @login_required(login_url="/login/")
 def preview(response, id):
     doc = NceaUserDocument.objects.get(id=id)

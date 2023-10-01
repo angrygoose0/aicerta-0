@@ -1,0 +1,133 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block title%}
+View PDF
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <button class="btn btn-sm btn-icon" id="prev-page">
+            <i class="fas fa-arrow-circle-left"></i>
+        </button>
+        <button class="btn btn-sm btn-icon" id="next-page">
+            <i class="fas fa-arrow-circle-right"></i>
+        </button>
+        <div class="py-3">
+            <span class="page-info">
+                Page <span id="page-num">1</span> of <span id="page-count"></span>
+            </span>
+
+            <canvas id="pdf-render"></canvas>
+
+
+        </div>
+    </div>
+    
+    <script>
+
+        
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    
+        const url = "{{ ocrpdf.file.url }}";
+
+        let pdfDoc = null,
+            pageNum = 1,
+            pageIsRendering = false
+            pageNumIsPending = null;
+
+        const scale = 1.8,
+            canvas = document.querySelector('#pdf-render'),
+            ctx = canvas.getContext('2d')
+
+        // Render the page
+
+        const renderPage = num => {
+            pageIsRendering = true;
+        
+            // Get Page
+            pdfDoc.getPage(num).then(page => {
+                const viewportOriginal = page.getViewport({ scale: 1 });
+                const containerWidth = document.querySelector('.container').clientWidth;
+                const desiredWidth = containerWidth - 40; // 40px is the margin of the .exam class
+                const scale = desiredWidth / viewportOriginal.width;
+        
+                const viewport = page.getViewport({ scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+        
+                const renderCtx = {
+                    canvasContext: ctx,
+                    viewport
+                };
+        
+                page.render(renderCtx).promise.then(() => {
+                    pageIsRendering = false;
+        
+                    if(pageNumIsPending !== null) {
+                        renderPage(pageNumIsPending);
+                        pageNumIsPending = null;
+                    }
+                });
+        
+                // Output current page
+                document.querySelector('#page-num').textContent = num;
+            });
+        };        
+
+        // Check for pages pages rendering
+        const queueRenderPage = num => {
+            if(pageIsRendering) {
+                pageNumIsPending = num;   
+            } else {
+                renderPage(num);
+            }
+        }
+
+        // Show Prev Page
+        const showPrevPage = () => {
+            if(pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        // Show Next Page
+        const showNextPage = () => {
+            if(pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        // Get Document
+        pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
+            pdfDoc = pdfDoc_;
+            console.log(pdfDoc);
+
+            document.querySelector('#page-count').textContent = pdfDoc.numPages;
+
+            renderPage(pageNum)
+        });
+
+        // Button events
+        document.querySelector('#prev-page').addEventListener('click', showPrevPage);
+        document.querySelector('#next-page').addEventListener('click', showNextPage);
+
+        // Resize event listener
+        window.addEventListener('resize', () => {
+            if (pdfDoc) {
+                queueRenderPage(pageNum);
+            }
+        });
+                
+
+    </script>
+
+{% endblock %}
+
+

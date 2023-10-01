@@ -12,7 +12,10 @@
         <!-- Math Quill -->
         <link rel="stylesheet" href="{% static 'css/mathquill.css' %}">
 
-        
+        <!-- Styles for PDF viewer -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
+
+
 
 
         <!-- MathJax -->
@@ -36,7 +39,11 @@
         <!-- font-awesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-
+        <!-- pdf js-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.js"></script>
+        
     </head>
     <body>
         
@@ -50,7 +57,6 @@
         <div id="content", name="content", class="main">      
             {% block content%}
             {% endblock %}
-
         </div>
 
         <div class="toast-container bottom-0 end-0 p-3" id="toast-container">
@@ -65,9 +71,12 @@
         <!-- Mathquill JS-->
         <script src="{% static 'js/mathquill.js' %}"></script>
 
-        
+        <!-- Moment JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
+
+        <!-- PDF JS -->
+        
         {% block scripts%}
         {% endblock %}
         
@@ -91,7 +100,7 @@
         <script>
             
             const socket = new WebSocket(
-                'wss://' + window.location.host + '/ws/notifications/'
+                'ws://' + window.location.host + '/ws/notifications/'
             );
         
             // Function to store toast data in localStorage
@@ -261,14 +270,7 @@
             setInterval(updateTimestamps, 60 * 1000);
         </script>
         
-        
 
-
-
-        <script>
-        // to get rid of all toasts when logging out etc localStorage.removeItem('toasts');
-        </script>
-        
     </body>
 </html>
 
