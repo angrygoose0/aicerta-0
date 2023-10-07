@@ -242,3 +242,6 @@ else:
 
 
 AI_API = os.environ.get("AI_API")
+
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024

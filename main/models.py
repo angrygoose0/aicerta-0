@@ -82,6 +82,16 @@ class AssesmentSchedule(models.Model):
     def __str__(self):
         return "%s, %s" % (self.QUESTION, self.type)
 
+class File(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    file = models.FileField()
+    
+    def __str__(self):
+        return "%s - %s" % (self.name, self.user)
+    
+
+
 
 class NceaUserDocument(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument", null = True, blank = True)
@@ -93,11 +103,16 @@ class NceaUserDocument(models.Model):
     
     credit_price = models.IntegerField(default=0)
     
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null = True, blank = True)
+    
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
 
     
-
+class OCRImage(models.Model):
+    document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
+    image = models.ImageField()
+    text = models.TextField(null = True, blank = True, default=None)
     
 class NceaUserQuestions(models.Model):
     document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
@@ -129,10 +144,3 @@ class HelpMessage(models.Model):
     date = models.DateTimeField
     
 
-class File(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    file = models.FileField()
-    
-    def __str__(self):
-        return "%s - %s" % (self.name, self.user)

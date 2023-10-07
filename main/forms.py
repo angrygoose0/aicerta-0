@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, AssesmentSchedule, File
+from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, AssesmentSchedule, File, OCRImage
 import roman
 from django.db.models import Q
 
@@ -23,6 +23,12 @@ class FileForm(ModelForm):
     class Meta:
         model = File
         fields = ['name', 'file']
+        
+        
+class OCRImageForm(ModelForm):
+    class Meta:
+        model = OCRImage
+        fields = ['image']
 
     
 class AnswerForm(ModelForm):

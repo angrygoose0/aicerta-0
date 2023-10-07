@@ -1,18 +1,22 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden
-from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule, File
-from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm, FileForm
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule, File, OCRImage
+from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm, FileForm, OCRImageForm
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from payment.models import ProductPrice
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
 import math
 import json
+import base64
 
 from .tasks import mark_document, prepare_document, test
 from celery.result import AsyncResult
@@ -105,7 +109,47 @@ def upload(response, id):
     }
     return render(response, "main/upload.html", context)
 
+@login_required(login_url="/login")
+def create(response):
+    
+    form = CreateNewDocument(user=response.user)
+        
 
+    if response.method == "POST":
+
+        form = CreateNewDocument(response.POST, user=response.user)
+
+        if form.is_valid():
+            n = form.cleaned_data["name"]
+            exam = form.cleaned_data["exam"]
+
+            
+            QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
+
+        
+            user_exam = NceaUserDocument(user=response.user, exam=exam, name=n, mark=0)
+            user_exam.save()
+
+            for QUESTION in QUESTIONS:
+                secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION,)
+
+                for secondaryquestion in secondaryquestions:
+                    nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
+                    nceauserexamquestion.save()
+
+                scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
+                scores.save()
+                    
+            return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
+            #return HttpResponse("hooray")
+        else:
+            print(form.errors)
+            form = CreateNewDocument(user=response.user)
+            print("lala")
+            return render(response, "main/create.html", {"form":form})
+
+    return render(response, "main/create.html", {"form":form})
+        
 
 
 @login_required(login_url="/login/")
@@ -116,6 +160,8 @@ def index(response, id):
         qs = NceaUserQuestions.objects.filter(document = doc)
         AnswerFormset = modelformset_factory(NceaUserQuestions, form=AnswerForm , extra = 0,)
         formset = AnswerFormset(queryset=qs,)
+        
+        OCRform = OCRImageForm()
 
         form_groups = {}
         for form in formset:
@@ -131,6 +177,7 @@ def index(response, id):
             'formset' : formset,
             'form_groups': form_groups,
             'files': files,
+            "ocrform": OCRform,
             }
 
         if response.method == "POST":
@@ -171,9 +218,40 @@ def ocrpdf(response, id, ocr):
             "ocrpdf" : ocrpdf,
         }
     
-    
-    
     return render(response, "main/ocrpdf.html", context)
+
+@login_required(login_url="/login/")
+def file_to_doc(response, id, ocr):
+    if response.method == "POST":
+        doc = NceaUserDocument.objects.get(id=id)
+        ocrpdf = File.objects.get(id=ocr)
+        doc.file = ocrpdf
+        doc.save()
+        return HttpResponseRedirect("/app/%s/edit" % (id))
+
+ 
+
+
+
+def save_image(request, id):
+    if request.method == "POST":
+        form = OCRImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image_instance = form.save(commit=False)
+            # Assuming that NceaUserDocument is imported and you want to link the image to a specific document.
+            # Here, I assume 'id' is the ID of the NceaUserDocument.
+            image_instance.document_id = id
+            image_instance.save()
+            # Return a JSON response if you want an AJAX-style response.
+            # You can modify this to return whatever you wish.
+            return HttpResponseRedirect("/app/%s/edit" % (id))
+        else:
+            print(form.errors)
+            return JsonResponse({'status': 'error', 'message': 'There was an error saving the image.'})
+
+
+
+
 
 
 
@@ -266,47 +344,7 @@ def trigger_mark(response, id):
 
 
 
-@login_required(login_url="/login")
-def create(response):
-    
-    form = CreateNewDocument(user=response.user)
-        
 
-    if response.method == "POST":
-
-        form = CreateNewDocument(response.POST, user=response.user)
-
-        if form.is_valid():
-            n = form.cleaned_data["name"]
-            exam = form.cleaned_data["exam"]
-
-            
-            QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
-
-        
-            user_exam = NceaUserDocument(user=response.user, exam=exam, name=n, mark=0)
-            user_exam.save()
-
-            for QUESTION in QUESTIONS:
-                secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION,)
-
-                for secondaryquestion in secondaryquestions:
-                    nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
-                    nceauserexamquestion.save()
-
-                scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
-                scores.save()
-                    
-            return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
-            #return HttpResponse("hooray")
-        else:
-            print(form.errors)
-            form = CreateNewDocument(user=response.user)
-            print("lala")
-            return render(response, "main/create.html", {"form":form})
-
-    return render(response, "main/create.html", {"form":form})
-        
     
 @login_required(login_url="login/")
 def settings(response):

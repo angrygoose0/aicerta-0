@@ -1,40 +1,76 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 
 {% block title %}Document{% endblock %}
 
 
 {% block content %}
-    <div class="container position-relative">
-        <!-- Eye Icon Button at the top right -->
-        <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
-            <i class="fas fa-eye"></i>
-        </a>
-        <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
-            <i class="fas fa-upload"></i>
-        </button>
+    <div class="row">
         
-        
-        
+        <div class="col {% if doc.file %} scrolling-column {% endif %}">
+            <div class="container position-relative">
+                <!-- Eye Icon Button at the top right -->
+                <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
+                    <i class="fas fa-upload"></i>
+                </button>
 
+                
+                <div class='exam'>
+                    <div class="py-3">
+                        <h1>{{doc.name}}</h1>
+                        <small><b>Standard: {{doc.exam.standard}}</b></small> 
+                        <br>
+                        <small><b>Year: {{doc.exam.year}}</b></small>
+                    </div>
+                    
+                    {% include "main/partials/forms.html" %}
 
-        
-        <div class='exam'>
-            <div class="py-3">
-                <h1>{{doc.name}}</h1>
-                <small><b>Standard: {{doc.exam.standard}}</b></small> 
-                <br>
-                <small><b>Year: {{doc.exam.year}}</b></small>
-            </div>
-            
-            {% include "main/partials/forms.html" %}
-
-            <div>
-                <a class="btn btn-outline-success" href="{% url 'prepare_mark' doc.id %}" role="button">Mark</a>
+                    <div>
+                        <a class="btn btn-outline-success" href="{% url 'prepare_mark' doc.id %}" role="button">Mark</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+        {% if doc.file %}
+            <div class="container scrolling-column">
+                <button class="btn btn-sm btn-icon" id="prev-page">
+                    <i class="fas fa-arrow-circle-left"></i>
+                </button>
+                <button class="btn btn-sm btn-icon" id="next-page">
+                    <i class="fas fa-arrow-circle-right"></i>
+                </button>
+                <button class="btn btn-sm btn-icon" id="crop-button">
+                    <i class="fas fa-crop"></i>
+                </button>
+
+                <div class="py-3">
+                    <span class="page-info">
+                        Page <span id="page-num">1</span> of <span id="page-count"></span>
+                    </span>
+        
+                    <canvas id="pdf-render"></canvas>
+                    <form action="{% url 'save_image' id=doc.id %}" 
+                        id="imageForm" 
+                        method="POST" 
+                        enctype="multipart/form-data"
+                        style="display: none;">
+                        {% csrf_token %}
+                        {{ ocrform.image|as_crispy_field }}
+                        
+
+                    </form>
+
+        
+        
+                </div>
+            </div>
+        {% endif %}
+    </div> 
 
     <div class="modal fade" id="latexModal" tabindex="-1" aria-labelledby="latexModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
@@ -107,7 +143,7 @@
             </div>
         </div>
     </div>
-
+    
     <div class="modal fade modal-lg" id="OCRModal" tabindex="-1" aria-labelledby="OCRModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -120,16 +156,22 @@
                     <div class="row">
                         {% for file in files %}
                             <div class="col-2">
-                                <a href="/app/{{doc.id}}/ocr/{{file.id}}" class="card box-shadow card-hoverable mb-2" style="text-decoration: none;">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ file.name|truncatechars:15}}</h5>
-                                        <p class="card-text">{{file.file|truncatechars:15}}</p>
-                                        <!-- You can add more details of the file here -->
-                                    </div>
-                                </a>
+
+
+                                <form action="{% url 'file_to_doc' doc.id file.id %}" method="POST" class="card-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="card box-shadow card-hoverable mb-2" style="text-decoration: none; border: none; background: none;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ file.name|truncatechars:15 }}</h5>
+                                            <p class="card-text">{{ file.file|truncatechars:15 }}</p>
+                                            <!-- You can add more details of the file here -->
+                                            <!-- Add hidden inputs if you have any data to send with the POST request -->
+                                            <!-- <input type="hidden" name="someName" value="someValue"> -->
+                                        </div>
+                                    </button>
+                                </form>
                             </div>
                         {% endfor %}
-
                         
                         <div class="col-2">
                             <a href="/app/{{doc.id}}/upload" class="card mb-2" style="text-decoration: none;">
@@ -138,19 +180,16 @@
                                 </div>
                             </a>
                         </div>
-
+    
                     <div>
                 </div>
-                
-
-
-                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-success">Close or Save or whatever action you need</button>
                 </div>
             </div>
         </div>
     </div>
+    
     
 
 
@@ -159,5 +198,176 @@
 
 {% block scripts %}
     <script src="{% static 'js/index.js' %}"></script>
+    <script>
+
+        
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+    
+        const url = "{{ doc.file.file.url }}";
+
+        let pdfDoc = null,
+            pageNum = 1,
+            pageIsRendering = false
+            pageNumIsPending = null;
+
+        const scale = 1.8,
+            canvas = document.querySelector('#pdf-render'),
+            ctx = canvas.getContext('2d')
+
+        // Render the page
+
+        const renderPage = num => {
+            pageIsRendering = true;
+        
+            // Get Page
+            pdfDoc.getPage(num).then(page => {
+                const viewportOriginal = page.getViewport({ scale: 1 });
+                const containerWidth = document.querySelector('.container').clientWidth;
+                const desiredWidth = containerWidth - 40; // 40px is the margin of the .exam class
+                const scale = desiredWidth / viewportOriginal.width;
+        
+                const viewport = page.getViewport({ scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+        
+                const renderCtx = {
+                    canvasContext: ctx,
+                    viewport
+                };
+        
+                page.render(renderCtx).promise.then(() => {
+                    pageIsRendering = false;
+        
+                    if(pageNumIsPending !== null) {
+                        renderPage(pageNumIsPending);
+                        pageNumIsPending = null;
+                    }
+                });
+        
+                // Output current page
+                document.querySelector('#page-num').textContent = num;
+            });
+        };        
+
+        // Check for pages pages rendering
+        const queueRenderPage = num => {
+            if(pageIsRendering) {
+                pageNumIsPending = num;   
+            } else {
+                renderPage(num);
+            }
+        }
+
+        // Show Prev Page
+        const showPrevPage = () => {
+            if(pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        // Show Next Page
+        const showNextPage = () => {
+            if(pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        // Get Document
+        pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
+            pdfDoc = pdfDoc_;
+            console.log(pdfDoc);
+
+            document.querySelector('#page-count').textContent = pdfDoc.numPages;
+
+            renderPage(pageNum)
+        });
+
+        // Button events
+        document.querySelector('#prev-page').addEventListener('click', showPrevPage);
+        document.querySelector('#next-page').addEventListener('click', showNextPage);
+
+        // Resize event listener
+        window.addEventListener('resize', () => {
+            if (pdfDoc) {
+                queueRenderPage(pageNum);
+            }
+        });
+    </script>
+
+    <script>
+        let cropping = false;
+        let cropper;
+
+        const cropButton = document.getElementById('crop-button');
+        const cropIcon = cropButton.querySelector('.fas');
+        const form = document.getElementById('imageForm');
+        const imageInput = document.getElementById('id_image');  // Assuming default Django id naming for form fields
+
+        const imageDataInput = document.getElementById('imageData');
+
+        function dataURLtoBlob(dataurl) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }
+
+        cropButton.addEventListener('click', function() {
+            event.preventDefault();
+            if (!cropping) {
+                // Enter cropping state
+                cropping = true;
+
+                cropIcon.classList.remove('fa-crop');
+                cropIcon.classList.add('fa-check');
+
+                const canvas = document.getElementById('pdf-render');
+                cropper = new Cropper(canvas);
+            } else {
+                // Confirm cropping state
+                if (cropper) {
+                    const croppedCanvas = cropper.getCroppedCanvas();
+                    const croppedImageDataURL = croppedCanvas.toDataURL('image/png');
+                    
+                    // Convert the Base64 data URL to a Blob
+                    const byteString = atob(croppedImageDataURL.split(',')[1]);
+                    const mimeString = croppedImageDataURL.split(',')[0].split(':')[1].split(';')[0];
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    for (let i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    const blob = new Blob([ab], { type: mimeString });
+                    
+                    // Convert the Blob to a File object
+                    const file = new File([blob], 'cropped_image.png', { type: mimeString });
+                    
+                    // Set the File object as the value of the image input field
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    imageInput.files = dataTransfer.files;
+                    
+                    form.submit();
+                    console.log("A")
+
+                    // Clean up
+                    cropper.destroy();
+                    cropping = false;
+        
+                    cropIcon.classList.remove('fa-check');
+                    cropIcon.classList.add('fa-crop');
+                }
+            }
+        });
+
+    </script>
+
 
 {% endblock %}
