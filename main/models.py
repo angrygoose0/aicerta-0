@@ -44,6 +44,9 @@ class NceaQUESTION(models.Model):
     
     def __str__(self):
         return "%s, %s" % (self.exam, self.QUESTION)
+
+    class Meta:
+            ordering = ['exam', 'QUESTION']
     
 class NceaSecondaryQuestion(models.Model):
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
@@ -56,7 +59,7 @@ class NceaSecondaryQuestion(models.Model):
         return "%s, %s, %s" % (self.QUESTION, self.primary, self.secondary)
     
     class Meta:
-        ordering = ['primary', 'secondary']
+        ordering = ['QUESTION', 'primary', 'secondary']
         
     
 
@@ -127,6 +130,9 @@ class NceaUserQuestions(models.Model):
     
     def __str__(self):
         return "%s, %s" % (self.document, self.question,)
+        
+    class Meta:
+        ordering = ['document', 'question']
     
     
 class NceaScores(models.Model):
@@ -138,9 +144,15 @@ class NceaScores(models.Model):
     def __str__(self):
         return "%s, %s, score: %s" % (self.document, self.QUESTION, self.score)
 
+    class Meta:
+        ordering = ['document', 'QUESTION']
+        
 class HelpMessage(models.Model):
     message = models.TextField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="help", null = True, blank = True)
     date = models.DateTimeField
+
+    class Meta:
+            ordering = ['date']
     
 
