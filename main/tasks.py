@@ -247,14 +247,14 @@ def mark_document(id, user_id):
         
         for QUESTION in QUESTIONS:
             secondary_questions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
-            
+            processed_question_system = QUESTION.system.replace("\\", "\\\\")
             messages = []
             system_message = {"role":"system", "content": 
                 r""" 
                 %s
                 
                 %s
-                """ % (start_system, QUESTION.system)}
+                """ % (start_system, processed_question_system)}
             messages.append(system_message)
             
                     
