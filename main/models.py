@@ -152,7 +152,3 @@ class HelpMessage(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="help", null = True, blank = True)
     date = models.DateTimeField
 
-    class Meta:
-            ordering = ['date']
-    
-
