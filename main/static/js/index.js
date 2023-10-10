@@ -1,5 +1,7 @@
 var MQ = MathQuill.getInterface(2);
 
+const formElement = document.getElementById("answer-formset");
+
 function initializeMathQuill() {
     // Initialize MathQuill on elements
     document.querySelectorAll('.mathquill-input').forEach(span => {
@@ -33,7 +35,7 @@ function initializeMathQuill() {
         $(this).hide();
     });
 
-    let formElement = document.getElementById("answer-formset");
+    
     // Initialize other functionalities
     $('#insertLatexBtn').on('click', function() {
         var latexArray = [];

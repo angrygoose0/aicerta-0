@@ -231,25 +231,50 @@ def file_to_doc(response, id, ocr):
 
  
 
+from google.cloud import vision
+from django.conf import settings
+client = vision.ImageAnnotatorClient.from_service_account_info(settings.GOOGLE_CREDENTIALS)
+image = vision.Image()
 
 
+def ocr_api_response(uri):
+    
+    
+    image.source.image_uri = uri
+    response = client.document_text_detection(image=image)
+
+    if response.text_annotations:
+        return response.text_annotations[0].description
+    elif response.error.message:
+        raise Exception(
+            response.error.message
+        )
+        
+
+    
 def save_image(request, id):
     if request.method == "POST":
         form = OCRImageForm(request.POST, request.FILES)
         if form.is_valid():
             image_instance = form.save(commit=False)
-            # Assuming that NceaUserDocument is imported and you want to link the image to a specific document.
-            # Here, I assume 'id' is the ID of the NceaUserDocument.
             image_instance.document_id = id
-            image_instance.save()
-            # Return a JSON response if you want an AJAX-style response.
-            # You can modify this to return whatever you wish.
+            image_instance.save()  # First save to get the image URL
+
+            image_uri = image_instance.image.url
+            image_absolute_uri = request.build_absolute_uri(image_uri)
+
+            try:
+                image_instance.text = ocr_api_response(image_absolute_uri)
+                image_instance.save()  # Save again after OCR processing
+            except Exception as e:
+                # Handle the exception (e.g., log it)
+                print(e)
+                return JsonResponse({'status': 'error', 'message': 'Failed processing image through OCR.'})
+
             return HttpResponseRedirect("/app/%s/edit" % (id))
         else:
             print(form.errors)
             return JsonResponse({'status': 'error', 'message': 'There was an error saving the image.'})
-
-
 
 
 
