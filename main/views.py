@@ -17,6 +17,9 @@ from django.core.files.base import ContentFile
 import math
 import json
 import base64
+from google.cloud import vision
+from django.conf import settings
+
 
 from .tasks import mark_document, prepare_document, test
 from celery.result import AsyncResult
@@ -229,47 +232,46 @@ def file_to_doc(response, id, ocr):
         doc.save()
         return HttpResponseRedirect("/app/%s/edit" % (id))
 
- 
-
-from google.cloud import vision
-from django.conf import settings
-client = vision.ImageAnnotatorClient.from_service_account_info(settings.GOOGLE_CREDENTIALS)
-image = vision.Image()
 
 
-def ocr_api_response(uri):
-    
-    
-    image.source.image_uri = uri
+def detect_document(image_model):
+    """Detects document features in an image."""
+    from google.cloud import vision
+
+    client = vision.ImageAnnotatorClient.from_service_account_info(settings.GOOGLE_CREDENTIALS)
+        
+    with image_model.image.open("rb") as image_file:
+            content = image_file.read()
+
+    image = vision.Image(content=content)
+
     response = client.document_text_detection(image=image)
-
+    
     if response.text_annotations:
         return response.text_annotations[0].description
+
+
     elif response.error.message:
         raise Exception(
-            response.error.message
+            "{}\nFor more info on error messages, check: "
+            "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
-        
+
 
     
 def save_image(request, id):
     if request.method == "POST":
+        
+        
         form = OCRImageForm(request.POST, request.FILES)
         if form.is_valid():
             image_instance = form.save(commit=False)
             image_instance.document_id = id
-            image_instance.save()  # First save to get the image URL
+            image_instance.save()
 
-            image_uri = image_instance.image.url
-            image_absolute_uri = request.build_absolute_uri(image_uri)
-
-            try:
-                image_instance.text = ocr_api_response(image_absolute_uri)
-                image_instance.save()  # Save again after OCR processing
-            except Exception as e:
-                # Handle the exception (e.g., log it)
-                print(e)
-                return JsonResponse({'status': 'error', 'message': 'Failed processing image through OCR.'})
+            image_instance.text = detect_document(image_instance)
+            
+            image_instance.save()
 
             return HttpResponseRedirect("/app/%s/edit" % (id))
         else:
@@ -372,7 +374,7 @@ def trigger_mark(response, id):
 
     
 @login_required(login_url="login/")
-def settings(response):
+def settings_page(response):
     
     productprice = ProductPrice.objects.all()    
     subscriptions = productprice.filter(type="subscription")
