@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 import sys
+import json
+import base64
 from pathlib import Path
 import dj_database_url
 from django.core.management.utils import get_random_secret_key
@@ -245,3 +247,7 @@ AI_API = os.environ.get("AI_API")
 
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
+
+GOOGLE_CREDENTIALS_BASE64=os.environ.get("GOOGLE_CREDENTIALS_BASE64")
+decoded_credentials = base64.b64decode(GOOGLE_CREDENTIALS_BASE64).decode("utf-8")
+GOOGLE_CREDENTIALS = json.loads(decoded_credentials)

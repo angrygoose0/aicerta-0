@@ -18,6 +18,10 @@
                 <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
                     <i class="fas fa-upload"></i>
                 </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ResultsModal">
+                    Show OCR Modal
+                </button>
+                
 
                 
                 <div class='exam'>
@@ -71,6 +75,36 @@
             </div>
         {% endif %}
     </div> 
+
+    <div class="modal fade" id="ResultsModal" tabindex="-1" aria-labelledby="ResultsModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl"> <!-- Increase modal size to modal-xl for better visibility -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ResultsModalLabel">OCR Results</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Column for the cropped image -->
+                        <div class="col-md-6">
+                            <img id="croppedImage" src="" alt="Cropped Image" class="img-fluid"> <!-- Image will be loaded dynamically -->
+                        </div>
+                        
+                        <!-- Column for the OCR text -->
+                        <div class="col-md-6">
+                            <textarea class="form-control" id="ocrText" rows="10" placeholder="OCR Results will appear here..."></textarea> <!-- Text area to edit OCR results if needed -->
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success">Close or Save or whatever action you need</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 
     <div class="modal fade" id="latexModal" tabindex="-1" aria-labelledby="latexModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
@@ -189,6 +223,7 @@
             </div>
         </div>
     </div>
+
     
     
 

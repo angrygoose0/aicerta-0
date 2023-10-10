@@ -11,6 +11,7 @@ import tiktoken
 from django.conf import settings
 import logging
 import time
+from google.cloud import vision
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -56,7 +57,24 @@ openai.api_key = settings.AI_API
 
 encoding = tiktoken.encoding_for_model("gpt-4")
 
+client = vision.ImageAnnotatorClient.from_service_account_info(settings.GOOGLE_CREDENTIALS)
+image = vision.Image()
 
+@shared_task
+def detect_document_uri(uri):
+    
+    
+    image.source.image_uri = uri
+    response = client.document_text_detection(image=image)
+
+    if response.text_annotations:
+        return response.text_annotations[0].description
+    elif response.error.message:
+        raise Exception(
+            response.error.message
+        )
+    else:
+        return "No text detected"
 
 @shared_task
 def prepare_document(id):
