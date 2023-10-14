@@ -44,8 +44,15 @@ function initializeMathQuill() {
             if (currentLatex) latexArray.push(currentLatex);
         });
     
-        var formattedLatex = latexArray.length === 1 ? '\\(' + latexArray[0] + '\\)' :
-            latexArray.map(latex => '\\[' + latex + '\\] ').join('');
+        var formattedLatex;
+
+        if (latexArray.length === 1) {
+            formattedLatex = '\\(' + latexArray[0] + '\\)';
+        } else {
+            formattedLatex = '\\begin{aligned} ' + 
+            latexArray.map(latex => '&' + latex + ' \\\\ ').join('') + 
+            '\\end{aligned}';
+        }
     
         console.log("Retrieved input ID:", $('#latexModal').data('target-input-id'));
         var targetInput = $('#' + $('#latexModal').data('target-input-id'));
