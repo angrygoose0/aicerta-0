@@ -15,6 +15,10 @@ import time
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+from mathpix.mathpix import MathPix
+mathpix = MathPix(app_id="aicerta_dba064_cf8251", app_key="1edb871fea6133e08b718918bdfa84093d4bdeade502e3e0eb461d600ad9def7")
+
+
 channel_layer = get_channel_layer()
 
 
@@ -55,7 +59,6 @@ Assesment Schedule:
 openai.api_key = settings.AI_API
 
 encoding = tiktoken.encoding_for_model("gpt-4")
-
 
 
 @shared_task
@@ -129,6 +132,40 @@ def prepare_document(id):
     except Exception as e:
         print(e)
         return e
+    
+    
+    
+@shared_task(bind=True)
+def ocr_task(self, image_instance):
+    channel_layer = get_channel_layer()
+    try:
+        # OCR Process (e.g., using pytesseract or any OCR tool)
+        async_to_sync(channel_layer.send)(
+            websocket_channel_name,
+            {
+                "type": "task_message",
+                "message": "OCR started",
+                "status": "started",
+            }
+        )
+        
+        # Simulating OCR task
+        time.sleep(5)  # Assume OCR takes 5 seconds, replace this with actual OCR process
+        
+        ocr = mathpix.process_image(image=image_instance)
+            
+        print(ocr.latex)
+
+        
+    except Exception as e:
+        async_to_sync(channel_layer.send)(
+            websocket_channel_name,
+            {
+                "type": "task_message",
+                "message": str(e),
+                "status": "failed",
+            }
+        )
 
 
 def websocket(room_name, task_id, doc, progress, error):

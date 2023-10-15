@@ -22,8 +22,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         progress = event['progress']
         doc_id = event['doc_id']
         error = event['error']
-
-        
         
         await self.send(text_data=json.dumps({
             'task_id': task_id,
@@ -34,5 +32,3 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'error':error,
             
         }))
-        
-    

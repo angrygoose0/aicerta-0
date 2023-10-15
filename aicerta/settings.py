@@ -247,3 +247,7 @@ AI_API = os.environ.get("AI_API")
 
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
+
+GOOGLE_CREDENTIALS_BASE64=os.environ.get("GOOGLE_CREDENTIALS_BASE64")
+decoded_credentials = base64.b64decode(GOOGLE_CREDENTIALS_BASE64).decode("utf-8")
+GOOGLE_CREDENTIALS = json.loads(decoded_credentials)

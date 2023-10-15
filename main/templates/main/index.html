@@ -7,6 +7,7 @@
 
 
 {% block content %}
+
     <div class="row">
         
         <div class="col {% if doc.file %} scrolling-column {% endif %}">
@@ -48,9 +49,13 @@
                 <button class="btn btn-sm btn-icon" id="next-page">
                     <i class="fas fa-arrow-circle-right"></i>
                 </button>
-                <button class="btn btn-sm btn-icon" id="crop-button">
-                    <i class="fas fa-crop"></i>
+                <button class="btn btn-sm btn-icon" id="crop-button-text">
+                    <i class="fas fa-font"></i>
                 </button>
+                <button class="btn btn-sm btn-icon" id="crop-button-math">
+                    <i class="fas fa-superscript"></i>
+                </button>
+                
 
                 <div class="py-3">
                     <span class="page-info">
@@ -99,7 +104,7 @@
                 </div>
     
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-success">Close or Save or whatever action you need</button>
+                    <button type="button" class="btn btn-outline-success" id="insertOCRBtn">Insert Results</button>
                 </div>
             </div>
         </div>
@@ -335,43 +340,36 @@
     </script>
 
     <script>
-        let cropping = false;
-        let cropper;
+        document.addEventListener("DOMContentLoaded", function() {
 
-        const cropButton = document.getElementById('crop-button');
-        const cropIcon = cropButton.querySelector('.fas');
-        const form = document.getElementById('imageForm');
-        const imageInput = document.getElementById('id_image');  // Assuming default Django id naming for form fields
-
-        const imageDataInput = document.getElementById('imageData');
-
-        function dataURLtoBlob(dataurl) {
-            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-            while(n--){
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-            return new Blob([u8arr], {type:mime});
-        }
-
-        cropButton.addEventListener('click', function() {
-            event.preventDefault();
-            if (!cropping) {
-                // Enter cropping state
+            let cropping = false;
+            let cropper;
+        
+            const cropButtonText = document.getElementById('crop-button-text');
+            const cropButtonMath = document.getElementById('crop-button-math');
+        
+            const iconText = cropButtonText.querySelector('.fas');
+            const iconMath = cropButtonMath.querySelector('.fas');
+        
+            const form = document.getElementById('imageForm');
+            const imageInput = document.getElementById('id_image');
+            const imageDataInput = document.getElementById('imageData');
+        
+            function enterCroppingState(cropButton, cropIcon, otherButton, cropMethod) {
                 cropping = true;
-
-                cropIcon.classList.remove('fa-crop');
+                cropIcon.classList.remove(cropMethod === "math" ? 'fa-superscript' : 'fa-font');
                 cropIcon.classList.add('fa-check');
-
+                otherButton.disabled = true;
+        
                 const canvas = document.getElementById('pdf-render');
                 cropper = new Cropper(canvas);
-            } else {
-                // Confirm cropping state
+            }
+        
+            function confirmCroppingState(cropIcon, cropMethod) {
                 if (cropper) {
                     const croppedCanvas = cropper.getCroppedCanvas();
                     const croppedImageDataURL = croppedCanvas.toDataURL('image/png');
                     
-                    // Convert the Base64 data URL to a Blob
                     const byteString = atob(croppedImageDataURL.split(',')[1]);
                     const mimeString = croppedImageDataURL.split(',')[0].split(':')[1].split(';')[0];
                     const ab = new ArrayBuffer(byteString.length);
@@ -381,28 +379,116 @@
                     }
                     const blob = new Blob([ab], { type: mimeString });
                     
-                    // Convert the Blob to a File object
                     const file = new File([blob], 'cropped_image.png', { type: mimeString });
                     
-                    // Set the File object as the value of the image input field
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(file);
                     imageInput.files = dataTransfer.files;
+        
+                    const formData = new FormData(form);
+                    formData.append('crop_method', cropMethod);
+                    $.ajax({
+                        url: form.action,
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                document.getElementById('ocrText').value = response.ocr_result;
+                                document.getElementById('croppedImage').src = response.cropped_image_url;
+                                $('#ResultsModal').modal('show');
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function() {
+                            alert('An error occurred. Please try again.');
+                        }
+                    });
                     
-                    form.submit();
-                    console.log("A")
-
-                    // Clean up
                     cropper.destroy();
                     cropping = false;
-        
                     cropIcon.classList.remove('fa-check');
-                    cropIcon.classList.add('fa-crop');
+                    cropIcon.classList.add(cropMethod === "math" ? 'fa-superscript' : 'fa-font');
+                    cropButtonMath.disabled = false;
+                    cropButtonText.disabled = false;
                 }
             }
+        
+            cropButtonText.addEventListener('click', function(event) {
+                event.preventDefault();
+                if (!cropping) {
+                    enterCroppingState(cropButtonText, iconText, cropButtonMath, "text");
+                } else {
+                    confirmCroppingState(iconText, "text");
+                }
+            });
+        
+            cropButtonMath.addEventListener('click', function(event) {
+                event.preventDefault();
+                if (!cropping) {
+                    enterCroppingState(cropButtonMath, iconMath, cropButtonText, "math");
+                } else {
+                    confirmCroppingState(iconMath, "math");
+                }
+            });
         });
 
     </script>
 
+    <script>
+        $(document).ready(function() {
+            var textToInsert;
+        
+            // Step 1: Capture text when "Insert Text" button is pressed
+            $("#insertOCRBtn").on("click", function() {
+                textToInsert = $("#ocrText").val();  // Assuming text is in a textarea with id 'ocrText'
+                $("#ResultsModal").modal('hide');   // Hide the modal
+                
+                // Add overlay to the page
+                $("body").append('<div class="overlay"></div>');
+                $(".overlay").fadeIn();
+            });
+        
+            // Step 2 and 3: Insert the text into a form field when it's clicked
+            $("form input, form textarea").on("click", function() {
+                if (textToInsert) {  // Check if there's text to insert
+                    insertAtCursor(this, textToInsert);  // Insert the text at cursor position
+                    textToInsert = null;  // Clear the textToInsert to prevent accidental insertions
+        
+                    // Remove overlay from the page
+                    $(".overlay").fadeOut(function() {
+                        $(this).remove();
+                    });
+                }
+            });
+        
+            // Insert text at cursor position function
+            function insertAtCursor(field, value) {
+                // IE support
+                if (document.selection) {
+                    field.focus();
+                    var sel = document.selection.createRange();
+                    sel.text = value;
+                }
+                // MOZILLA and others
+                else if (field.selectionStart || field.selectionStart == '0') {
+                    var startPos = field.selectionStart;
+                    var endPos = field.selectionEnd;
+                    field.value = field.value.substring(0, startPos)
+                        + value
+                        + field.value.substring(endPos, field.value.length);
+                } else {
+                    field.value += value;
+                }
+            }
+        });
+        
+        
+        
+        
+        
+    </script>
 
 {% endblock %}

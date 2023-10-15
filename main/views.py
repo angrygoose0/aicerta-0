@@ -18,6 +18,7 @@ import math
 import json
 import base64
 from django.conf import settings
+from google.cloud import vision
 
 from mathpix.mathpix import MathPix
 
@@ -26,7 +27,7 @@ mathpix = MathPix(app_id="aicerta_dba064_cf8251", app_key="1edb871fea6133e08b718
 
 
 
-from .tasks import mark_document, prepare_document, test
+from .tasks import mark_document, prepare_document, test, ocr_task
 from celery.result import AsyncResult
 
 
@@ -239,32 +240,59 @@ def file_to_doc(response, id, ocr):
 
 
     
+
+def detect_document(image_model):
+    """Detects document features in an image."""
+    from google.cloud import vision
+
+    client = vision.ImageAnnotatorClient.from_service_account_info(settings.GOOGLE_CREDENTIALS)
+        
+    with image_model.image.open("rb") as image_file:
+            content = image_file.read()
+            
+
+    image = vision.Image(content=content)
+
+    response = client.document_text_detection(image=image)
+    
+    if response.text_annotations:
+        return response.text_annotations[0].description
+
+
+    elif response.error.message:
+        raise Exception(
+            "{}\nFor more info on error messages, check: "
+            "https://cloud.google.com/apis/design/errors".format(response.error.message)
+        )
+
 def save_image(request, id):
     if request.method == "POST":
-        
-        
         form = OCRImageForm(request.POST, request.FILES)
         if form.is_valid():
             image_instance = form.save(commit=False)
             image_instance.document_id = id
             image_instance.save()
-            
-            ocr = mathpix.process_image(image=image_instance)
-            
-            print(ocr.latex)
-            
 
-            image_instance.text = ocr.latex
+            crop_method = request.POST.get('crop_method')
+            
+            if crop_method == 'text':
+                image_instance.text = detect_document(image_instance)
+
+            elif crop_method == 'math':
+                ocr = mathpix.process_image(image=image_instance)
+                image_instance.text = ocr.latex
             
             image_instance.save()
 
-            return HttpResponseRedirect("/app/%s/edit" % (id))
+            # Return a JSON response with the OCRed result and the cropped image URL
+            return JsonResponse({
+                'status': 'success',
+                'ocr_result': image_instance.text,
+                'cropped_image_url': image_instance.image.url
+            })
         else:
             print(form.errors)
             return JsonResponse({'status': 'error', 'message': 'There was an error saving the image.'})
-
-
-
 
 
 
