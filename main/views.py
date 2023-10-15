@@ -22,7 +22,7 @@ from google.cloud import vision
 
 from mathpix.mathpix import MathPix
 
-mathpix = MathPix(app_id="aicerta_dba064_cf8251", app_key="1edb871fea6133e08b718918bdfa84093d4bdeade502e3e0eb461d600ad9def7")
+mathpix = MathPix(app_id=settings.MATHPIX_APP_ID, app_key=settings.MATHPIX_APP_KEY)
 
 
 
