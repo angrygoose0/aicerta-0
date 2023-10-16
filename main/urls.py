@@ -19,4 +19,5 @@ urlpatterns = [
     path('<int:id>/prepare/', views.prepare_mark, name='prepare_mark'),
     path('check-task/<str:task_id>', views.check_task, name='check_task'),
     path('<int:id>/save_image', views.save_image, name='save_image'),
+    path('protected_files/<int:file_id>/', views.serve_protected_file, name='serve_protected_file'),
 ]

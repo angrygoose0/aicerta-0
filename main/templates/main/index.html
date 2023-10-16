@@ -244,7 +244,7 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
     
-        const url = "{{ doc.file.file.url }}";
+        const url = "{% url 'serve_protected_file' doc.file.id %}";
 
         let pdfDoc = null,
             pageNum = 1,
@@ -437,58 +437,5 @@
 
     </script>
 
-    <script>
-        $(document).ready(function() {
-            var textToInsert;
-        
-            // Step 1: Capture text when "Insert Text" button is pressed
-            $("#insertOCRBtn").on("click", function() {
-                textToInsert = $("#ocrText").val();  // Assuming text is in a textarea with id 'ocrText'
-                $("#ResultsModal").modal('hide');   // Hide the modal
-                
-                // Add overlay to the page
-                $("body").append('<div class="overlay"></div>');
-                $(".overlay").fadeIn();
-            });
-        
-            // Step 2 and 3: Insert the text into a form field when it's clicked
-            $("form input, form textarea").on("click", function() {
-                if (textToInsert) {  // Check if there's text to insert
-                    insertAtCursor(this, textToInsert);  // Insert the text at cursor position
-                    textToInsert = null;  // Clear the textToInsert to prevent accidental insertions
-        
-                    // Remove overlay from the page
-                    $(".overlay").fadeOut(function() {
-                        $(this).remove();
-                    });
-                }
-            });
-        
-            // Insert text at cursor position function
-            function insertAtCursor(field, value) {
-                // IE support
-                if (document.selection) {
-                    field.focus();
-                    var sel = document.selection.createRange();
-                    sel.text = value;
-                }
-                // MOZILLA and others
-                else if (field.selectionStart || field.selectionStart == '0') {
-                    var startPos = field.selectionStart;
-                    var endPos = field.selectionEnd;
-                    field.value = field.value.substring(0, startPos)
-                        + value
-                        + field.value.substring(endPos, field.value.length);
-                } else {
-                    field.value += value;
-                }
-            }
-        });
-        
-        
-        
-        
-        
-    </script>
-
+    <script src="{% static 'js/ocrinsert.js' %}"></script>
 {% endblock %}

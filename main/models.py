@@ -106,7 +106,7 @@ class NceaUserDocument(models.Model):
     
     credit_price = models.IntegerField(default=0)
     
-    file = models.ForeignKey(File, on_delete=models.CASCADE, null = True, blank = True)
+    file = models.ForeignKey(File, on_delete=models.SET_NULL, null = True, blank = True)
     
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)

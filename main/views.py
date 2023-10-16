@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
+from storages.backends.s3boto3 import S3Boto3Storage
 import math
 import json
 import base64
@@ -181,6 +182,9 @@ def index(response, id):
             
         files = File.objects.filter(user=response.user)
         
+        if settings.DEVELOPMENT_MODE:
+            pdf_url = doc.file.file.url
+        
         context = {
             "doc": doc,
             'formset' : formset,
@@ -264,6 +268,19 @@ def detect_document(image_model):
             "{}\nFor more info on error messages, check: "
             "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
+
+def serve_protected_file(request, file_id):
+    file_instance = File.objects.get(pk=file_id)
+    
+    # Ensure the user requesting the file is the owner
+    if request.user != file_instance.user:
+        return HttpResponseForbidden
+
+    # Generate a signed URL
+    s3_storage = S3Boto3Storage()
+    url = s3_storage.url(file_instance.file.name, expire=300)  # URL will be valid for 5 minutes
+
+    return HttpResponseRedirect(url)
 
 def save_image(request, id):
     if request.method == "POST":
