@@ -243,8 +243,15 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
         
-            const url = "{% url 'serve_protected_file' doc.file.id %}"
-            //
+            {% if development %}
+                const url = "{{doc.file.file.url}}"; 
+            {% else %}
+            {% if doc.file %}
+                const url = "{% url 'serve_protected_file' doc.file.id %}";
+                {% else %}
+                    const url = "";  // or some default value
+                {% endif %}
+            {% endif %}
 
             let pdfDoc = null,
                 pageNum = 1,
