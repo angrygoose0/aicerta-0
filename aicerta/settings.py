@@ -176,9 +176,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -256,16 +253,19 @@ GOOGLE_CREDENTIALS = json.loads(decoded_credentials)
 MATHPIX_APP_ID=os.environ.get("MATHPIX_APP_ID")
 MATHPIX_APP_KEY=os.environ.get("MATHPIX_APP_KEY")
 
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = 'aicerta-bucket'
-AWS_S3_ENDPOINT_URL = 'https://aicerta-bucket.syd1.digitaloceanspaces.com'  # Adjust the endpoint URL to your region
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
-AWS_DEFAULT_ACL = 'private'  # This ensures that by default files are private
-
-# Define custom storage for media files
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
+if DEVELOPMENT_MODE is True:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+    
+else:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = 'aicerta-bucket'
+    AWS_S3_ENDPOINT_URL = 'https://aicerta-bucket.syd1.digitaloceanspaces.com'
+    AWS_DEFAULT_ACL = 'private'
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+    }

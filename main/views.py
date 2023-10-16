@@ -182,8 +182,7 @@ def index(response, id):
             
         files = File.objects.filter(user=response.user)
         
-        if settings.DEVELOPMENT_MODE:
-            pdf_url = doc.file.file.url
+        development = settings.DEVELOPMENT_MODE
         
         context = {
             "doc": doc,
@@ -191,6 +190,7 @@ def index(response, id):
             'form_groups': form_groups,
             'files': files,
             "ocrform": OCRform,
+            "development" : development,
             }
 
         if response.method == "POST":
