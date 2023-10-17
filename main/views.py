@@ -279,6 +279,7 @@ def serve_protected_file(request, file_id):
     # Generate a signed URL
     s3_storage = S3Boto3Storage()
     url = s3_storage.url(file_instance.file.name, expire=300)  # URL will be valid for 5 minutes
+    print(url)
 
     return HttpResponseRedirect(url)
 
