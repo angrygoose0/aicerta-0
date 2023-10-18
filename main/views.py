@@ -209,6 +209,7 @@ def index(response, id):
         files = File.objects.filter(user=response.user)
         
         signed_url = generate_signed_url(doc.file.file.name)
+        print(signed_url)
         
     
         
