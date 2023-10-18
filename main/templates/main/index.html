@@ -242,16 +242,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-        
-            {% if development %}
-                const url = "{{doc.file.file.url}}"; 
-            {% else %}
-            {% if doc.file %}
-                const url = "{{url}}";
-                {% else %}
-                    const url = "";  // or some default value
-                {% endif %}
-            {% endif %}
+            const url = "{{doc.file.file.url}}"; 
 
             let pdfDoc = null,
                 pageNum = 1,
