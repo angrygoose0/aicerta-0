@@ -247,7 +247,7 @@
                 const url = "{{doc.file.file.url}}"; 
             {% else %}
             {% if doc.file %}
-                const url = "{% url 'serve_protected_file' doc.file.id %}";
+                const url = "{{url}}";
                 {% else %}
                     const url = "";  // or some default value
                 {% endif %}
