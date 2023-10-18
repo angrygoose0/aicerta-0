@@ -184,11 +184,11 @@ def index(response, id):
         
         development = settings.DEVELOPMENT_MODE
 
-
-    
-        # Generate a signed URL
-        s3_storage = S3Boto3Storage()
-        url = s3_storage.url(doc.file.file.name, expire=300)  # URL will be valid for 5 minutes
+        url=""
+        if doc.file:
+            # Generate a signed URL
+            s3_storage = S3Boto3Storage()
+            url = s3_storage.url(doc.file.file.name, expire=300)  # URL will be valid for 5 minutes
         print(url)
     
         
