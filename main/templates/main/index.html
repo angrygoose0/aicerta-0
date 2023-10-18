@@ -242,7 +242,8 @@
         document.addEventListener("DOMContentLoaded", function() {
             pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-            const url = "{{doc.file.file.url}}"; 
+            //const url = "{{doc.file.file.url}}"; 
+            const url = "https://syd1.digitaloceanspaces.com/aicerta-bucket/91164-ass-2022.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=DO00LKBF9ZT2L6GBY9UY%2F20231018%2Fsyd1%2Fs3%2Faws4_request&X-Amz-Date=20231018T025236Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1a48975fc1be8941ee4adf085a05c7da8b2e0dde1b68c70927aac10091605a51"
 
             let pdfDoc = null,
                 pageNum = 1,
