@@ -161,6 +161,32 @@ def create(response):
     return render(response, "main/create.html", {"form":form})
         
 
+import boto3
+
+
+def generate_signed_url(file_path):
+    # Initialize S3 client
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=settings.AWS_S3_REGION_NAME,
+        endpoint_url=settings.AWS_S3_ENDPOINT_URL,
+    )
+
+    # Generate the presigned URL
+    url = s3.generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
+            'Key': file_path,
+        },
+        ExpiresIn=3600
+    )
+    return url
+
+
+
 
 @login_required(login_url="/login/")
 def index(response, id):   
@@ -182,6 +208,8 @@ def index(response, id):
             
         files = File.objects.filter(user=response.user)
         
+        signed_url = generate_signed_url(doc.file.file.name)
+        
     
         
         context = {
@@ -190,6 +218,7 @@ def index(response, id):
             'form_groups': form_groups,
             'files': files,
             "ocrform": OCRform,
+            "signed_url" : signed_url,
             }
 
         if response.method == "POST":
