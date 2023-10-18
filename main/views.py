@@ -182,14 +182,6 @@ def index(response, id):
             
         files = File.objects.filter(user=response.user)
         
-        development = settings.DEVELOPMENT_MODE
-
-        url=""
-        if doc.file:
-            # Generate a signed URL
-            s3_storage = S3Boto3Storage()
-            url = s3_storage.url(doc.file.file.name, expire=300)  # URL will be valid for 5 minutes
-        print(url)
     
         
         context = {
@@ -198,8 +190,6 @@ def index(response, id):
             'form_groups': form_groups,
             'files': files,
             "ocrform": OCRform,
-            "development" : development,
-            "url" : url,
             }
 
         if response.method == "POST":
