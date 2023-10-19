@@ -207,11 +207,11 @@ def index(response, id):
             form_groups[question].append(form)
             
         files = File.objects.filter(user=response.user)
-        
-        signed_url = generate_signed_url(doc.file.file.name)
-        print(signed_url)
-        
+
+        signed_url = ""
+        if doc.file:
     
+            signed_url = generate_signed_url(doc.file.file.name)
         
         context = {
             "doc": doc,
