@@ -7,79 +7,80 @@
 
 
 {% block content %}
-
-    <div class="row">
-        
-        <div class="col {% if doc.file %} scrolling-column {% endif %}">
-            <div class="container position-relative">
-                <!-- Eye Icon Button at the top right -->
-                <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
-                    <i class="fas fa-eye"></i>
-                </a>
-                <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
-                    <i class="fas fa-upload"></i>
-                </button>
-                <!--button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ResultsModal">
-                    Show OCR Modal
-                </button-->
-                
-
-                
-                <div class='exam'>
-                    <div class="py-3">
-                        <h1>{{doc.name}}</h1>
-                        <small><b>Standard: {{doc.exam.standard}}</b></small> 
-                        <br>
-                        <small><b>Year: {{doc.exam.year}}</b></small>
-                    </div>
+    <div class="container-fluid">
+        <div class="row">
+            
+            <div class="col {% if doc.file %} scrolling-column {% endif %}">
+                <div class="container position-relative">
+                    <!-- Eye Icon Button at the top right -->
+                    <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                    <!--button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ResultsModal">
+                        Show OCR Modal
+                    </button-->
                     
-                    {% include "main/partials/forms.html" %}
 
-                    <div>
-                        <a class="btn btn-outline-success" href="{% url 'prepare_mark' doc.id %}" role="button">Mark</a>
+                    
+                    <div class='exam'>
+                        <div class="py-3">
+                            <h1>{{doc.name}}</h1>
+                            <small><b>Standard: {{doc.exam.standard}}</b></small> 
+                            <br>
+                            <small><b>Year: {{doc.exam.year}}</b></small>
+                        </div>
+                        
+                        {% include "main/partials/forms.html" %}
+
+                        <div>
+                            <a class="btn btn-outline-success" href="{% url 'prepare_mark' doc.id %}" role="button">Mark</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% if doc.file %}
-            <div class="container scrolling-column">
-                <button class="btn btn-sm btn-icon" id="prev-page">
-                    <i class="fas fa-arrow-circle-left"></i>
-                </button>
-                <button class="btn btn-sm btn-icon" id="next-page">
-                    <i class="fas fa-arrow-circle-right"></i>
-                </button>
-                <button class="btn btn-sm btn-icon" id="crop-button-text">
-                    <i class="fas fa-font"></i>
-                </button>
-                <button class="btn btn-sm btn-icon" id="crop-button-math">
-                    <i class="fas fa-superscript"></i>
-                </button>
-                
+            {% if doc.file %}
+                <div class="container scrolling-column">
+                    <button class="btn btn-sm btn-icon" id="prev-page">
+                        <i class="fas fa-arrow-circle-left"></i>
+                    </button>
+                    <button class="btn btn-sm btn-icon" id="next-page">
+                        <i class="fas fa-arrow-circle-right"></i>
+                    </button>
+                    <button class="btn btn-sm btn-icon" id="crop-button-text">
+                        <i class="fas fa-font"></i>
+                    </button>
+                    <button class="btn btn-sm btn-icon" id="crop-button-math">
+                        <i class="fas fa-superscript"></i>
+                    </button>
+                    
 
-                <div class="py-3">
-                    <span class="page-info">
-                        Page <span id="page-num">1</span> of <span id="page-count"></span>
-                    </span>
-        
-                    <canvas id="pdf-render"></canvas>
-                    <form action="{% url 'save_image' id=doc.id %}" 
-                        id="imageForm" 
-                        method="POST" 
-                        enctype="multipart/form-data"
-                        style="display: none;">
-                        {% csrf_token %}
-                        {{ ocrform.image|as_crispy_field }}
-                        
+                    <div class="py-3">
+                        <span class="page-info">
+                            Page <span id="page-num">1</span> of <span id="page-count"></span>
+                        </span>
+            
+                        <canvas id="pdf-render"></canvas>
+                        <form action="{% url 'save_image' id=doc.id %}" 
+                            id="imageForm" 
+                            method="POST" 
+                            enctype="multipart/form-data"
+                            style="display: none;">
+                            {% csrf_token %}
+                            {{ ocrform.image|as_crispy_field }}
+                            
 
-                    </form>
+                        </form>
 
-        
-        
+            
+            
+                    </div>
                 </div>
-            </div>
-        {% endif %}
-    </div> 
+            {% endif %}
+        </div> 
+    </div>
 
     <div class="modal fade" id="ResultsModal" tabindex="-1" aria-labelledby="ResultsModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl"> <!-- Increase modal size to modal-xl for better visibility -->
@@ -242,7 +243,12 @@
         document.addEventListener("DOMContentLoaded", function() {
             pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-            const url = "{{signed_url|safe}}"; 
+            {% if development_mode %}
+                const url = "{{signed_url|safe}}";
+            {% else %}
+                const url = "{{doc.file.file.url}}";
+            {% endif %}
+
             //const url = "https://syd1.digitaloceanspaces.com/aicerta-bucket/91164-ass-2022.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=DO00LKBF9ZT2L6GBY9UY%2F20231018%2Fsyd1%2Fs3%2Faws4_request&X-Amz-Date=20231018T025236Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1a48975fc1be8941ee4adf085a05c7da8b2e0dde1b68c70927aac10091605a51"
 
             let pdfDoc = null,
@@ -250,7 +256,7 @@
                 pageIsRendering = false
                 pageNumIsPending = null;
 
-            const scale = 1.8,
+            const scale = 2,
                 canvas = document.querySelector('#pdf-render'),
                 ctx = canvas.getContext('2d')
 
