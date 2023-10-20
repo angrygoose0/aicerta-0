@@ -213,7 +213,7 @@ def index(response, id):
         development_mode = settings.DEVELOPMENT_MODE
         signed_url = ""
         if doc.file:
-            if development_mode:
+            if development_mode == False:
                 signed_url = generate_signed_url(doc.file.file.name)
                 print("a")
                 
