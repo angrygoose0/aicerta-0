@@ -56,6 +56,9 @@ function initializeMathQuill() {
 
         $('#croppedLatexImage').parent().remove();
 
+        $('#LatexImageCol').remove();
+        
+
         $('.mathquill-input').each(function() {
             MQ.MathField(this).latex('');
         });
@@ -153,11 +156,18 @@ function populateModalWithLatex(latexString, imageUrl) {
 
     // Handle image
     if (imageUrl) {
-        const imageDiv = $('<div class="col">').append(
+        // Make modal normal size
+        $('#latexModal .modal-dialog').removeClass('modal-lg');
+        $('#latexModal .modal-dialog').addClass('modal-lg');
+        const imageDiv = $('<div class="col" id="LatexImageCol">').append(
             $('<img id="croppedLatexImage" src="" alt="Cropped Image" class="img-fluid">')
         );
         imageDiv.find('#croppedLatexImage').attr('src', imageUrl);
         $('.modal-body .row').prepend(imageDiv);
+
+    } else {
+        // Make modal normal size
+        $('#latexModal .modal-dialog').removeClass('modal-lg');
     }
 
 
