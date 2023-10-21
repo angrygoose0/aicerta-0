@@ -19,10 +19,11 @@
                     <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
                         <i class="fas fa-upload"></i>
                     </button>
-                    <!--button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ResultsModal">
-                        Show OCR Modal
-                    </button-->
+                    <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 5rem;" data-bs-toggle="modal" data-bs-target="#latexModal">
+                        <i class="fas fa-square-root-alt"></i>
+                    </button>
                     
+
 
                     
                     <div class='exam'>
@@ -121,60 +122,18 @@
                 </div>
                 
                 <div class="modal-body">
-                    
-                    <div class="mathquill-container py-2">
-                        <div class="btn-toolbar mb-2 " role="toolbar" aria-label="Toolbar with button groups">
-                            <!-- Arithmetic & Basic Algebra Group -->
-                            <div class="btn-group me-2" role="group" aria-label="Arithmetic">
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="+">+</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="-">-</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\times">\(\times\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\div">\(\div\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\pm">\(\pm\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\mp">\(\mp\)</button>
-                            </div>
-                        
-                            <!-- Relations & Equivalents Group -->
-                            <div class="btn-group me-2" role="group" aria-label="Relations">
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="=">=</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\neq">\(\neq\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\approx">\(\approx\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\equiv">\(\equiv\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="<"><</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex=">">></button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\leq">\(\leq\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\geq">\(\geq\)</button>
-                            </div>
-                        
-                            <!-- Calculus Group -->
-                            <div class="btn-group me-2" role="group" aria-label="Calculus">
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\int">\(\int\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\partial">\(\partial\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\lim_{x \to a}">\(\lim\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\sum">\(\sum\)</button>
-                            </div>
-                        
-                            <!-- Greek Letters Group (only a few for the sake of brevity) -->
-                            <div class="btn-group me-2" role="group" aria-label="Greek Letters">
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\alpha">\(\alpha\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\beta">\(\beta\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\gamma">\(\gamma\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\delta">\(\delta\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\lambda">\(\lambda\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\Omega">\(\Omega\)</button>
-                            </div>
-                        
-                            <!-- Miscellaneous Group -->
-                            <div class="btn-group" role="group" aria-label="Miscellaneous">
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\infty">\(\infty\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\sqrt{}">\(\sqrt{}\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\angle">\(\angle\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\therefore">\(\therefore\)</button>
-                                <button type="button" class="btn btn-sm btn-light math-button" data-latex="\because">\(\because\)</button>
+                    <div class="row">
+                        <!--div class="col-md-6">
+                            <img id="croppedLatexImage" src="" alt="Cropped Latex Image" class="img-fluid"> <!-- Image will be loaded dynamically -->
+                        <!--/div-->
+                        <div class="col">
+                            <div class="mathquill-container py-2">
+
+                                {% include "main/partials/math-btns.html" %}
+                                <p><span class="mathquill-input"></span></p>
+                                <button type="button" class="btn btn-outline-success add-mathquill-btn">+</button>
                             </div>
                         </div>
-                        <p><span class="mathquill-input"></span></p>
-                        <button type="button" class="btn btn-outline-success add-mathquill-btn">+</button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -238,211 +197,13 @@
 {% endblock %}
 
 {% block scripts %}
+    <script>
+        {% if development_mode %}
+            const url = "{{doc.file.file.url}}";         
+        {% else %}
+            const url = "{{signed_url|safe}}";
+        {% endif %}
+    </script>
     <script src="{% static 'js/index.js' %}"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
-            {% if development_mode %}
-                const url = "{{doc.file.file.url}}";
-                
-            {% else %}
-                const url = "{{signed_url|safe}}";
-            {% endif %}
-
-            //const url = "https://syd1.digitaloceanspaces.com/aicerta-bucket/91164-ass-2022.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=DO00LKBF9ZT2L6GBY9UY%2F20231018%2Fsyd1%2Fs3%2Faws4_request&X-Amz-Date=20231018T025236Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1a48975fc1be8941ee4adf085a05c7da8b2e0dde1b68c70927aac10091605a51"
-
-            let pdfDoc = null,
-                pageNum = 1,
-                pageIsRendering = false
-                pageNumIsPending = null;
-
-            const scale = 2,
-                canvas = document.querySelector('#pdf-render'),
-                ctx = canvas.getContext('2d')
-
-            // Render the page
-
-            const renderPage = num => {
-                pageIsRendering = true;
-            
-                // Get Page
-                pdfDoc.getPage(num).then(page => {
-                    const viewportOriginal = page.getViewport({ scale: 1 });
-                    const containerWidth = document.querySelector('.container').clientWidth;
-                    const desiredWidth = containerWidth - 40; // 40px is the margin of the .exam class
-                    const scale = desiredWidth / viewportOriginal.width;
-            
-                    const viewport = page.getViewport({ scale });
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-            
-                    const renderCtx = {
-                        canvasContext: ctx,
-                        viewport
-                    };
-            
-                    page.render(renderCtx).promise.then(() => {
-                        pageIsRendering = false;
-            
-                        if(pageNumIsPending !== null) {
-                            renderPage(pageNumIsPending);
-                            pageNumIsPending = null;
-                        }
-                    });
-            
-                    // Output current page
-                    document.querySelector('#page-num').textContent = num;
-                });
-            };        
-
-            // Check for pages pages rendering
-            const queueRenderPage = num => {
-                if(pageIsRendering) {
-                    pageNumIsPending = num;   
-                } else {
-                    renderPage(num);
-                }
-            }
-
-            // Show Prev Page
-            const showPrevPage = () => {
-                if(pageNum <= 1) {
-                    return;
-                }
-                pageNum--;
-                queueRenderPage(pageNum);
-            }
-
-            // Show Next Page
-            const showNextPage = () => {
-                if(pageNum >= pdfDoc.numPages) {
-                    return;
-                }
-                pageNum++;
-                queueRenderPage(pageNum);
-            }
-
-            // Get Document
-            pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
-                pdfDoc = pdfDoc_;
-                console.log(pdfDoc);
-
-                document.querySelector('#page-count').textContent = pdfDoc.numPages;
-
-                renderPage(pageNum)
-            });
-
-            // Button events
-            document.querySelector('#prev-page').addEventListener('click', showPrevPage);
-            document.querySelector('#next-page').addEventListener('click', showNextPage);
-
-            // Resize event listener
-            window.addEventListener('resize', () => {
-                if (pdfDoc) {
-                    queueRenderPage(pageNum);
-                }
-            });
-        });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-
-            let cropping = false;
-            let cropper;
-        
-            const cropButtonText = document.getElementById('crop-button-text');
-            const cropButtonMath = document.getElementById('crop-button-math');
-        
-            const iconText = cropButtonText.querySelector('.fas');
-            const iconMath = cropButtonMath.querySelector('.fas');
-        
-            const form = document.getElementById('imageForm');
-            const imageInput = document.getElementById('id_image');
-            const imageDataInput = document.getElementById('imageData');
-        
-            function enterCroppingState(cropButton, cropIcon, otherButton, cropMethod) {
-                cropping = true;
-                cropIcon.classList.remove(cropMethod === "math" ? 'fa-superscript' : 'fa-font');
-                cropIcon.classList.add('fa-check');
-                otherButton.disabled = true;
-        
-                const canvas = document.getElementById('pdf-render');
-                cropper = new Cropper(canvas);
-            }
-        
-            function confirmCroppingState(cropIcon, cropMethod) {
-                if (cropper) {
-                    const croppedCanvas = cropper.getCroppedCanvas();
-                    const croppedImageDataURL = croppedCanvas.toDataURL('image/png');
-                    
-                    const byteString = atob(croppedImageDataURL.split(',')[1]);
-                    const mimeString = croppedImageDataURL.split(',')[0].split(':')[1].split(';')[0];
-                    const ab = new ArrayBuffer(byteString.length);
-                    const ia = new Uint8Array(ab);
-                    for (let i = 0; i < byteString.length; i++) {
-                        ia[i] = byteString.charCodeAt(i);
-                    }
-                    const blob = new Blob([ab], { type: mimeString });
-                    
-                    const file = new File([blob], 'cropped_image.png', { type: mimeString });
-                    
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    imageInput.files = dataTransfer.files;
-        
-                    const formData = new FormData(form);
-                    formData.append('crop_method', cropMethod);
-                    $.ajax({
-                        url: form.action,
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                document.getElementById('ocrText').value = response.ocr_result;
-                                document.getElementById('croppedImage').src = response.cropped_image_url;
-                                $('#ResultsModal').modal('show');
-                            } else {
-                                alert(response.message);
-                            }
-                        },
-                        error: function() {
-                            alert('An error occurred. Please try again.');
-                        }
-                    });
-                    
-                    cropper.destroy();
-                    cropping = false;
-                    cropIcon.classList.remove('fa-check');
-                    cropIcon.classList.add(cropMethod === "math" ? 'fa-superscript' : 'fa-font');
-                    cropButtonMath.disabled = false;
-                    cropButtonText.disabled = false;
-                }
-            }
-        
-            cropButtonText.addEventListener('click', function(event) {
-                event.preventDefault();
-                if (!cropping) {
-                    enterCroppingState(cropButtonText, iconText, cropButtonMath, "text");
-                } else {
-                    confirmCroppingState(iconText, "text");
-                }
-            });
-        
-            cropButtonMath.addEventListener('click', function(event) {
-                event.preventDefault();
-                if (!cropping) {
-                    enterCroppingState(cropButtonMath, iconMath, cropButtonText, "math");
-                } else {
-                    confirmCroppingState(iconMath, "math");
-                }
-            });
-        });
-
-    </script>
-
-    <script src="{% static 'js/ocrinsert.js' %}"></script>
+    <script src="{% static 'js/pdf-crop.js' %}"></script>
 {% endblock %}

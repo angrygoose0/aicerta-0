@@ -341,7 +341,7 @@ def save_image(request, id):
             return JsonResponse({
                 'status': 'success',
                 'ocr_result': image_instance.text,
-                'cropped_image_url': image_instance.image.url
+                'cropped_image_url': image_instance.image.url,
             })
         else:
             print(form.errors)

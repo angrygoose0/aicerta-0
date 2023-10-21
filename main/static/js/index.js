@@ -1,17 +1,10 @@
 var MQ = MathQuill.getInterface(2);
-
-const formElement = document.getElementById("answer-formset");
+var formattedText;
 
 function initializeMathQuill() {
     // Initialize MathQuill on elements
     document.querySelectorAll('.mathquill-input').forEach(span => {
         MQ.MathField(span);
-    });
-
-    // Ensure buttons can trigger the modal
-    $(document).on('click', 'button[data-bs-toggle="modal"]', function() {
-        console.log("Captured input ID:", $(this).data('input-id'));
-        $('#latexModal').data('target-input-id', $(this).data('input-id'));
     });
 
     // Ensure clicking on a math button inserts LaTeX
@@ -35,7 +28,6 @@ function initializeMathQuill() {
         $(this).hide();
     });
 
-    
     // Initialize other functionalities
     $('#insertLatexBtn').on('click', function() {
         var latexArray = [];
@@ -44,33 +36,30 @@ function initializeMathQuill() {
             if (currentLatex) latexArray.push(currentLatex);
         });
     
-        var formattedLatex;
-
         if (latexArray.length === 1) {
-            formattedLatex = '\\(' + latexArray[0] + '\\)';
+            formattedText = '\\(' + latexArray[0] + '\\)';
         } else {
-            formattedLatex = '\\begin{aligned} ' + 
+            formattedText = '\\begin{aligned} ' + 
             latexArray.map(latex => '&' + latex + ' \\\\ ').join('') + 
             '\\end{aligned}';
         }
     
-        console.log("Retrieved input ID:", $('#latexModal').data('target-input-id'));
-        var targetInput = $('#' + $('#latexModal').data('target-input-id'));
-        targetInput.val(function(i, val) {
-            return val + formattedLatex;
-        });
-        formElement.submit();
+        console.log(formattedText);
         $('#latexModal').modal('hide');
+
+        $("body").append('<div class="overlay"></div>');
+        $(".overlay").fadeIn();
     });
     
-
     $('#latexModal').on('hidden.bs.modal', function() {
         $('.mathquill-container:not(:first)').remove();
+
+        $('#croppedLatexImage').parent().remove();
+
         $('.mathquill-input').each(function() {
             MQ.MathField(this).latex('');
         });
         $('.add-mathquill-btn').show();
-        $(this).removeData('target-input-id');
     });
 }
 
@@ -83,3 +72,125 @@ document.body.addEventListener('htmx:afterSwap', function(event) {
         initializeMathQuill();
     }
 });
+
+
+// Using event delegation for dynamically added content
+$("body").on("click focus", "form input, form textarea", function(event) {
+    if (formattedText) {
+        insertAtCursor(this, formattedText);
+        formattedText = null;
+
+        $(".overlay").fadeOut(function() {
+            $(this).remove();
+        });
+
+        event.stopPropagation();  // Prevent other click handlers from interfering
+    }
+});
+
+const form = document.getElementById("answer-formset");
+
+function submitForm() {
+    var form = document.getElementById("answer-formset");
+    var event = new Event('change', { bubbles: true, cancelable: true });
+    form.dispatchEvent(event);
+}
+
+function insertAtCursor(field, value) {
+    // Set cursor position to the end of the text
+    var textLength = field.value.length;
+    field.selectionStart = textLength;
+    field.selectionEnd = textLength;
+
+    // Insert the value at the cursor position
+    if (field.selectionStart || field.selectionStart === '0') {
+        var startPos = field.selectionStart;
+        var endPos = field.selectionEnd;
+        field.value = field.value.substring(0, startPos)
+            + value
+            + field.value.substring(endPos, field.value.length);
+        field.selectionStart = startPos + value.length;
+        field.selectionEnd = startPos + value.length;
+    } else {
+        field.value += value;
+    }
+    submitForm();
+}
+
+$("#insertOCRBtn").on("click", function() {
+    formattedText = $("#ocrText").val();
+    $("#ResultsModal").modal('hide');
+    
+    $("body").append('<div class="overlay"></div>');
+    $(".overlay").fadeIn();
+});
+
+
+
+// Using event delegation for dynamically added content
+$("body").on("click focus", "form input, form textarea", function(event) {
+    if (formattedText) {
+        insertAtCursor(this, formattedText);
+        formattedText = null;
+
+        $(".overlay").fadeOut(function() {
+            $(this).remove();
+        });
+
+        event.stopPropagation();  // Prevent other click handlers from interfering
+        
+    }
+});
+
+function populateModalWithLatex(latexString, imageUrl) {
+    // Clear existing fields
+    $('.mathquill-container:not(:first)').remove();
+    $('.mathquill-input').each(function() {
+        MQ.MathField(this).latex('');
+    });
+
+    $('#croppedLatexImage').remove();
+
+    // Handle image
+    if (imageUrl) {
+        const imageDiv = $('<div class="col">').append(
+            $('<img id="croppedLatexImage" src="" alt="Cropped Image" class="img-fluid">')
+        );
+        imageDiv.find('#croppedLatexImage').attr('src', imageUrl);
+        $('.modal-body .row').prepend(imageDiv);
+    }
+
+
+    // Handle LaTeX
+    // Check if the LaTeX string contains multiple lines
+    if (latexString.includes('\\begin{aligned}') && latexString.includes('\\end{aligned}')) {
+        // Extract individual equations from the LaTeX string
+        const equations = latexString.split('\\end{aligned}')[0].split('\\begin{aligned}')[1].split('\\\\').map(eq => eq.trim()).filter(eq => eq);
+
+        // Create a field for each equation
+        equations.forEach((eq, index) => {
+            if (index === 0) {
+                // Set the LaTeX content of the first field
+                MQ.MathField($('.mathquill-input')[0]).latex(eq);
+            } else {
+                // Create a new field for each subsequent equation
+                const newContainer = $('<div class="mathquill-container"></div>').append(
+                    $('<p><span class="mathquill-input"></span></p>'),
+                    $('<button type="button" class="btn btn-outline-success add-mathquill-btn">+</button>')
+                );
+                $('.mathquill-container:last').after(newContainer);
+                MQ.MathField(newContainer.find('.mathquill-input')[0]).latex(eq);
+                $('.add-mathquill-btn:last').hide();
+            }
+        });
+    } else {
+        // Handle the case where the LaTeX string contains a single line
+        MQ.MathField($('.mathquill-input')[0]).latex(latexString);
+    }
+}
+
+
+
+
+
+
