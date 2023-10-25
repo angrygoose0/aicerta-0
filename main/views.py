@@ -329,13 +329,16 @@ def save_image(request, id):
             crop_method = request.POST.get('crop_method')
             
             if crop_method == 'text':
-                image_instance.text = detect_document(image_instance)
+                text = detect_document(image_instance)
+                image_instance.text = text.replace('\n', ' ')  # Add this line to remove line breaks
 
             elif crop_method == 'math':
                 ocr = mathpix.process_image(image=image_instance)
-                image_instance.text = ocr.latex
-            
+                text = ocr.latex
+                image_instance.text = text.replace('\n', ' ')  # Add this line to remove line breaks
+
             image_instance.save()
+
 
             # Return a JSON response with the OCRed result and the cropped image URL
             return JsonResponse({
