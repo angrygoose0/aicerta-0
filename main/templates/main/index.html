@@ -21,11 +21,7 @@
                     </button>
                     <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 5rem;" data-bs-toggle="modal" data-bs-target="#latexModal">
                         <i class="fas fa-square-root-alt"></i>
-                    </button>
-                    
-
-
-                    
+                    </button>             
                     <div class='exam'>
                         <div class="py-3">
                             <h1>{{doc.name}}</h1>
@@ -43,40 +39,39 @@
                 </div>
             </div>
             {% if doc.file %}
-                <div class="container scrolling-column">
-                    <button class="btn btn-sm btn-icon" id="prev-page">
-                        <i class="fas fa-arrow-circle-left"></i>
-                    </button>
-                    <button class="btn btn-sm btn-icon" id="next-page">
-                        <i class="fas fa-arrow-circle-right"></i>
-                    </button>
-                    <button class="btn btn-sm btn-icon" id="crop-button-text">
-                        <i class="fas fa-font"></i>
-                    </button>
-                    <button class="btn btn-sm btn-icon" id="crop-button-math">
-                        <i class="fas fa-superscript"></i>
-                    </button>
-                    
+                <div class="col scrolling-column">
+                    <div class="container position-relative">
+                        <button class="btn btn-sm btn-icon" id="prev-page">
+                            <i class="fas fa-arrow-circle-left"></i>
+                        </button>
+                        <button class="btn btn-sm btn-icon" id="next-page">
+                            <i class="fas fa-arrow-circle-right"></i>
+                        </button>
+                        <button class="btn btn-sm btn-icon" id="crop-button-text">
+                            <i class="fas fa-font"></i>
+                        </button>
+                        <button class="btn btn-sm btn-icon" id="crop-button-math">
+                            <i class="fas fa-superscript"></i>
+                        </button>
+                        
 
-                    <div class="py-3">
-                        <span class="page-info">
-                            Page <span id="page-num">1</span> of <span id="page-count"></span>
-                        </span>
-            
-                        <canvas id="pdf-render"></canvas>
-                        <form action="{% url 'save_image' id=doc.id %}" 
-                            id="imageForm" 
-                            method="POST" 
-                            enctype="multipart/form-data"
-                            style="display: none;">
-                            {% csrf_token %}
-                            {{ ocrform.image|as_crispy_field }}
-                            
+                        <div class="py-3">
+                            <span class="page-info">
+                                Page <span id="page-num">1</span> of <span id="page-count"></span>
+                            </span>
+                
+                            <canvas id="pdf-render"></canvas>
+                            <form action="{% url 'save_image' id=doc.id %}" 
+                                id="imageForm" 
+                                method="POST" 
+                                enctype="multipart/form-data"
+                                style="display: none;">
+                                {% csrf_token %}
+                                {{ ocrform.image|as_crispy_field }}
+                                
 
-                        </form>
-
-            
-            
+                            </form>
+                        </div>
                     </div>
                 </div>
             {% endif %}
