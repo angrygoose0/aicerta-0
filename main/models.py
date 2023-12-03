@@ -62,28 +62,6 @@ class NceaSecondaryQuestion(models.Model):
         ordering = ['QUESTION', 'primary', 'secondary']
         
     
-
-class AssesmentSchedule(models.Model):
-    CHOICES = (
-    ("n", "QUESTION"),
-    ("a", "Achieved"),
-    ("m", "Merit"),
-    ("e", "Excellence"),
-    )
-    
-    QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
-    secondary_question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE, null = True, blank = True)
-    
-    text = models.TextField()
-    order = models.IntegerField()
-    
-    type = models.CharField(max_length=20, choices=CHOICES) #achievement, merit, or excellence, null means not a bulletpoint.
-    
-    class Meta:
-        ordering = ['QUESTION', 'order']
-        
-    def __str__(self):
-        return "%s, %s" % (self.QUESTION, self.type)
     
 class Criteria(models.Model):
     secondary_questions = models.ManyToManyField(NceaSecondaryQuestion, related_name="nceacriteria", blank=True)

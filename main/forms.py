@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, AssesmentSchedule, File, OCRImage
+from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage
 import roman
 from django.db.models import Q
 
@@ -55,19 +55,7 @@ class AnswerForm(ModelForm):
         )
         self.fields['answer'].required = False  # Set required to False for the field
 
-class StandardForm(ModelForm):
-    class Meta:
-        model = AssesmentSchedule
-        fields = ['text', 'type']
-        widgets = {
-            'text': forms.Textarea(attrs={'rows': 4}),
-            'type': forms.Select(),
-            }
-        labels = {
-            'text': 'Text:',
-            'type': 'Type:',
-        }
-        
+
 class SupportForm(forms.ModelForm):
     class Meta:
         model = HelpMessage
