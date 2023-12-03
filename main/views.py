@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
-from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule, File, OCRImage
+from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, AssesmentSchedule, File, OCRImage, Criteria, BulletPoint, Quoted
 from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, StandardForm, SupportForm, FileForm, OCRImageForm
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
@@ -14,14 +14,22 @@ from django.contrib import messages
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
+import re
 from storages.backends.s3boto3 import S3Boto3Storage
+from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
 import math
+from datetime import datetime
 import json
 import base64
 from django.conf import settings
 from google.cloud import vision
-
+from collections import defaultdict
 from mathpix.mathpix import MathPix
+
+
+
+
+
 
 mathpix = MathPix(app_id=settings.MATHPIX_APP_ID, app_key=settings.MATHPIX_APP_KEY)
 
@@ -77,7 +85,6 @@ def check_task(response, task_id,):
                 'credits': credits,
                 'doc_id': doc_id
                 }
-
             
             return render(response, "main/partials/task_completed.html", context)
         #return JsonResponse({'status': 'READY', 'result': task.result})
@@ -121,27 +128,29 @@ def upload(response, id):
 
 @login_required(login_url="/login")
 def create(response):
-    
     form = CreateNewDocument(user=response.user)
-        
 
     if response.method == "POST":
-
         form = CreateNewDocument(response.POST, user=response.user)
 
         if form.is_valid():
             n = form.cleaned_data["name"]
             exam = form.cleaned_data["exam"]
-
-            
             QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
 
-        
             user_exam = NceaUserDocument(user=response.user, exam=exam, name=n, mark=0)
             user_exam.save()
 
             for QUESTION in QUESTIONS:
-                secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION,)
+                secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
+                
+                criterias = Criteria.objects.filter(
+                    secondary_questions__in=secondaryquestions
+                ).prefetch_related('secondary_questions')
+                
+                for criteria in criterias:
+                    bulletpoint = BulletPoint(criteria=criteria, document=user_exam)
+                    bulletpoint.save()                   
 
                 for secondaryquestion in secondaryquestions:
                     nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
@@ -151,7 +160,6 @@ def create(response):
                 scores.save()
                     
             return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
-            #return HttpResponse("hooray")
         else:
             print(form.errors)
             form = CreateNewDocument(user=response.user)
@@ -380,27 +388,74 @@ def preview(response, id):
 @login_required(login_url="login/")
 def viewmarked(response, id):
     doc = NceaUserDocument.objects.get(id=id)
+
     if doc.user == response.user:
         userquestions = NceaUserQuestions.objects.filter(document = doc)
-        #get how many QUESTIONS there are
+        
+        secondary_questions = NceaSecondaryQuestion.objects.filter(nceauserquestions__in=userquestions)
+        
+        criteria_qs = Criteria.objects.filter(
+            secondary_questions__in=secondary_questions
+        ).prefetch_related('secondary_questions')
+
         QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
-        # for each QUESTION, the system message will be the system in the NceaQUESTION
-    
         userquestion_groups = {}
+        
+        bullet_points = BulletPoint.objects.filter(document=doc, criteria__in=criteria_qs)
+        
+        data = []
+        for bullet_point in bullet_points:
+            quotes = Quoted.objects.filter(bullet_point=bullet_point)
+            for quote in quotes:
+                userquestion = userquestions.get(question=quote.secondary_question)
+                quote_data = {
+                    "bulletpoint_id": bullet_point.id,
+                    "quote_id": quote.id,
+                    "quote_question_id": userquestion.id,
+                    "quote": quote.quote
+                }
+                data.append(quote_data)
+            
+        
+
         for userquestion in userquestions:
             score = NceaScores.objects.get(document=doc, QUESTION=userquestion.question.QUESTION)
+            criteria_list = [criteria for criteria in criteria_qs if criteria.secondary_questions.last() == userquestion.question]
+            bullet_points = BulletPoint.objects.filter(criteria__in=criteria_list, document=doc)
+            
+            bullet_point_groups = {}
+            for bullet_point in bullet_points:
+                bullet_point_type=""
+                if bullet_point.criteria:
+                    if bullet_point.criteria.type == "a":
+                        bullet_point_type="Achieved:"
+                    elif bullet_point.criteria.type == "m":
+                        bullet_point_type="Merit:"
+                    elif bullet_point.criteria.type == "e":
+                        bullet_point_type="Excellence:"
+                    
+                if bullet_point_type not in bullet_point_groups:
+                    bullet_point_groups[bullet_point_type] = []
+                bullet_point_groups[bullet_point_type].append(bullet_point)
+                
+                
+            userquestion_with_bullet = (userquestion, bullet_point_groups)
 
-            question = (userquestion.question.QUESTION.QUESTION, score.score, userquestion.question.QUESTION.system_html)
+
+            question = (userquestion.question.QUESTION.QUESTION, score.score)
             if question not in userquestion_groups:
                 userquestion_groups[question] = []
-            userquestion_groups[question].append(userquestion)
+            userquestion_groups[question].append(userquestion_with_bullet)
+            
+
 
         context ={
             "doc": doc,
             "userquestion_groups" : userquestion_groups,
             "QUESTIONS" : QUESTIONS,
+            "quotes_data" : data,
         }
-    
+            
     
         return render(response, "main/marked.html", context)
 
@@ -425,18 +480,12 @@ def trigger_mark(response, id):
 
         user_id = response.user.id
         mark_document.delay(id, user_id)
-        #test.delay(id,user_id)
 
-        
         user.credits -= required_credits
         user.save()
-        
-        
+
         return HttpResponseRedirect("/app/")
         
-
-
-
 
 
 

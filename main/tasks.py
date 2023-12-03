@@ -1,9 +1,10 @@
 from celery import shared_task, current_task
-from .models import NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, AssesmentSchedule, NceaScores
+from .models import NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, NceaScores, Criteria, Quoted, BulletPoint
 from accounts.models import CustomUser
 from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
 from django.utils.safestring import mark_safe
 import json
+from django.db.models import Max, OuterRef, Subquery
 import openai
 import os
 import re
@@ -18,117 +19,141 @@ from asgiref.sync import async_to_sync
 from mathpix.mathpix import MathPix
 mathpix = MathPix(app_id="aicerta_dba064_cf8251", app_key="1edb871fea6133e08b718918bdfa84093d4bdeade502e3e0eb461d600ad9def7")
 
+from openai import OpenAI
+
+client = OpenAI(
+    organization='org-oYF2mFI0qL1ksfDhutt5vPEi',
+    api_key=settings.AI_API
+    
+)
+
+system="""
+    You are tasked with marking exam answers.
+
+    You will be given one or multiple criteria, and one or multiple user answers.
+
+    For each criteria, your job is to figure out if the one or multiple answers fulfil the specific criteria.
+
+    You are also given a model answer for each question, this is a guideline that human markers use to ensure accurate marking. Keep in mind, one user answer might be trying to fulfil multiple criteria, ones you may or may not be given, and so the evidence may be more detailed than needed.
+    Just focus on if the specific criteria you are on is fulfilled by the user answers you are given.
+
+    When processing the input text, please pay special attention to patterns that match the LaTeX notation for inline and display equations, to ensure accurate processing of mathematical content.
+
+    Your response should be given as JSON.
+    {"criteria":[{"no":<criteria number>,"confidence":<confidence number>,"explanation":"<explanation>","quotes":{"<question id>":"<quote>"}}]}
+
+    - Criteria Number (no): The number of the criteria being evaluated.
+    - Confidence Number (confidence): A number from 0 to 100 representing how confident you are that the USER answer fulfills the criteria. A score of 0 means you are completely confident the answer is wrong, and a score of 100 means you are 100% confident the answer is correct.
+    - Explanation (explanation): A detailed explanation of why you gave the confidence number you did.
+    - Quotes (quotes): A dictionary where each key is a question identifier and each value is a direct quote from the USER answer that fulfills the criteria. This direct quote must be accurate(punctuation and spaces)
+    NOTE: if a quote in the answer is seperated (so there are mutliple parts in the answer that qualifies the criteria), create multiple seperate JSON quote objects.
+
+    Here is an example of a possible user input:
+    Model Answer:
+    (a)(i):
+    The capital of New Zealand is Auckland.
+    (b)(i):
+    Water freezes at 0 degrees Celsius at standard atmospheric pressure.
+    (b)(ii):
+    Water boils at 100 degrees Celsius at standard atmospheric pressure.
+    (c)(i):
+    The Earth revolves around the Sun.
+
+    User Answer:
+    (a)(i):
+    The capital of New Zealand is Tauranga.
+    (b)(i):
+    At standard pressure, water freezes at 0°C.
+    (b)(ii): 
+    At standard pressure, water boils at 100°C.
+    (c)(i): The Earth likes to revolve.
+
+    Criteria:
+    1: States that the capital of New Zealand is Auckland.
+    2: States that water boils at 100 degrees celsius, and freezes at 0 degreese celsius at standard atmospheric pressure.
+    3: States that the Earth revolves around the Sun.
+
+
+    Here is an example of the output:
+    {"criteria":[{"no":1,"confidence":0,"explanation":"The response was completely incorrect, as the capital of New Zealand is NOT Tauranga.","quotes":{"(a)(i)":"The capital of New Zealand is Tauranga."}},{"no":2,"confidence":100,"explanation":"The response was completely correct, as the user states that water boils at 100 degrees celsius, and freezes at 0 degrees celsius at standard atmospheric pressure.","quotes":{"(b)(i)":"At 0 degrees Celsius, water,",(b)(i)":"solidifying into ice under the influence of standard atmospheric pressure.","(b)(ii)":"At standard pressure, water boils at 100°C"}},{"no":3,"confidence":20,"explanation":"The response states that the earth revolves but doesn't state around what.","quotes":{"(c)(i)":"The Earth likes to revolve."}}]}
+    This JSON should be outputted as unformatted and with minimal whitespace.
+    """ 
+
+
 
 channel_layer = get_channel_layer()
 
 
 logger = logging.getLogger(__name__)
 
-start_system = """
-You are tasked with marking NCEA Questions based on a provided assessment schedule and model answers. Each question's response should be evaluated on the following criteria:
 
-1. Every bullet point in the answer corresponds to a point in the assessment schedule. If an answer correctly addresses a bullet point from the schedule, it receives a point.
-2. If an answer does not answer the question or provides a random response, it should be marked as incorrect and therefore no feedback objects.
-3. An answer containing a diagram or a table represented as {img} should be automatically marked as correct since these types of content are not supported in the current context.
+def backslash(text):
+    processed_text = text.replace("\\", "\\\\")
+    return processed_text
 
-When processing the input text, please pay special attention to patterns that match the LaTeX notation for inline and display equations:
 
-If a segment of text is enclosed between the markers "\\(" and "\\)", treat this as an inline mathematical equation. For example, "\\(x = y + z\\)" or "\\(\\frac{x}{y}\\)".
-
-If a segment of text is enclosed between the markers "\\[" and "\\]", treat this as a display-style mathematical equation. For example, "\\[x = y + z\\]" or "\\[\\frac{x}{y}\\]".
-
-Any LaTeX notation that is not enclosed between these markers should be considered as regular text and not a mathematical equation. For instance, the text "x = \\frac{-b \\pm \\sqrt{b^2-4a}}{2a}" without the enclosing markers is just text and should not be interpreted as a mathematical equation.
-
-It's crucial to interpret the enclosed LaTeX correctly to ensure accurate processing of mathematical content.
-
-Your goal is to determine the number of Achievement, Merit, and Excellence marks for each question. If no marks of a certain type are awarded for a question, assign "0" to that mark type. 
-
-For each question, provide feedback. The feedback should include the type of mark (Achievement, Merit, or Excellence), the relevant bullet point from the assessment schedule that the answer addressed correctly, and a quote from the user's answer that correctly addressed the bullet point.
-
-The output should be in JSON format and structured as follows:
-
-{"questions":[{"question":"(a)(i)","feedback":[{"type":"(Achievement/Merit/Excellence)","bullet_point":"•(1,2,5) (this is the number of the bullet point that the user's answer addresses.)","answer":"(quoted from the snippet of the user's answer that addresses the bullet point.( whitespace, punctuation, and capital letters has to be accurate))"}],"achievement":"(number of Achievement marks)","merit":"(number of Merit marks)","excellence":"(number of Excellence marks)"}]}
-
-Note: The number of questions in the 'questions' array will vary based on the number of questions being assessed. Similarly, the number of feedback items for each question will depend on the number of bullet points in the assessment schedule for that question.
-
-Assesment Schedule:    
-
-"""
-
+from collections import defaultdict
 
 openai.api_key = settings.AI_API
 
 encoding = tiktoken.encoding_for_model("gpt-4")
 
 
+
+def interpolate_color(color1, color2, factor):
+    """ Interpolates between two colors based on the factor. """
+    r = color1[0] + (color2[0] - color1[0]) * factor
+    g = color1[1] + (color2[1] - color1[1]) * factor
+    b = color1[2] + (color2[2] - color1[2]) * factor
+    return int(r), int(g), int(b)
+
+def get_pastel_color(value):
+    """ Returns the pastel color for the given value. """
+    pastel_red = (255, 128, 128)
+    pastel_yellow = (255, 255, 128)
+    pastel_green = (128, 255, 128)
+
+    if value <= 50:
+        # Interpolate between pastel red and pastel yellow
+        return interpolate_color(pastel_red, pastel_yellow, value / 50.0)
+    else:
+        # Interpolate between pastel yellow and pastel green
+        return interpolate_color(pastel_yellow, pastel_green, (value - 50) / 50.0)
+
+# Test the function with different values
+def pastel_color(bullet_point): 
+    r, g, b = get_pastel_color(bullet_point.confidence)
+    bullet_point.r = r
+    bullet_point.g = g
+    bullet_point.b = b
+    bullet_point.save()
+
 @shared_task
 def prepare_document(id):
     try:
-        doc = NceaUserDocument.objects.get(id=id)
-        userquestions = NceaUserQuestions.objects.filter(document = doc)
-        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
-        counter = 1
-        tokens = 0
+        text= ""
+        text += system
         
-        for QUESTION in QUESTIONS:
-            secondary_questions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
-            
-            
-            ass = ""
-            ass_html = '<li class="list-group-item">'
-            schedules = AssesmentSchedule.objects.filter(QUESTION=QUESTION)
-
-            for schedule in schedules:
-                if schedule.type == "n":
-                    primary = number_to_alphabet(schedule.secondary_question.primary)
-                    secondary = number_to_roman(schedule.secondary_question.secondary)
-                    ass += "(%s)(%s):\n" % (primary, secondary)
-                    ass += "Model Answer:\n"
-                    ass += "%s\n\n" % (schedule.text.strip())
-                    
-                    ass_html += mark_safe("<b>(%s)(%s):</b>\n" % (primary, secondary))
-                    ass_html += mark_safe("<p>Model Answer:</p>\n")
-                    ass_html += mark_safe("<p>%s</p>\n\n" % (schedule.text.strip()))
-                    
-                else:
-                    if schedule.type in ["a", "m", "e"]:
-                        type_dict = {"a": "Achievement", "m": "Merit", "e": "Excellence"}
-                        ass += f"{type_dict[schedule.type]}: \n"
-                        ass_html += mark_safe(f"<b>{type_dict[schedule.type]}:</b>")
-
-                    bullet_points = schedule.text.split('•')[1:]
-                    for point in bullet_points:
-                        formatted_point = f"•{counter} {point.strip()}"
-                        ass += "%s \n" % formatted_point.strip()
-
-                            # Add a unique id for each bullet point in ass_html
-                        bullet_points_html = f'<li class="bullet_point_{counter}">{point.strip()}</li>'
-                        ass_html += mark_safe(f"<ul>{bullet_points_html}</ul>")
-                                            
-                        counter += 1
-
-                ass_html += mark_safe("<br>")
-            ass_html += '</li>'
-            QUESTION.system = ass
-            QUESTION.system_html = ass_html
-            QUESTION.save()
-            
+        document = NceaUserDocument.objects.get(id=id)
+        user_questions = NceaUserQuestions.objects.filter(document=document)
+        secondary_questions = NceaSecondaryQuestion.objects.filter(nceauserquestions__in=user_questions)
+        criteria_qs = Criteria.objects.filter(
+            secondary_questions__in=secondary_questions
+        ).prefetch_related('secondary_questions')
         
-            useranswer = ""
-            for secondary_question in secondary_questions:
-                userquestion = userquestions.get(question=secondary_question)
-                primary = number_to_alphabet(secondary_question.primary)
-                secondary = number_to_roman(secondary_question.secondary)
-                useranswer += "(%s)(%s):\n" % (primary, secondary)
-                useranswer += "%s\n" % (userquestion.answer)
-                useranswer += "\n"
-                
+        for user_question in user_questions:
+            text += "%s \n" % (user_question.answer)
+        
+        for secondary_question in secondary_questions:
+            text += "%s \n" % (secondary_question.evidence)
             
-            text = start_system + "\n" + ass + "\n" + useranswer
-            tokens += len(encoding.encode(text))
+        for criteria in criteria_qs:
+            text += "%s \n" % (criteria.text)
+            
+        tokens = len(encoding.encode(text))   
+        tokens = tokens * 2
             
         return tokens
-
     except Exception as e:
         print(e)
         return e
@@ -242,151 +267,210 @@ def test(id, user_id):
 
 @shared_task
 def mark_document(id, user_id): 
+    
     try:   
-        doc = NceaUserDocument.objects.get(id=id)
+        document = NceaUserDocument.objects.get(id=id)
         user = CustomUser.objects.get(id=user_id)
 
-        required_credits = doc.credit_price
+        required_credits = document.credit_price
         credits = user.credits
 
         room_name = f"user_{user_id}"
         task_id = current_task.request.id
 
-        if doc.user != user:
+        if document.user != user:
             error_message="Unauthorized attempt"
-            websocket(room_name, task_id, doc, 0, error_message)
+            websocket(room_name, task_id, document, 0, error_message)
             return error_message
 
         if credits < required_credits:
             error_message="Not enough credits"
-            websocket(room_name, task_id, doc, 0, error_message)
+            websocket(room_name, task_id, document, 0, error_message)
             return error_message
         
     except Exception as e:
         print(e)
         return str(e)
 
-
-    
     try:
-        websocket(room_name, task_id, doc, 0, None)
+        websocket(room_name, task_id, document, 0, None)
         
-        userquestions = NceaUserQuestions.objects.filter(document = doc)
-        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
+        counter=0
+        tokens = 0 
+
+        user_questions = NceaUserQuestions.objects.filter(document=document)
+        secondary_questions = NceaSecondaryQuestion.objects.filter(nceauserquestions__in=user_questions)
+
+        # Step 1: Annotate and Order Criteria Queryset
+        last_secondary_question_subquery = NceaSecondaryQuestion.objects.filter(
+            nceacriteria=OuterRef('pk')
+        ).order_by('-QUESTION', '-primary', '-secondary').values('id')[:1]
+
+        criteria_qs = Criteria.objects.filter(
+            secondary_questions__in=secondary_questions
+        ).annotate(
+            last_secondary_question_id=Subquery(last_secondary_question_subquery)
+        ).order_by('last_secondary_question_id').prefetch_related('secondary_questions')
+
+        bullet_points = BulletPoint.objects.filter(document=document, criteria__in=criteria_qs)
         
-        counter = 1
-        document_mark = 0
-        tokens = 0
-        
-        number_of_questions = QUESTIONS.count()
-        processed_questions = 0
-        
-        
-        for QUESTION in QUESTIONS:
-            secondary_questions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
-            processed_question_system = QUESTION.system.replace("\\", "\\\\")
-            messages = []
-            system_message = {"role":"system", "content": 
-                r""" 
-                %s
-                
-                %s
-                """ % (start_system, processed_question_system)}
-            messages.append(system_message)
+        if document.marked_before  == 1 :
+            quoted_qs = Quoted.objects.filter(bullet_point__in=bullet_points)
+            quoted_qs.delete()
+
+        x = 0
+        for bullet_point in bullet_points:
+            x += 1
+            bullet_point.no = x
+            bullet_point.save()  
+
+        # 2. Create a dictionary to hold the groups.
+        groups = defaultdict(list)
+
+        # 3. For each Criteria object, add it to the appropriate group in the dictionary.
+        for criteria in criteria_qs:
+            # Get the set of NceaSecondaryQuestion IDs for this Criteria object.
+            question_ids = {question.id for question in criteria.secondary_questions.all()}
+            # Add the Criteria object to the group.
+            groups[frozenset(question_ids)].append(criteria)
             
+        for question_ids, criteria_list in groups.items():
+
+            messages = []
+            
+            # 1. Create a set of all NceaSecondaryQuestion IDs related to the first Criteria object in the list.
+            common_question_ids = {question.id for question in criteria_list[0].secondary_questions.all()}
+            
+            # 2. For each of the other Criteria objects in the list, intersect the set of common IDs with the set of IDs related to that Criteria object.
+            for criteria in criteria_list[1:]:
+                question_ids = {question.id for question in criteria.secondary_questions.all()}
+                common_question_ids &= question_ids
+            
+            # 3. Now common_question_ids contains the IDs of NceaSecondaryQuestion objects that are related to all Criteria objects in the list.
+            # Retrieve those NceaSecondaryQuestion objects.
+            common_questions = NceaSecondaryQuestion.objects.filter(id__in=common_question_ids)
+
+            if any(criteria.image == 1 for criteria in criteria_list):
+                y=0
+                for criteria in criteria_list:
+                    bullet_point = bullet_points.get(criteria=criteria)
                     
-            useranswer = ""
-            for secondary_question in secondary_questions:
-                userquestion = userquestions.get(question=secondary_question)
-                processed_userquestion = userquestion.answer.replace("\\", "\\\\")
-                logger.info("Processed question: %s", processed_userquestion)
-                primary = number_to_alphabet(secondary_question.primary)
-                secondary = number_to_roman(secondary_question.secondary)
-                useranswer += "(%s)(%s):\n" % (primary, secondary)
-                useranswer += "%s\n" % (processed_userquestion)
-                useranswer += "\n"
+                    bullet_point.confidence = 100
+                    bullet_point.explanation = "images as answers aren't supported, so the response has been marked correct as a placeholder."
+                    pastel_color(bullet_point)
+                    bullet_point.save()
+                    
+                    for question in common_questions:
+                        print(question)
+                        y+=1
+                        print(y)
+                        user_question = user_questions.get(question=question)
+                        
+                        quote = Quoted(bullet_point=bullet_point, secondary_question=question, quote=user_question.answer)
+                        quote.save()
+            else:
+                system_message = {"role":"system", "content": 
+                    r"%s" % (system)}
                 
+                messages.append(system_message)   
+                message = "Model Answer: \n"
+            
+                # 4. Now you can loop through common_questions and do whatever you want with each one.
+                for question in common_questions:
+                    primary = number_to_alphabet(question.primary)
+                    secondary = number_to_roman(question.secondary)
+                    message += "(%s)(%s): \n" % (primary, secondary)
+                    message += "%s \n \n" % (question.evidence)
+                    
+                message += "User Answer: \n"
+                for question in common_questions:
+                    userquestion = user_questions.get(question=question, document=document)
+                    primary = number_to_alphabet(question.primary)
+                    secondary = number_to_roman(question.secondary)
+                    message += "(%s)(%s): \n" % (primary, secondary)
+                    message += "%s \n \n" % (userquestion.answer)
                 
-            user_message = {"role":"user", "content":useranswer}
-            messages.append(user_message)
+                index=0
+                message += "Criteria: \n"
+                for index, criteria in enumerate(criteria_list):
+                    index += 1
+                    message += "%s: %s \n" % (index, criteria.text)
+                    criteria.order = index
+                    criteria.save()
+                    
+                user_message = {"role":"user", "content":message}
+                messages.append(user_message)
+                print(messages)
+                
+                file_name = f"message_{counter}.json"
+                with open(file_name, 'w') as f:
+                    json.dump(messages, f, indent=4)
 
-
-            res = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=messages,
                 temperature=0
+                res = client.chat.completions.create(
+                    model="gpt-4-1106-preview",
+                    response_format={"type":"json_object"},
+                    messages=messages,
+                    temperature=temperature
+                )
+
+                counter += 1
+
+                marks = res.choices[0].message.content
+                tokens += res.usage.total_tokens
+                processed_marks = backslash(marks)
+                data = json.loads(processed_marks)
+
+                for criterion_data in data['criteria']:
+                    order = criterion_data['no']
+                    confidence = criterion_data['confidence']
+                    explanation = criterion_data['explanation']
+                    quotes = criterion_data['quotes']
+
+                    criteria = next((c for c in criteria_list if c.order == order), None)
+                    if criteria is not None:
+                        bullet_point = bullet_points.get(criteria=criteria)                   
+                        bullet_point.confidence = confidence
+                        bullet_point.explanation = explanation
+                        pastel_color(bullet_point)
+                        bullet_point.save()
+                        
+                        for key, value in quotes.items():
+                            match = re.match(r"\((.*?)\)\((.*?)\)", key)
+                            if match:
+                                alphabet, roman = match.groups()
+                                primary = alphabet_to_number(alphabet)
+                                secondary = roman_to_number(roman)
+                                
+                                secondary_question = common_questions.get(primary=primary, secondary=secondary)  
+                                Quoted.objects.create(secondary_question=secondary_question, bullet_point=bullet_point, quote=value)
+                                
+        QUESTIONS = NceaQUESTION.objects.filter(exam=document.exam)
+        
+        
+        document_mark = 0
+        for QUESTION in QUESTIONS:
+            total_a=0
+            total_m=0
+            total_e=0
+            minimum_confidence=80
+            second = secondary_questions.filter(QUESTION=QUESTION)
+            
+            criterias = Criteria.objects.filter(
+                secondary_questions__in=second
             )
             
-            print(res)
-            
-            marks = res["choices"][0]["message"]["content"]
-            tokens += res["usage"]["total_tokens"]
-            data = json.loads(marks)
-            
-            total_a = 0
-            total_m = 0
-            total_e = 0
-            for i, question in enumerate(data['questions']):
-                sec = question['question']
-                feedbacks = question['feedback']
-                match = re.search(r"\((.*?)\)\((.*?)\)", sec)
-                if match is not None:
-                    primary = match.group(1)
-                    secondary=match.group(2)
-                    primary= alphabet_to_number(primary)
-                    secondary = roman_to_number(secondary)
-                else:
-                    primary = 0
-                    secondary = 0
-
-                sec_question = secondary_questions.get(primary=primary, secondary=secondary)
-                userquestion = userquestions.get(question=sec_question)
-                txt = userquestion.answer
-                classes_for_each_char = [set() for _ in range(len(txt))]
-
-                # For each feedback item, mark the corresponding characters with the CSS class
-                for feedback in feedbacks:
-                    # Check if feedback type is not "Achievement", "Merit", or "Excellence" and skip if so
-                    if feedback['type'] in ["Achievement", "Merit", "Excellence"]:
-                        css_class = "bullet_point" + feedback['bullet_point'].replace("•","_")
-                        try:
-                            start_index = txt.index(feedback['answer'])
-                            end_index = start_index + len(feedback['answer'])
-                            for i in range(start_index, end_index):
-                                classes_for_each_char[i].add(css_class)
-
-                            marked_up_text = ""
-                            current_classes = set()
-                            for i, char in enumerate(txt):
-                                if classes_for_each_char[i] != current_classes:
-                                    # Close the current span(s), if any
-                                    if current_classes:
-                                        marked_up_text += "</div>" * len(current_classes)
-                                    # Open a new span(s) for the new classes
-                                    for css_class in classes_for_each_char[i]:
-                                        marked_up_text += f'<div class="{css_class}">'
-                                    current_classes = classes_for_each_char[i]
-                                marked_up_text += char
-                            # Close the final span(s), if any
-                            if current_classes:
-                                marked_up_text += "</div>" * len(current_classes)
-
-                            userquestion.answer_html = mark_safe(marked_up_text)
-                        except:
-                            continue
-                    else:
-                        continue
-                    
-                # Increment counters
-                total_a += int(question['achievement'])
-                total_m += int(question['merit'])
-                total_e += int(question['excellence'])
-
-                userquestion.achievement = int(question['achievement'])
-                userquestion.merit = int(question['merit'])
-                userquestion.excellence = int(question['excellence'])
-                userquestion.save()
-
+            for criteria in criterias:
+                bulletpoint = BulletPoint.objects.get(document=document, criteria=criteria)
+                
+                if bulletpoint.confidence >= minimum_confidence:
+                    if criteria.type == "a":
+                        total_a += 1
+                    elif criteria.type == "m":
+                        total_m += 1
+                    elif criteria.type == "e":
+                        total_e += 1
+                        
             conditions = [
                 (8, 'e', QUESTION.e8),
                 (7, 'e', QUESTION.e7),
@@ -396,33 +480,30 @@ def mark_document(id, user_id):
                 (3, 'a', QUESTION.a3),
                 (2, 'a', QUESTION.n2),
                 (1, 'a', QUESTION.n1),
-                (0, 'a', QUESTION.n0)
+                (0, 'a', QUESTION.n0),
             ]
-
+            
             score = 0
             total_values = {'e': total_e, 'm': total_m, 'a': total_a}
             for s, var, condition in conditions:
                 if total_values[var] >= condition:
                     score = s
                     break
-
-            ncea_score = NceaScores.objects.get(document=doc, QUESTION=QUESTION)
+                
+            ncea_score = NceaScores.objects.get(document=document, QUESTION=QUESTION)
             ncea_score.score = score
             ncea_score.save()
-            document_mark += score
             
-            processed_questions += 1
-            progress_percentage = (processed_questions / number_of_questions) * 90
-            rounded_progress = round(progress_percentage)
-            websocket(room_name, task_id, doc, rounded_progress, None)
+            document_mark += ncea_score.score
             
-        doc.mark = document_mark
-        doc.marked_before = 1
-        doc.save()
-        websocket(room_name, task_id, doc, 100, None)
+        document.mark = document_mark
+        document.marked_before = 1
+        document.save()
+        
+        websocket(room_name, task_id, document, 100, None)
     except Exception as e:
         print(e)
         error_message=str(e)
-        websocket(room_name, task_id, doc, 0, error_message)
+        websocket(room_name, task_id, document, 0, error_message)
 
         return str(e)

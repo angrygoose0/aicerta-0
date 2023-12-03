@@ -15,7 +15,7 @@
                         <br>
                         <small><b>Year: {{doc.exam.year}}</b></small>
                     </div>
-                    {% for question, userquestions in userquestion_groups.items %}
+                    {% for question, userquestion_with_criteria in userquestion_groups.items %}
                         <div class="py-4">
                             <ul class="list-group list-group-flush">
                                 <h3 class="py-3">QUESTION {{question.0|NUMBER}} : 
@@ -24,11 +24,10 @@
                                     </span>
                                 </h3>
                                 <ul>
-                                    {% for userquestion in userquestions %}
+                                    {% for userquestion, criteria_list in userquestion_with_criteria %}
                                         <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 
-                                        <span class="score">Achievement: {{userquestion.achievement}} | Merit: {{userquestion.merit}} | Excellence: {{userquestion.excellence}}</span>
                                         <br>
-                                        <p>{{userquestion.answer_html|safe}}</p>
+                                        <p id="answer-{{ userquestion.id }}">{{userquestion.answer}}</p>
                                     {% endfor%}
                                 </ul>
 
@@ -50,11 +49,33 @@
                 <div class='exam'>
                     <h1 class="py-4">Assesment Schedule:</h1>
 
-                    {% for question, userquestions in userquestion_groups.items %}
+                    {% for question, userquestion_with_bullet in userquestion_groups.items %}
 
                         <h3 class="py-3">QUESTION {{question.0|NUMBER}}:</h3>
                         <div class="py-4">
-                                {{question.2|safe}}
+                            {% for userquestion, bullet_point_groups in userquestion_with_bullet %}
+                                <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 
+                                <p>{{userquestion.question.evidence}}</p>
+
+                                <ul class="bullet-point-list">
+                                    {% for bullet_point_type, bullet_points in bullet_point_groups.items %}
+                                        <b>{{bullet_point_type}}</b>
+
+                                        {% for bullet_point in bullet_points %}
+                                            <ul>
+                                                <li data-bs-toggle="tooltip" data-bs-placement="top" class="bullet_point_{{bullet_point.no}}"data-bs-title="{{bullet_point.explanation}}{{bullet_point.confidence}}" data-bullet="{{ bullet_point.id }}"
+                                                style="background-color: rgb({{bullet_point.r}}, {{bullet_point.g}}, {{bullet_point.b}});">{{bullet_point.criteria.text}}</li>
+                                            </ul>
+                                            
+                                        {% endfor %}
+
+                                        
+
+                                    {% endfor %}
+                                </ul>
+            
+                            {% endfor%}
+
                         </div>
                     {% endfor %}
                 </div>
@@ -66,27 +87,69 @@
 {% endblock %}
 
 {% block scripts%}
+
+    <script type="text/javascript">
+        var quotesData = {{ quotes_data|safe }};
+        console.log(quotesData);
+    </script>
+
     <script>
-        function getRandomColor() {
-            const letters = 'BCDEF'.split('');
-            let color = 'rgba(';
-            for (let i = 0; i < 3; i++) { // Looping only 3 times since we only need R, G, B values
-                // Generate a random number between 0-255 for R, G, and B
-                let rgbValue = Math.floor(Math.random() * 256);
-                color += rgbValue + ',';
-            }
-            color += '0.3)'; // Adding the alpha value for 60% opacity. Adjust as needed.
-            return color;
+        function highlightQuotes(bulletPointId) {
+            quotesData.forEach(function(quote) {
+                
+                if (quote.bulletpoint_id == bulletPointId) {
+                    var answerElement = document.getElementById('answer-' + quote.quote_question_id);
+                    console.log(quote.quote)
+                    if (answerElement) {
+                        var highlightedText = answerElement.innerHTML.replace(quote.quote, `<span id="quote-${quote.quote_id}" class="highlight">${quote.quote}</span>`);
+                        answerElement.innerHTML = highlightedText;
+                    }
+                }
+            });
         }
 
+        function removeHighlights(bulletPointId) {
+            quotesData.forEach(function(quote) {
+                if (quote.bulletpoint_id == bulletPointId) {
+                    var answerElement = document.getElementById('answer-' + quote.quote_question_id);
+                    if (answerElement) {
+                        var quoteElement = document.getElementById('quote-' + quote.quote_id);
+                        if (quoteElement) {
+                            answerElement.innerHTML = answerElement.innerHTML.replace(quoteElement.outerHTML, quoteElement.innerHTML);
+                        }
+                    }
+                }
+            });
+        }
+        
+        
+
+        document.querySelectorAll('li[data-bullet]').forEach(function(bulletPointElement) {
+            bulletPointElement.addEventListener('mouseenter', function() {
+                var bulletPointId = this.getAttribute('data-bullet');
+                highlightQuotes(bulletPointId);
+            });
+        
+            bulletPointElement.addEventListener('mouseleave', function() {
+                var bulletPointId = this.getAttribute('data-bullet');
+                removeHighlights(bulletPointId);
+            });
+        });
+        
+        
+
+    </script>
+
+    <script>
+
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        
+
         window.onload = function() {
-            const classColorMap = {};
             const bulletPoints = document.querySelectorAll("[class^='bullet_point_']");
             bulletPoints.forEach(function(bulletPoint) {
-                if (!classColorMap[bulletPoint.className]) {
-                    classColorMap[bulletPoint.className] = getRandomColor();
-                }
-                bulletPoint.style.backgroundColor = classColorMap[bulletPoint.className];
+
 
                 // Add event listeners to the bullet points
                 bulletPoint.addEventListener('mouseover', function() {

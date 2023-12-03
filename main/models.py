@@ -39,8 +39,6 @@ class NceaQUESTION(models.Model):
     e7 = models.IntegerField(default=1, choices=ECHOICES)
     e8 = models.IntegerField(default=2, choices=ECHOICES)
     
-    system = models.TextField(null = True, blank = True)
-    system_html = models.TextField(null = True, blank = True)
     
     def __str__(self):
         return "%s, %s" % (self.exam, self.QUESTION)
@@ -53,6 +51,8 @@ class NceaSecondaryQuestion(models.Model):
 
     primary = models.IntegerField()
     secondary = models.IntegerField()
+    
+    evidence = models.TextField(null=True, blank=True)
 
     
     def __str__(self):
@@ -84,6 +84,21 @@ class AssesmentSchedule(models.Model):
         
     def __str__(self):
         return "%s, %s" % (self.QUESTION, self.type)
+    
+class Criteria(models.Model):
+    secondary_questions = models.ManyToManyField(NceaSecondaryQuestion, related_name="nceacriteria", blank=True)
+    text = models.TextField(null=True, blank=True)
+    type = models.CharField(max_length=10) # a, m, e
+    image = models.IntegerField(default=0) #1 for image, 0 for not image
+    
+    order = models.IntegerField(default=0)
+
+
+    def __str__(self):
+        return "%s, %s, %s" % (self.secondary_questions, self.type, self.order)
+
+    
+    
 
 class File(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -92,9 +107,6 @@ class File(models.Model):
     
     def __str__(self):
         return "%s - %s" % (self.name, self.user)
-    
-
-
 
 class NceaUserDocument(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument", null = True, blank = True)
@@ -122,12 +134,8 @@ class NceaUserQuestions(models.Model):
     question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE)  
     
     answer = models.TextField(max_length=1500)
-    answer_html = models.TextField(null = True, blank = True)
     
-    achievement = models.IntegerField(default=0)
-    merit = models.IntegerField(default=0)
-    excellence = models.IntegerField(default=0)
-    
+
     def __str__(self):
         return "%s, %s" % (self.document, self.question,)
         
@@ -151,4 +159,26 @@ class HelpMessage(models.Model):
     message = models.TextField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="help", null = True, blank = True)
     date = models.DateTimeField
+
+class BulletPoint(models.Model):
+    document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE, null = True, blank = True)
+    criteria = models.ForeignKey(Criteria, on_delete=models.CASCADE, related_name="criteria", null = True, blank = True)
+    confidence = models.IntegerField(default=0)
+    explanation = models.TextField(null=True, blank=True)
+    r = models.IntegerField(default=255)
+    g = models.IntegerField(default=255)
+    b = models.IntegerField(default=255)
+    no = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return "%s, %s" % (self.document, self.criteria)
+
+
+class Quoted(models.Model):
+    secondary_question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE, null = True, blank = True)
+    bullet_point = models.ForeignKey(BulletPoint, on_delete=models.CASCADE, related_name="bullet_point", null = True, blank = True)
+    quote = models.TextField(null=True, blank=True)
+    
+    def __str__(self):
+        return "%s, %s" % (self.secondary_question, self.bullet_point)
 

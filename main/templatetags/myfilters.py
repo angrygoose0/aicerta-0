@@ -4,6 +4,7 @@ from django import template
 register = template.Library()
 
 def number_to_alphabet(number):
+    number = int(number)
     if 1 <= number <= 26:
         return chr(number + 96)  # Convert number to lowercase alphabet
     else:

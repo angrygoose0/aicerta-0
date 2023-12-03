@@ -26,6 +26,7 @@ class Command(BaseCommand):
                         QUESTION = question,
                         primary = row["Primary"],
                         secondary = row["Secondary"],
+                        evidence = row["Evidence"],
                     )
                         
                     self.stdout.write(self.style.SUCCESS(f'Created NCEA SECONDARIES'))

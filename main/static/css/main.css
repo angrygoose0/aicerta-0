@@ -108,6 +108,7 @@ form input, form textarea, form button {
     transform: translateY(-50%);
 }
 
+.highlight { background-color: yellow; }
 
 .btn-outline-success {
     border-color: #376d4d;

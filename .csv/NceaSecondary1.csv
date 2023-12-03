@@ -1,15 +1,15 @@
-Standard,Year,QUESTION,Primary,Secondary
-90944,2022,1,1,1
-90944,2022,1,1,2
-90944,2022,1,1,3
-90944,2022,1,2,1
-90944,2022,1,2,2
-90944,2022,2,1,1
-90944,2022,2,2,1
-90944,2022,2,3,1
-90944,2022,2,3,2
-90944,2022,3,1,1
-90944,2022,3,1,2
-90944,2022,3,2,1
-90944,2022,3,3,1
-90944,2022,3,3,2
+Standard,Year,QUESTION,Primary,Secondary,Evidence
+90944,2022,1,1,1,{img}
+90944,2022,1,1,2,"Both ions: 2,8,8."
+90944,2022,1,1,3,"S needs to gain 2 electrons to have a full outer shell and become stable. S forms a S2– ion, which has a charge of 2–, as it now has 18 negative electrons and 16 positive protons. Cl needs to gain one electron to have a full outer shell and become stable. Cl gains 1 electron to form Cl– ion, which has a charge of –1, as it now has 18 negative electrons and 17 positive protons.  Therefore, S2– and Cl– ions now both have the same electron arrangement of 2,8,8."
+90944,2022,1,2,1,{img}
+90944,2022,1,2,2,"Only Vitamin C is an acid, so will turn blue litmus red.  Vitamin B6 is a base, so will have no effect on blue litmus. Calcium carbonate will undergo a neutralisation reaction with the acidic Vitamin C to produce bubbles (of carbon dioxide) / fizzing. Vitamin B6 cannot neutralise the calcium carbonate, so no bubbles / fizzing are seen."
+90944,2022,2,1,1,"As the temperature of the vinegar/ acid/ mixture  increases, the particles move faster and have more energy. There are more collisions per second between the reacting particles due to faster speed, and more of these collisions have enough energy to cause a reaction. Therefore, increasing the temperature will cause more successful collisions per second, and the reaction will occur faster."
+90944,2022,2,2,1,"Section A: The steep line shows the reaction is fast. There are more reactant particles, so more collisions per second. More product particles are being formed, including more gas, so more gas is collected.  Section B: The line is less steep, so the reaction has slowed. There are fewer reactant particles, so fewer successful collisions per second and so less product is being made, so the volume of gas increases less quickly.  Section C: The line is horizontal so the reaction has stopped because one of the reactants has been used up, so there are no more collisions between reacting particles, so no gas is produced. "
+90944,2022,2,3,1,The concentration of the solution is changed.
+90944,2022,2,3,2,"When water is added, the acid is diluted. In the diluted acid, there are fewer acid particles / H+ ions / vinegar particles in the same volume of the acid. Because of this, there are fewer particles available to collide with the sodium hydrogen carbonate particles. Because there are fewer to collide, less successful collisions occur per second, and the rate of reaction is slower. "
+90944,2022,3,1,1,{img}
+90944,2022,3,1,2,"Copper forms an ion with a charge of +2. It requires two negative charges to form a neutral compound. The hydroxide ion has a charge of –1, so two hydroxide ions, with a combined charge of –2 are required to cancel out the charge on the copper ion. The carbonate ion has a charge of –2, so only one carbonate ion is required to cancel out the charge on the copper ion. "
+90944,2022,3,2,1,copper hydroxide + hydrochloric acid \(\rightarrow\) copper chloride + water \(Cu\left(OH\right)_2\ +2HCl \rightarrow CuCl_2+2H_2O\)
+90944,2022,3,3,1,Neutralisation reaction.
+90944,2022,3,3,2,"In discussion accept H+ or H3O+.  As the Cu(OH)2 is added, the HCl is being neutralised as water is formed.  When no Cu(OH)2 is added, the universal indicator paper is red and has pH 1–2 because there is an excess of H+ ions.  While the Cu(OH)2 is being added, there is still an excess of H+ ions, but not as big. The pH is 4–5.  The paper is orange as the solution is still slightly acidic.  When the numbers of H+ and OH– ions are equal, the solution is neutralised, the paper is green and the pH is 7.  As more Cu(OH)2 is added, the universal indicator paper is now blue. The solution has an excess of OH– ions and is basic / alkaline with a pH greater than 7."

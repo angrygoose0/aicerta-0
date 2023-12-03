@@ -1,0 +1,46 @@
+Standard,Year,Secondary,Text,Type,Image
+90944,2022,111|112,Correctly gives the electron arrangement of both atoms in (i)  OR  Both ions in (ii). Accept written e arrangements. ,a,1
+90944,2022,113,States that full outer shells are stable. Accept ‘full valence shells’ as stable for A.  ,a,0
+90944,2022,113,"Defines ion, e.g. an ion is an atom that gains or loses electrons to get a full outer shell.  ",a,0
+90944,2022,113,Correct number of protons for both. ,a,0
+90944,2022,113,Correct charge for both / number of electrons gained. ,a,0
+90944,2022,113,"Explains that sulfide and chloride ions have the same electron arrangement (2,8,8), as sulfur has gained 2 electrons to get a full outer shell / become stable, and chlorine has gained one electron to get a full outer shell / to become stable. ",m,0
+90944,2022,113,"Explains how two ions have different charge: S2– now has two more electrons than protons, and Cl– has one more electron than protons.",m,0
+90944,2022,113,"Explains why the two ions have the same electronic arrangement: achieve stable, full outer shells by S gaining two electrons, Cl gaining one electron, and therefore having the same electron arrangement of 2,8,8  AND  Explains why two ions have the same arrangement, but a different charge: sulfide ion is S2–, as it now has two more negative electrons than positive protons, and chloride ion is Cl–, as it now has one more negative electron than positive protons. ",e,0
+90944,2022,121,ONE row of table correct OR ONE column of table correct.,a,1
+90944,2022,121,Table complete with ONE observation explained.,m,1
+90944,2022,121,"Explanations to correctly identify solutions, with observations linked to properties (i.e. complete table and ALL observations explained).",e,1
+90944,2022,122,Explains one observation.,a,0
+90944,2022,211,Increasing temperature causes more (frequent) collisions OR converse.,a,0
+90944,2022,211,Increasing temperature means particles have more energy / move faster OR converse.,a,0
+90944,2022,211,Reaction occurs when particles collide successfully. OR More (successful) collisions per second cause a faster rate of reaction (or from above).,a,0
+90944,2022,211,Explains that the higher temperature causes the particles to move faster; therefore there will be more frequent collisions / more collisions per second / more collisions per unit of time.,m,0
+90944,2022,211,"Acid particles at higher temperatures will have more energy / force, resulting in more successful collisions. ",m,0
+90944,2022,211,"Fully explains that increased temperature leads to faster particles colliding more often.  AND  More of these collisions have enough energy / force to cause successful collisions / reactions. Therefore, there will be more successful collisions per second / more successful collisions will happen more frequently so rate of reaction will be faster. ",e,0
+90944,2022,221,"Describes difference in rates in each section, e.g.: A: Fast B: Slower C: No reaction",a,0
+90944,2022,221,Links number OR concentration of reactant particles present to number of collisions in one section.,a,0
+90944,2022,221,"Explains rate in TWO sections linked to reactants or products and particle collisions, e.g.:  A: Reaction is fast, there are many reactant particles, so more collisions. B: Reaction is slowing, as there are fewer particles to collide. C: Reaction has stopped, as there are no more reactant particles to collide.",m,0
+90944,2022,221,"Full explanation of rate in each stage, including a link between gradient/ number of particles available to collide (collisions per second) AND reaction rate.",e,0
+90944,2022,231|232,Identifies concentration. OR  States that the added water reduces the concentration.,a,0
+90944,2022,231|233,"Definition of rate of reaction e.g., the number of particle collisions per second.  OR  Definition of collision theory e.g. particles collide / hit / at the correct orientation with enough energy.",a,0
+90944,2022,231|234,"Less concentrated acid has less acid / H+ particles to react. OR  When there are less reactants / particles / reactant particles, there are fewer collisions.",a,0
+90944,2022,231|235,"Reaction rate is slower with decreased concentration. OR  When vinegar /particles are more spread out, the reaction is slower.",a,0
+90944,2022,231|236,"Explains that by decreasing the concentration of the acid / the reaction with the lower concentration, there are fewer acid particles present to collide (successfully) so the reaction rate is slower.",m,0
+90944,2022,231|237,"Fully explains why the reaction is slower, by linking the ideas that there are fewer acid particles (in the same unit volume / per volume) available for less successful collisions, and hence there will be less frequent collisions / collisions per second / collisions per unit time, causing the slower reaction rate ",e,0
+90944,2022,311,Any ONE correct ratio.,a,1
+90944,2022,312,States that overall an ionic compound has no charge.,a,0
+90944,2022,312,States that the +2 charge on the copper ion cancels out / balances the two –1 charges on the hydroxide ions.,a,0
+90944,2022,312,States that the +2 charge on the copper ion cancels out / balances the –2 charge on the carbonate ion.,a,0
+90944,2022,312,"Explains that because the copper ion has a charge of +2 and the hydroxide ion has a charge of –1, the ratio of copper ions to hydroxide ions is 1:2.",m,0
+90944,2022,312,"Explains that because the copper ion has a charge of +2 and the carbonate ion has a charge of –2, the ratio of copper ions to carbonate ions is 1:1.  OR   Alternative of M1 or M2 (one M point only) . OR  Explains in terms of electron transfer for one of the compounds.",m,0
+90944,2022,312,"Fully explains the ratio of ions in both copper hydroxide AND copper carbonate in terms of the balance of positive and negative charges in the two compounds, AND must include the compounds have no charge / zero charge are neutrally charged.",e,0
+90944,2022,321,Correct word equation. Check carefully for the incorrect ‘chloric’.,a,0
+90944,2022,321,"Correct formulae for symbol equation, but not balanced.",m,0
+90944,2022,321,Correctly balanced symbol equation.,e,0
+90944,2022,331,Neutralisation or Acid-base reaction,a,0
+90944,2022,332,Links two pH values to correct colours.,a,0
+90944,2022,332,Identifies that H+ ions are neutralised as OH– ions are added.,a,0
+90944,2022,332,"At pH 7 / neutral, – acid and base cancel out.  OR  H+ = OH– at pH 7.",a,0
+90944,2022,332,Links UI colours to two correct pH values and relative concentrations of ions present.,m,0
+90944,2022,332,"Explains that once a sufficient number of OH– ions have been added to neutralise all the H+ ions (to form water), the pH equals 7.",m,0
+90944,2022,332,"Fully explains and links the colour changes to the changing pH, relative concentration of H+ ions and OH– ions present, and neutralisation reaction occurring (pH 7 when H+ = OH– and neutral substances / water made).",e,0
