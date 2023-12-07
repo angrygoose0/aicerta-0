@@ -54,7 +54,16 @@
         
         <div class="sidenav">
             <a href="/app/">Home</a>
-            <a href="/app/create">Create</a>
+            <div class="dropdown">
+                <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Create
+                </a>
+                <ul class="dropdown-menu" data-bs-theme="dark">
+                    <li><a class="dropdown-item" href="/app/create">create document</a></li>
+                    <li><a class="dropdown-item" href="#">create standard</a></li>
+                    <li><a class="dropdown-item" href="#">create classroom</a></li>
+                </ul>
+            </div>
             <a href="/app/account">Account</a>
             <a href="/app/support">Support</a>
         </div>

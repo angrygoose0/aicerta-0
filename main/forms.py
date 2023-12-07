@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage
+from .models import NceaExam, Classroom, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage
 import roman
 from django.db.models import Q
 
@@ -18,6 +18,13 @@ class CreateNewDocument(forms.Form):
             # Query for exams the user can see
             self.fields['exam'].queryset = NceaExam.objects.filter(Q(is_public=True) | Q(users=user))
 
+class CreateClass(ModelForm):
+    class Meta:
+        model = Classroom
+        fields = ['name']
+        
+
+    
     
 class FileForm(ModelForm):
     class Meta:

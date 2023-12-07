@@ -10,6 +10,7 @@ urlpatterns = [
     path("<int:id>/ocr/<int:ocr>", views.file_to_doc, name="file_to_doc"),
     path("", views.home, name="home"),
     path("create/", views.create, name="create"),
+    path("createclass/", views.createclass, name="create"),
     path("<int:id>/delete/", views.delete_ncea_document, name="delete_ncea_document"),
     path("account/", views.settings_page, name="settings"),
     #path("standard/", views.standard, name="standard"),

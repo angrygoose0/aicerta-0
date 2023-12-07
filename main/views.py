@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted
-from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm
+from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
 import re
+import boto3
 from storages.backends.s3boto3 import S3Boto3Storage
 from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
 import math
@@ -167,9 +168,27 @@ def create(response):
             return render(response, "main/create.html", {"form":form})
 
     return render(response, "main/create.html", {"form":form})
-        
 
-import boto3
+
+@login_required(login_url="/login/")
+def createclass(response, id):
+    
+    if response.method == "POST":
+        form = CreateClass(response.POST)
+        if form.is_valid():
+            # Automatically set the user from the request
+            class_instance = form.save(commit=False)
+            class_instance.teacher = response.user
+            class_instance.save()
+            return HttpResponseRedirect("/app/" % id)
+    else:
+        form = CreateClass()
+    
+    context = {
+        'form': form
+    }
+    return render(response, "main/createclass.html", context)
+
 
 
 def generate_signed_url(file_path):
@@ -537,4 +556,6 @@ def support(response):
         'form': form,
         }
     return render(response, "main/support.html", context)
+
+
     

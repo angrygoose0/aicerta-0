@@ -160,3 +160,8 @@ class Quoted(models.Model):
     def __str__(self):
         return "%s, %s" % (self.secondary_question, self.bullet_point)
 
+class Classroom(models.Model):
+    name = models.CharField(max_length=100)
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="teacher")
+    students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="students", blank=True)
+    
