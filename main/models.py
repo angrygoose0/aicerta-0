@@ -165,3 +165,18 @@ class Classroom(models.Model):
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="teacher")
     students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="students", blank=True)
     
+    def __str__(self):
+        return self.name
+    
+class Assignment(models.Model):
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,)
+    name = models.CharField(max_length=100)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return "%s, %s, %s, %s" % (self.teacher, self.name, self.classroom, self.exam)
+    
+    

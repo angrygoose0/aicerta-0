@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}
+homepage
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class='exam'>
+            <div class="py-3">
+                <h1>Classroom {{classroom.name}}</h1>
+            </div>
+            
+            <div class="assignments">
+                {% for assignment in assignments %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ assignment.name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Assigned by: {{ assignment.teacher }}</h6>
+                            <p class="card-text">{{ assignment.exam }}</p>
+                            <p class="card-text">{{ assignment.description }}</p>
+                            <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No assignments yet.</p>
+                {% endfor %}
+            </div>
+            
+        </div>
+    </div>
+{% endblock %}

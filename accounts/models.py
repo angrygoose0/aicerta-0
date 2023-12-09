@@ -8,6 +8,7 @@ from django.conf import settings
 
 
 class CustomUser(AbstractUser):
+    
     plan = models.ForeignKey(ProductPrice, on_delete=models.SET_NULL, null = True, blank = True)
     credits = models.IntegerField(default=0) #cents
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)

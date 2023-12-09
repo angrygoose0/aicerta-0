@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import NceaExam, Classroom, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage
+from .models import NceaExam, Classroom, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage, Assignment
 import roman
 from django.db.models import Q
 
@@ -23,9 +23,22 @@ class CreateClass(ModelForm):
         model = Classroom
         fields = ['name']
         
+class CreateAssignment(ModelForm):
+    class Meta:
+        model = Assignment
+        fields = ['name', 'exam', 'description', 'classroom']
+        
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            # Query for exams the user can see
+            self.fields['exam'].queryset = NceaExam.objects.filter(Q(is_public=True) | Q(users=user))
+            self.fields['classroom'].queryset = Classroom.objects.filter(Q(teacher=user))
 
-    
-    
+            
+
+        
+
 class FileForm(ModelForm):
     class Meta:
         model = File

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
-from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted
-from .forms import CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass
+from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
+from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.core.exceptions import ObjectDoesNotExist
@@ -171,7 +171,7 @@ def create(response):
 
 
 @login_required(login_url="/login/")
-def createclass(response, id):
+def createclass(response):
     
     if response.method == "POST":
         form = CreateClass(response.POST)
@@ -180,7 +180,7 @@ def createclass(response, id):
             class_instance = form.save(commit=False)
             class_instance.teacher = response.user
             class_instance.save()
-            return HttpResponseRedirect("/app/" % id)
+            return HttpResponseRedirect("/app/")
     else:
         form = CreateClass()
     
@@ -188,6 +188,25 @@ def createclass(response, id):
         'form': form
     }
     return render(response, "main/createclass.html", context)
+
+@login_required(login_url="/login/")
+def createassignment(response):
+    
+    if response.method == "POST":
+        form = CreateAssignment(response.POST)
+        if form.is_valid():
+            # Automatically set the user from the request
+            assignment_instance = form.save(commit=False)
+            assignment_instance.teacher = response.user
+            assignment_instance.save()
+            return HttpResponseRedirect("/app/")
+    else:
+        form = CreateAssignment(user=response.user)
+    
+    context = {
+        'form': form
+    }
+    return render(response, "main/createassignment.html", context)
 
 
 
@@ -558,4 +577,13 @@ def support(response):
     return render(response, "main/support.html", context)
 
 
+def classroom(response, id):
+    classroom = Classroom.objects.get(id=id)
     
+    assignments = Assignment.objects.filter(classroom=classroom)
+    
+    context = {
+        'classroom' : classroom,
+        'assignments' : assignments,
+        }
+    return render(response, "main/classroom.html", context)
