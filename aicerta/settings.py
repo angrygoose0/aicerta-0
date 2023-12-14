@@ -38,6 +38,7 @@ CSRF_TRUSTED_ORIGINS = ['https://aicerta.com', 'https://www.aicerta.com',]
 
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -89,6 +90,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.classroom_list',
+                'accounts.context_processors.user',
+                'accounts.context_processors.classroom_form',
             ],
         },
     },
@@ -247,9 +250,10 @@ AI_API = os.environ.get("AI_API")
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 50 * 1024 * 1024
 
-GOOGLE_CREDENTIALS_BASE64=os.environ.get("GOOGLE_CREDENTIALS_BASE64")
-decoded_credentials = base64.b64decode(GOOGLE_CREDENTIALS_BASE64).decode("utf-8")
-GOOGLE_CREDENTIALS = json.loads(decoded_credentials)
+#unhashtag in nz
+#GOOGLE_CREDENTIALS_BASE64=os.environ.get("GOOGLE_CREDENTIALS_BASE64")
+#decoded_credentials = base64.b64decode(GOOGLE_CREDENTIALS_BASE64).decode("utf-8")
+#GOOGLE_CREDENTIALS = json.loads(decoded_credentials)
 
 MATHPIX_APP_ID=os.environ.get("MATHPIX_APP_ID")
 MATHPIX_APP_KEY=os.environ.get("MATHPIX_APP_KEY")

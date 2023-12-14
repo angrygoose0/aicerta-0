@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import NceaExam, NceaScores, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, File, OCRImage, HelpMessage, Criteria, BulletPoint, Quoted
+from .models import NceaExam, Classroom, Assignment, NceaScores, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, File, OCRImage, HelpMessage, Criteria, BulletPoint, Quoted
 
 # Register your models here.
 
@@ -32,6 +32,19 @@ class QuotedAdmin(admin.ModelAdmin):
 admin.site.register(Quoted, QuotedAdmin)
 admin.site.register(BulletPoint, BulletPointAdmin)
 admin.site.register(Criteria, CriteriaAdmin)
+
+class ClassroomAdmin(admin.ModelAdmin):
+    readonly_fields = ('secret_code',)  # Make 'secret_code' read-only but visible
+
+    # If you want to customize the list display, you can add:
+    list_display = ('name', 'teacher', 'display_students', 'secret_code')
+
+    def display_students(self, obj):
+        return ", ".join([student.username for student in obj.students.all()])
+    display_students.short_description = 'Students'
+
+admin.site.register(Classroom, ClassroomAdmin)
+admin.site.register(Assignment)
 
 
 admin.site.register(NceaExam)

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
-from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom
+from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.core.exceptions import ObjectDoesNotExist
@@ -105,6 +105,29 @@ def delete_ncea_document(response, id):
         data = {'success': False}
     return JsonResponse(data)
 
+@login_required(login_url="/login/")
+def delete_assignment(response, id):
+    try:
+        assignment = Assignment.objects.get(id=id)
+        if assignment.teacher == response.user:
+            assignment.delete()
+            data = {'success': True}
+    except assignment.DoesNotExist:
+        data = {'success': False}
+    return JsonResponse(data)
+
+
+@login_required(login_url="/login/")
+def classroom_join(response):
+    if response.method == 'POST':
+        form = ClassroomJoin(response.POST)
+        if form.is_valid():
+            classroom = Classroom.objects.get(secret_code=form.cleaned_data["code"])
+            classroom.students.add(response.user)
+
+            classroom.save()
+            return HttpResponseRedirect("/app/classroom/%s" % classroom.id)
+    return
 
 
 

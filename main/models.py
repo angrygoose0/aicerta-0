@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+import string
+import random
 #from account.models import CustomUser
 
 # Create your models here.
@@ -164,7 +166,19 @@ class Classroom(models.Model):
     name = models.CharField(max_length=100)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="teacher")
     students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="students", blank=True)
-    
+    secret_code = models.CharField(max_length=6, unique=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.secret_code:
+            self.secret_code = self._generate_unique_code()
+        super().save(*args, **kwargs)
+
+    def _generate_unique_code(self):
+        while True:
+            code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+            if not Classroom.objects.filter(secret_code=code).exists():
+                return code
+
     def __str__(self):
         return self.name
     

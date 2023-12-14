@@ -1,4 +1,5 @@
 {% load static %}
+{% load crispy_forms_tags %}
 <!doctype html>
 <html lang="en">
     <head>
@@ -69,32 +70,45 @@
                         <li><a href="#">No classes</a></li>
                     {% endfor %}
 
+                    {% if user.student == True %}
+                        <form method="POST" action="/app/classroom-join/">
+                            {% csrf_token %}
+                            {{classroom_form|crispy}}
+                            <button type='submit' name = "save" class="btn btn-outline-success">submit</button>
+                        </form>
+
+
+                    {% endif %}
+
+
                     <li><a class="dropdown-item" href=""></a></li>
 
                 </ul>
             </div>
-            <div class="dropdown">
-                <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Create
-                </a>
-                <ul class="dropdown-menu" data-bs-theme="dark">
-                    <li><a class="dropdown-item" href="/app/create">create document</a></li>
-                    <li><a class="dropdown-item" href="#">create standard</a></li>
-                    <li><a class="dropdown-item" href="/app/createclass">create classroom</a></li>
-                    <li><a class="dropdown-item" href="/app/createassignment">create assignment</a></li>
-                </ul>
-            </div>
-            <div class="dropdown">
-                <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="path_to_user_pfp.png" alt="" class="user-pfp"/>
-                    Username
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
-                    <li><a href="/app/account">Account</a></li>
-                    <li><a href="/app/support">Support</a></li>
-                    <!-- Other menu items... -->
-                </ul>
-            </div> 
+            {% if user.student == False %}
+                <div class="dropdown">
+                    <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Create
+                    </a>
+                    <ul class="dropdown-menu" data-bs-theme="dark">
+                        <li><a class="dropdown-item" href="/app/create">create document</a></li>
+                        <li><a class="dropdown-item" href="#">create standard</a></li>
+                        <li><a class="dropdown-item" href="/app/createclass">create classroom</a></li>
+                        <li><a class="dropdown-item" href="/app/createassignment">create assignment</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="path_to_user_pfp.png" alt="" class="user-pfp"/>
+                        {{user.email}}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
+                        <li><a href="/app/account">Account</a></li>
+                        <li><a href="/app/support">Support</a></li>
+                        <!-- Other menu items... -->
+                    </ul>
+                </div> 
+            {% endif %}
         </div>
 
         <div id="content", name="content", class="main">      

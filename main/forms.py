@@ -91,3 +91,6 @@ class CreateNewStandard(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
     standard = forms.IntegerField()
     year = forms.IntegerField()
+
+class ClassroomJoin(forms.Form):
+    code = forms.CharField(label="Join Code", max_length=10)
