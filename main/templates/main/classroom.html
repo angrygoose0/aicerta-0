@@ -31,8 +31,9 @@ homepage
                             {% endif %}
 
                             {% if user.student == True %}
-                                <form method="POST" action="">
+                                <form method="POST" action="/app/assignment/{{assignment.id}}">
                                     {% csrf_token %}
+                                   
                                     <button type='submit' name = "save" class="btn btn-outline-success btn-sm">Start Test</button>
                                 </form>
                             {% endif %}

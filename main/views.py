@@ -610,3 +610,37 @@ def classroom(response, id):
         'assignments' : assignments,
         }
     return render(response, "main/classroom.html", context)
+
+@login_required(login_url="/login")
+def new_assignment_doc(response, id):
+    if response.method == "POST":
+        assignment = Assignment.objects.get(id=id)
+        if response.user in assignment.classroom.students.all():
+            #one more if to check if the student has already made an assignment doc.
+
+            exam = assignment.exam
+            QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
+        
+            user_exam = NceaUserDocument(user=response.user, exam=exam, name="", mark=0, assignment=assignment)
+            user_exam.save()
+
+            for QUESTION in QUESTIONS:
+                secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
+                
+                criterias = Criteria.objects.filter(
+                    secondary_questions__in=secondaryquestions
+                ).prefetch_related('secondary_questions')
+                
+                for criteria in criterias:
+                    bulletpoint = BulletPoint(criteria=criteria, document=user_exam)
+                    bulletpoint.save()                   
+
+                for secondaryquestion in secondaryquestions:
+                    nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
+                    nceauserexamquestion.save()
+
+                scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
+                scores.save()
+
+            return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
+

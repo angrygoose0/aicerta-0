@@ -88,6 +88,39 @@ class File(models.Model):
     def __str__(self):
         return "%s - %s" % (self.name, self.user)
 
+class Classroom(models.Model):
+    name = models.CharField(max_length=100)
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="teacher")
+    students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="students", blank=True)
+    secret_code = models.CharField(max_length=6, unique=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.secret_code:
+            self.secret_code = self._generate_unique_code()
+        super().save(*args, **kwargs)
+
+    def _generate_unique_code(self):
+        while True:
+            code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+            if not Classroom.objects.filter(secret_code=code).exists():
+                return code
+
+    def __str__(self):
+        return self.name
+
+class Assignment(models.Model):
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,)
+    name = models.CharField(max_length=100)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return "%s, %s, %s, %s" % (self.teacher, self.name, self.classroom, self.exam)
+    
+    
+
 class NceaUserDocument(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument", null = True, blank = True)
     name = models.CharField(max_length=100)
@@ -99,6 +132,7 @@ class NceaUserDocument(models.Model):
     credit_price = models.IntegerField(default=0)
     
     file = models.ForeignKey(File, on_delete=models.SET_NULL, null = True, blank = True)
+    assignment = models.ForeignKey(Assignment, on_delete=models.SET_NULL, null=True, blank=True)
     
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
@@ -162,35 +196,5 @@ class Quoted(models.Model):
     def __str__(self):
         return "%s, %s" % (self.secondary_question, self.bullet_point)
 
-class Classroom(models.Model):
-    name = models.CharField(max_length=100)
-    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="teacher")
-    students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="students", blank=True)
-    secret_code = models.CharField(max_length=6, unique=True, editable=False)
 
-    def save(self, *args, **kwargs):
-        if not self.secret_code:
-            self.secret_code = self._generate_unique_code()
-        super().save(*args, **kwargs)
-
-    def _generate_unique_code(self):
-        while True:
-            code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
-            if not Classroom.objects.filter(secret_code=code).exists():
-                return code
-
-    def __str__(self):
-        return self.name
-    
-class Assignment(models.Model):
-    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,)
-    name = models.CharField(max_length=100)
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
-    exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return "%s, %s, %s, %s" % (self.teacher, self.name, self.classroom, self.exam)
-    
     

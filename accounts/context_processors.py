@@ -16,6 +16,7 @@ def classroom_form(request):
     if request.user.is_authenticated:
         classroom_form = ClassroomJoin()
         return {'classroom_form': classroom_form}
+    return {'classroom_form': []}
 
 def user(request):
     if request.user.is_authenticated:
