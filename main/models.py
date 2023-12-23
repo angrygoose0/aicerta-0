@@ -119,7 +119,6 @@ class Assignment(models.Model):
     def __str__(self):
         return "%s, %s, %s, %s" % (self.teacher, self.name, self.classroom, self.exam)
     
-    
 
 class NceaUserDocument(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument", null = True, blank = True)

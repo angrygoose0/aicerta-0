@@ -617,30 +617,34 @@ def new_assignment_doc(response, id):
         assignment = Assignment.objects.get(id=id)
         if response.user in assignment.classroom.students.all():
             #one more if to check if the student has already made an assignment doc.
+            try:
+                assessment = NceaUserDocument.objects.get(user=response.user, assignment=assignment) 
+                return HttpResponseRedirect("/app/%s/edit" % assessment.id)
+            
+            except assessment.DoesNotExist:
+                exam = assignment.exam
+                QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
+            
+                user_exam = NceaUserDocument(user=response.user, exam=exam, name="", mark=0, assignment=assignment)
+                user_exam.save()
 
-            exam = assignment.exam
-            QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
-        
-            user_exam = NceaUserDocument(user=response.user, exam=exam, name="", mark=0, assignment=assignment)
-            user_exam.save()
+                for QUESTION in QUESTIONS:
+                    secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
+                    
+                    criterias = Criteria.objects.filter(
+                        secondary_questions__in=secondaryquestions
+                    ).prefetch_related('secondary_questions')
+                    
+                    for criteria in criterias:
+                        bulletpoint = BulletPoint(criteria=criteria, document=user_exam)
+                        bulletpoint.save()                   
 
-            for QUESTION in QUESTIONS:
-                secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
-                
-                criterias = Criteria.objects.filter(
-                    secondary_questions__in=secondaryquestions
-                ).prefetch_related('secondary_questions')
-                
-                for criteria in criterias:
-                    bulletpoint = BulletPoint(criteria=criteria, document=user_exam)
-                    bulletpoint.save()                   
+                    for secondaryquestion in secondaryquestions:
+                        nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
+                        nceauserexamquestion.save()
 
-                for secondaryquestion in secondaryquestions:
-                    nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
-                    nceauserexamquestion.save()
+                    scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
+                    scores.save()
 
-                scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
-                scores.save()
-
-            return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
+                return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
 
