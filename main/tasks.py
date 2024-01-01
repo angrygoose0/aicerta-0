@@ -1,5 +1,5 @@
 from celery import shared_task, current_task
-from .models import NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, NceaScores, Criteria, Quoted, BulletPoint
+from main.models import Assignment, NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, NceaScores, Criteria, Quoted, BulletPoint
 from accounts.models import CustomUser
 from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
 from django.utils.safestring import mark_safe
@@ -12,6 +12,11 @@ import tiktoken
 from django.conf import settings
 import logging
 import time
+
+from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -507,3 +512,18 @@ def mark_document(id, user_id):
         websocket(room_name, task_id, document, 0, error_message)
 
         return str(e)
+    
+@shared_task
+def set_assignment_ended(assignment_id):
+    assignment = Assignment.objects.get(id=assignment_id)
+    assignment.status = "ended"
+    assignment.save()
+
+@receiver(post_save, sender=Assignment)
+def schedule_assignment_update(sender, instance, **kwargs):
+    if instance.ends_at and instance.status == 'started':
+        delay = (instance.ends_at - timezone.now()).total_seconds()
+        if delay > 0:
+            set_assignment_ended.apply_async((instance.id,), countdown=delay)
+
+

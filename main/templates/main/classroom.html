@@ -12,6 +12,29 @@ homepage
                 <h1>Classroom {{classroom.name}}</h1>
                 <p>Code: {{classroom.secret_code}}</p>
             </div>
+
+            <ul class="nav nav-pills" id="myTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">Stream</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">People</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabsContent">
+                <div class="tab-pane show active py-5" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+                    
+
+                    <div class="py-4">
+                        
+
+                          
+                    </div>
+                </div>
+                <div class="tab-pane py-5" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+                    
+                </div>
+            </div>
             
             <div class="assignments">
                 {% for assignment in assignments %}

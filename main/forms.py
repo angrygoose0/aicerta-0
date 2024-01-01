@@ -3,6 +3,8 @@ from django import forms
 from .models import NceaExam, Classroom, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage, Assignment
 import roman
 from django.db.models import Q
+import datetime
+from django.core.exceptions import ValidationError
 
 def int_to_alpha(value):
     return chr(ord("a") + int(value) - 1)
@@ -26,8 +28,11 @@ class CreateClass(ModelForm):
 class CreateAssignment(ModelForm):
     class Meta:
         model = Assignment
-        fields = ['name', 'exam', 'description', 'classroom']
-        
+        fields = ['name', 'exam', 'description', 'classroom', 'ends_at']
+        widgets = {
+            'ends_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+        }
+
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         if user:
@@ -35,9 +40,19 @@ class CreateAssignment(ModelForm):
             self.fields['exam'].queryset = NceaExam.objects.filter(Q(is_public=True) | Q(users=user))
             self.fields['classroom'].queryset = Classroom.objects.filter(Q(teacher=user))
 
-            
+        # Set default value for ends_at field to now
+        self.fields['ends_at'].initial = datetime.datetime.now()
 
-        
+    def clean_ends_at(self):
+        ends_at = self.cleaned_data.get('ends_at')
+        # Get the current time
+        now = datetime.datetime.now(datetime.timezone.utc)  # Make sure to use the same timezone as your 'ends_at' field
+
+        # Check if 'ends_at' is in the past
+        if ends_at and ends_at < now:
+            raise ValidationError("The end date and time cannot be in the past.")
+
+        return ends_at
 
 class FileForm(ModelForm):
     class Meta:

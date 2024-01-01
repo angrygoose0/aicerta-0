@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 import string
 import random
+
 #from account.models import CustomUser
 
 # Create your models here.
@@ -115,7 +116,12 @@ class Assignment(models.Model):
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
+    ends_at= models.DateTimeField(null=True, blank=True)
+
+    status = models.CharField(max_length=50, default='started') #started, #ended
+
+
     def __str__(self):
         return "%s, %s, %s, %s" % (self.teacher, self.name, self.classroom, self.exam)
     
