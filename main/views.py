@@ -221,6 +221,7 @@ def createassignment(response):
             # Automatically set the user from the request
             assignment_instance = form.save(commit=False)
             assignment_instance.teacher = response.user
+            assignment_instance.status = 1
             assignment_instance.save()
             return HttpResponseRedirect("/app/")
     else:

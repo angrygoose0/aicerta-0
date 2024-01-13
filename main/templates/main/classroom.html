@@ -8,65 +8,143 @@ homepage
 {% block content %}
     <div class="container">
         <div class='exam'>
+            <!-- Classroom Header -->
             <div class="py-3">
-                <h1>Classroom {{classroom.name}}</h1>
-                <p>Code: {{classroom.secret_code}}</p>
+                <h1>Classroom {{ classroom.name }}</h1>
+                <p>Code: {{ classroom.secret_code }}</p>
             </div>
 
-            <ul class="nav nav-pills" id="myTabs" role="tablist">
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-pills mb-3" id="myTabs" role="tablist">
+                <!-- Assignments Tab -->
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab" aria-controls="tab1" aria-selected="true">Stream</a>
+                    <button class="nav-link active" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments" type="button" role="tab" aria-controls="assignments" aria-selected="true">Assignments</button>
                 </li>
+                <!-- People Tab -->
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab" aria-controls="tab2" aria-selected="false">People</a>
+                    <button class="nav-link" id="people-tab" data-bs-toggle="tab" data-bs-target="#people" type="button" role="tab" aria-controls="people" aria-selected="false">People</button>
                 </li>
             </ul>
+
+            <!-- Tab Content -->
             <div class="tab-content" id="myTabsContent">
-                <div class="tab-pane show active py-5" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
-                    
+                <!-- Assignments Tab Pane -->
+                <div class="tab-pane show active" id="assignments" role="tabpanel" aria-labelledby="assignments-tab">
+                    <!-- Assignment Status Filter -->
+                    <div class="mb-3">
+                        <select class="form-select" onchange="filterAssignments(this.value)">
+                            <option value="all">All Assignments</option>
+                            <option value="0">Pending</option>
+                            <option value="1">On-going</option>
+                            <option value="2">Archived</option>
+                        </select>
+                    </div>
 
-                    <div class="py-4">
-                        
+                    <!-- Assignments List -->
+                    <div class="assignments">
+                        {% for assignment in assignments %}
+                            <div class="card mb-3" data-status="{{ assignment.status }}" 
+                                {% if assignment.status == 1 %} data-ends-at="{{ assignment.ends_at|date:'c' }}" {% endif %}>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ assignment.name }}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">Assigned by: {{ assignment.teacher }}</h6>
+                                    <p class="card-text">{{ assignment.description }}</p>
+                                    <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
+                                        
+                                    {% if user.student == False %}
+                                        <form hx-post="/app/{{ assignment.id }}/delete/assignment" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
+                                            {% csrf_token %}
+                                            <button type="submit" class=" btn-danger btn btn-sm">Delete</button>
+                                        </form>
+                                    {% endif %}
 
-                          
+                                    {% if user.student == True %}
+                                        <form method="POST" action="/app/assignment/{{assignment.id}}">
+                                            {% csrf_token %}
+                                        
+                                            <button type='submit' name = "save" class="btn btn-outline-success btn-sm">Start Test</button>
+                                        </form>
+                                    {% endif %}
+
+                                    <!-- Countdown Timer -->
+                                    {% if assignment.status == 1 %}
+                                        <p class="countdown-timer card-text" id="timer-{{ assignment.id }}"><small class="text-muted">Time left: Calculating...</small></div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p>No assignments yet.</p>
+                        {% endfor %}
                     </div>
                 </div>
-                <div class="tab-pane py-5" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
-                    
+
+                <!-- People Tab Pane -->
+                <div class="tab-pane" id="people" role="tabpanel" aria-labelledby="people-tab">
+                    <div class="row">
+                        {% for person in people %}
+                            <div class="col-md-4">
+                                <div class="card mb-3">
+                                    <img src="{{ person.profile_picture_url }}" class="card-img-top" alt="{{ person.name }}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ person.name }}</h5>
+                                        <p class="card-text">{{ person.role }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p>No people yet.</p>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-            
-            <div class="assignments">
-                {% for assignment in assignments %}
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ assignment.name }}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Assigned by: {{ assignment.teacher }}</h6>
-                            <p class="card-text">{{ assignment.exam }}</p>
-                            <p class="card-text">{{ assignment.description }}</p>
-                            <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
-
-                            {% if user.student == False %}
-                                <form hx-post="/app/{{ assignment.id }}/delete/assignment" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
-                                    {% csrf_token %}
-                                    <button type="submit" class=" btn-danger btn btn-sm">Delete</button>
-                                </form>
-                            {% endif %}
-
-                            {% if user.student == True %}
-                                <form method="POST" action="/app/assignment/{{assignment.id}}">
-                                    {% csrf_token %}
-                                   
-                                    <button type='submit' name = "save" class="btn btn-outline-success btn-sm">Start Test</button>
-                                </form>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% empty %}
-                    <p>No assignments yet.</p>
-                {% endfor %}
-            </div>
-            
         </div>
     </div>
+
+    <script>
+        function filterAssignments(status) {
+            document.querySelectorAll('.assignments .card').forEach(card => {
+                if (status === 'all' || card.getAttribute('data-status') === status) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function calculateTimeLeft(endsAt) {
+            const now = new Date();
+            const endTime = new Date(endsAt);
+            const difference = endTime - now;
+
+            if (difference <= 0) {
+                return null;  // Past the end time
+            }
+
+            const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((difference / 1000 / 60) % 60);
+            const seconds = Math.floor((difference / 1000) % 60);
+
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        function updateTimers() {
+            document.querySelectorAll('.card[data-status="1"]').forEach(card => {
+                const endsAt = card.getAttribute('data-ends-at');
+                const timerElement = card.querySelector('.countdown-timer');
+
+                const timeLeft = calculateTimeLeft(endsAt);
+                if (timeLeft) {
+                    timerElement.innerHTML = `<small class="text-muted">Time left: ${timeLeft}</small>`;
+                } else {
+                    timerElement.innerHTML = `<small class="text-muted">Ended at: ${endsAt}</small>`;
+                }
+            });
+        }
+
+        setInterval(updateTimers, 1000);  // Update every second
+    </script>
+
 {% endblock %}
+

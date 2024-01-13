@@ -516,12 +516,12 @@ def mark_document(id, user_id):
 @shared_task
 def set_assignment_ended(assignment_id):
     assignment = Assignment.objects.get(id=assignment_id)
-    assignment.status = "ended"
+    assignment.status = 2
     assignment.save()
 
 @receiver(post_save, sender=Assignment)
 def schedule_assignment_update(sender, instance, **kwargs):
-    if instance.ends_at and instance.status == 'started':
+    if instance.ends_at and instance.status == 1:
         delay = (instance.ends_at - timezone.now()).total_seconds()
         if delay > 0:
             set_assignment_ended.apply_async((instance.id,), countdown=delay)

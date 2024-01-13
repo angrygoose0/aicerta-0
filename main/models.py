@@ -119,7 +119,7 @@ class Assignment(models.Model):
 
     ends_at= models.DateTimeField(null=True, blank=True)
 
-    status = models.CharField(max_length=50, default='started') #started, #ended
+    status = models.IntegerField(default=0) #0, 1, 2 = pending, on-going, archived
 
 
     def __str__(self):

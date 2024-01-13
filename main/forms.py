@@ -5,6 +5,7 @@ import roman
 from django.db.models import Q
 import datetime
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 def int_to_alpha(value):
     return chr(ord("a") + int(value) - 1)
@@ -41,12 +42,11 @@ class CreateAssignment(ModelForm):
             self.fields['classroom'].queryset = Classroom.objects.filter(Q(teacher=user))
 
         # Set default value for ends_at field to now
-        self.fields['ends_at'].initial = datetime.datetime.now()
-
+        self.fields['ends_at'].initial = timezone.now()
     def clean_ends_at(self):
         ends_at = self.cleaned_data.get('ends_at')
         # Get the current time
-        now = datetime.datetime.now(datetime.timezone.utc)  # Make sure to use the same timezone as your 'ends_at' field
+        now = timezone.now() # Make sure to use the same timezone as your 'ends_at' field
 
         # Check if 'ends_at' is in the past
         if ends_at and ends_at < now:
