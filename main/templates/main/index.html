@@ -21,7 +21,10 @@
                     </button>
                     <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 5rem;" data-bs-toggle="modal" data-bs-target="#latexModal">
                         <i class="fas fa-square-root-alt"></i>
-                    </button>             
+                    </button>   
+                    {% if doc.assignment.status == 1 %}
+                        <div class="countdown-timer" id="timer-{{ doc.assignment.id }}" data-ends-at="{{ doc.assignment.ends_at|date:'c' }}" ><small class="text-muted">Time left: Calculating...</small></div>
+                    {% endif %}          
                     <div class='exam'>
                         <div class="py-3">
                             <h1>{{doc.name}}</h1>
@@ -200,4 +203,37 @@
         {% endif %}
     </script>
     <script src="{% static 'js/index.js' %}"></script>
+
+    <script>
+        function calculateTimeLeft(endsAt) {
+            const now = new Date();
+            const endTime = new Date(endsAt);
+            const difference = endTime - now;
+
+            if (difference <= 0) {
+                return null;  // Past the end time
+            }
+
+            const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((difference / 1000 / 60) % 60);
+            const seconds = Math.floor((difference / 1000) % 60);
+
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        function updateTimer() {
+            const timerElement = document.getElementById('timer-{{ doc.assignment.id }}');
+            const endsAt = timerElement.getAttribute('data-ends-at');
+
+            const timeLeft = calculateTimeLeft(endsAt);
+            if (timeLeft) {
+                timerElement.innerHTML = `<small class="text-muted">Time left: ${timeLeft}</small>`;
+            } else {
+                timerElement.innerHTML = `<small class="text-muted">Ended at: ${endsAt}</small>`;
+            }
+        }
+
+        setInterval(updateTimer, 1000);  // Update every second
+    </script>
+
 {% endblock %}
