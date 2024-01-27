@@ -316,3 +316,13 @@ label {
 .card-hoverable:hover {
     cursor: pointer;
 }
+
+.alert {
+    margin-top: 20px; /* Adjust this value as needed */
+}
+
+.bi {
+    width: 16px;
+    height: 16px;
+}
+

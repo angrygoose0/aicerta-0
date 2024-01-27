@@ -519,11 +519,15 @@ def set_assignment_ended(assignment_id):
     assignment.status = 2
     assignment.save()
 
+    NceaUserDocument.objects.filter(assignment=assignment).update(is_editable=False)
+
 @receiver(post_save, sender=Assignment)
 def schedule_assignment_update(sender, instance, **kwargs):
     if instance.ends_at and instance.status == 1:
         delay = (instance.ends_at - timezone.now()).total_seconds()
         if delay > 0:
             set_assignment_ended.apply_async((instance.id,), countdown=delay)
+
+
 
 

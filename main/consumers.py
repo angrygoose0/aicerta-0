@@ -24,6 +24,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         error = event['error']
         
         await self.send(text_data=json.dumps({
+            'message_type' : 'notification',
             'task_id': task_id,
             'user_document_name': user_document_name,
             'exam_name': exam_name,
@@ -32,3 +33,17 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'error':error,
             
         }))
+    
+    async def alert_message(self, event):
+        message = event['message']
+        alert = event['alert']
+        icon = event['icon']
+
+        await self.send(text_data=json.dumps({
+            'message_type' : 'alert',
+            'message': message,
+            'alert' : alert,
+            'icon' : icon,
+        }))
+
+    

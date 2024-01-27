@@ -138,6 +138,8 @@ class NceaUserDocument(models.Model):
     
     file = models.ForeignKey(File, on_delete=models.SET_NULL, null = True, blank = True)
     assignment = models.ForeignKey(Assignment, on_delete=models.SET_NULL, null=True, blank=True)
+
+    editable = models.BooleanField(default=True)
     
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
