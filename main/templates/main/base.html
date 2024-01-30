@@ -126,13 +126,7 @@
         <div id="content", name="content", class="main">
 
             <div id="alert-container">
-            </div>
-
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                <strong>Holy guacamole!</strong> You should check in on some of those fields below.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>      
+            </div>   
             {% block content%}
             {% endblock %}
         </div>
@@ -255,20 +249,6 @@
                 toastEl.show();
             }
 
-            const alertContainer = document.getElementById('alertContainer')
-            const appendAlert = (message, type) => {
-                const wrapper = document.createElement('div')
-                wrapper.innerHTML = [
-                    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-                    `   <div>${message}</div>`,
-                    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-                    '</div>'
-                ].join('')
-                alertPlaceholder.append(wrapper)
-            }
-
-            appendAlert('Nice, you triggered this alert message!', 'success')
-            
             
         
             // WebSocket handlers
@@ -278,6 +258,7 @@
         
             socket.onmessage = function(event) {
                 const data = JSON.parse(event.data);
+                console.log(data);
 
                 if (data.message_type === 'notification') {
                     if (isToastDismissed(data.task_id) && data.progress !== 100) {
@@ -314,15 +295,30 @@
                         // Render a new toast
                         renderToast(data);
                     }
-                    break;
                     //setup message queuing for messages sent super quick
                 }
 
 
                 else if (data.message_type === 'alert') {
-                    handleAlert(data);
-                    break;
+                    
+
+                    var alertHTML = `
+                    <div class="alert alert-${data.alert} alert-dismissible fade show" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" role="img" aria-label="${data.alert}"><use xlink:href="#${data.icon}"/></svg>
+                        ${data.message}
+                        <!--button class="btn btn-sm btn-light">Create Copy</button-->
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    `
+
+                    var alertContainer = document.getElementById('alert-container')
+                    alertContainer.innerHTML += alertHTML;
                 }
+
+
+
+
+
 
             };
             

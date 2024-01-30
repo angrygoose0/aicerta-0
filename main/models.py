@@ -93,7 +93,7 @@ class Classroom(models.Model):
     name = models.CharField(max_length=100)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="teacher")
     students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="students", blank=True)
-    secret_code = models.CharField(max_length=6, unique=True, editable=False)
+    secret_code = models.CharField(max_length=6, unique=True, editable=False,)
 
     def save(self, *args, **kwargs):
         if not self.secret_code:

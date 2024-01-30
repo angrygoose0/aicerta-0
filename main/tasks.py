@@ -201,7 +201,7 @@ def ocr_task(self, image_instance):
 def websocket(room_name, task_id, doc, progress, error):
     async_to_sync(channel_layer.group_send)(
         room_name,  # Group name
-        {
+        {   
             'type': 'notification.message',
             'task_id': task_id,
             'user_document_name':doc.name,
@@ -209,6 +209,18 @@ def websocket(room_name, task_id, doc, progress, error):
             'progress': progress, #0-100%
             'doc_id':doc.id,
             'error':error
+        }
+    )
+    
+def alert(room_name, message, alert, icon):
+    async_to_sync(channel_layer.group_send)(
+        room_name,  # Group name
+        {   
+            'type': 'alert.message',
+            'message': message,
+            'alert': alert,
+            'icon': icon,
+
         }
     )
 @shared_task
@@ -293,7 +305,7 @@ def mark_document(id, user_id):
             websocket(room_name, task_id, document, 0, error_message)
             return error_message
         
-    except Exception as e:
+    except Exception as error_message:
         print(e)
         return str(e)
 
@@ -506,12 +518,11 @@ def mark_document(id, user_id):
         document.save()
         
         websocket(room_name, task_id, document, 100, None)
-    except Exception as e:
-        print(e)
-        error_message=str(e)
+    except Exception as error_message:
+        print(error_message)
         websocket(room_name, task_id, document, 0, error_message)
 
-        return str(e)
+        return str(error_message)
     
 @shared_task
 def set_assignment_ended(assignment_id):
@@ -519,7 +530,21 @@ def set_assignment_ended(assignment_id):
     assignment.status = 2
     assignment.save()
 
-    NceaUserDocument.objects.filter(assignment=assignment).update(is_editable=False)
+    NceaUserDocument.objects.filter(assignment=assignment).update(editable=False)
+    
+    users = CustomUser.objects.filter(nceadocument__assignment=assignment).distinct()
+    x=0
+    assignment_name = assignment.name
+    
+    for user in users:
+        document_name = NceaUserDocument.name
+        message = f"<p><strong>Time's Up for Assignment: {assignment_name}</strong> - Please note that your document <strong>\"{document_name}\"</strong> for the assignment <strong>\"{assignment_name}\"</strong> has reached the deadline. <hr>Access to editing this document is now disabled.</p>"
+        
+        alert(f"user_{user.pk}", message, "danger", "exclamation-triangle-fill")
+        
+        print(x)
+        x+=1
+        
 
 @receiver(post_save, sender=Assignment)
 def schedule_assignment_update(sender, instance, **kwargs):

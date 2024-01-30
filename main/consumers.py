@@ -39,11 +39,12 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         alert = event['alert']
         icon = event['icon']
 
+        # Constructing the message with assignment and document names
         await self.send(text_data=json.dumps({
-            'message_type' : 'alert',
+            'message_type': 'alert',
             'message': message,
-            'alert' : alert,
-            'icon' : icon,
+            'alert': alert,
+            'icon': icon,
         }))
 
-    
+        

@@ -81,11 +81,13 @@ homepage
                                         <h6 class="card-subtitle mb-2 text-muted">Assigned by: {{ assignment.teacher }}</h6>
                                         <p class="card-text">{{ assignment.description }}</p>
                                         <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
+                                        
                                             
                                         <form hx-post="/app/{{ assignment.id }}/delete/assignment" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
                                             {% csrf_token %}
                                             <button type="submit" class=" btn-danger btn btn-sm">Delete</button>
                                         </form>
+                                        
                             
                                         <!-- Countdown Timer -->
                                         {% if assignment.status == 1 %}
@@ -105,7 +107,7 @@ homepage
                         {% for person in people %}
                             <div class="col-md-4">
                                 <div class="card mb-3">
-                                    <img src="{{ person.profile_picture_url }}" class="card-img-top" alt="{{ person.name }}">
+                                    <!--img src="{{ person.profile_picture_url }}" class="card-img-top" alt="{{ person.name }}"-->
                                     <div class="card-body">
                                         <h5 class="card-title">{{ person.name }}</h5>
                                         <p class="card-text">{{ person.role }}</p>
@@ -159,7 +161,9 @@ homepage
                 if (timeLeft) {
                     timerElement.innerHTML = `<small class="text-muted">Time left: ${timeLeft}</small>`;
                 } else {
-                    timerElement.innerHTML = `<small class="text-muted">Ended at: ${endsAt}</small>`;
+                    // If the assignment has ended, ensure the original "Ended at" text is displayed
+                    const endedText = `Ended at: ${new Date(endsAt).toLocaleString()}`;
+                    timerElement.innerHTML = `<small class="text-muted">${endedText}</small>`;
                 }
             });
         }
