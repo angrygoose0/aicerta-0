@@ -533,7 +533,6 @@ def set_assignment_ended(assignment_id):
     NceaUserDocument.objects.filter(assignment=assignment).update(editable=False)
     
     users = CustomUser.objects.filter(nceadocument__assignment=assignment).distinct()
-    x=0
     assignment_name = assignment.name
     
     for user in users:
@@ -541,9 +540,7 @@ def set_assignment_ended(assignment_id):
         message = f"<p><strong>Time's Up for Assignment: {assignment_name}</strong> - Please note that your document <strong>\"{document_name}\"</strong> for the assignment <strong>\"{assignment_name}\"</strong> has reached the deadline. <hr>Access to editing this document is now disabled.</p>"
         
         alert(f"user_{user.pk}", message, "danger", "exclamation-triangle-fill")
-        
-        print(x)
-        x+=1
+
         
 
 @receiver(post_save, sender=Assignment)
