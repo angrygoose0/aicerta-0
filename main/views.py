@@ -265,6 +265,8 @@ def generate_signed_url(file_path):
 def index(response, id):   
     doc = NceaUserDocument.objects.get(id=id)
     if doc.user == response.user:
+
+        
         
         qs = NceaUserQuestions.objects.filter(document = doc)
         AnswerFormset = modelformset_factory(NceaUserQuestions, form=AnswerForm , extra = 0,)
@@ -321,7 +323,8 @@ def index(response, id):
                 print(form.errors)  
         if response.htmx:
             return render(response, "main/partials/forms.html", context)    
-                
+        doc.started = True
+        doc.save()
         return render(response, "main/index.html", context)
     return HttpResponseRedirect("/app/")
 
@@ -651,3 +654,26 @@ def new_assignment_doc(response, id):
 
                 return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
 
+@login_required(login_url="/login")
+def edit_assignment(response, id):
+    user = response.user
+    assignment = Assignment.objects.get(id=id)
+    
+    if user == assignment.teacher:
+        
+        userdocuments = NceaUserDocument.objects.filter(assignment=assignment)
+        
+        context = {
+            'userdocuments' : userdocuments,
+            'assignment' : assignment,
+        }
+        
+        return render(response, "main/edit_assignment.html", context)
+    return HttpResponseRedirect("/app/")
+
+@require_POST
+def start_test(request, id):
+    doc = NceaUserDocument.objects.get(id=id)
+    doc.started = True
+    doc.save()
+    return JsonResponse({'status': 'success',})

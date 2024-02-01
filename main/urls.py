@@ -26,4 +26,7 @@ urlpatterns = [
     path('protected_files/<int:file_id>/', views.serve_protected_file, name='serve_protected_file'),
     path('classroom/<int:id>', views.classroom, name="classroom"),
     path('assignment/<int:id>', views.new_assignment_doc, name="new_assignment_doc"),
+    path("edit-assignment/<int:id>", views.edit_assignment, name="edit_assignment"),
+    path("start-test/<int:id>", views.start_test, name="start_test"),
+    
 ]

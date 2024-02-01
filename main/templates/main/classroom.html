@@ -34,30 +34,30 @@ homepage
                     <!-- Assignments List -->
                     {% if user.student == True %}
                         <div class="assignments">
-                        {% for assignment in assignments %}
-                            {% if assignment.status == 1 %}
-                                <div class="card mb-3" data-status="{{ assignment.status }}" 
-                                data-ends-at="{{ assignment.ends_at|date:'c' }}" >
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ assignment.name }}</h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">Assigned by: {{ assignment.teacher }}</h6>
-                                        <p class="card-text">{{ assignment.description }}</p>
-                                        <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
-                                        
-                                        <form method="POST" action="/app/assignment/{{assignment.id}}">
-                                            {% csrf_token %}
-                                        
-                                            <button type='submit' name = "save" class="btn btn-outline-success btn-sm">Start Test</button>
-                                        </form>
-                        
-                                        <div class="countdown-timer card-text" id="timer-{{ assignment.id }}"><small class="text-muted">Time left: Calculating...</small></div>
-                
+                            {% for assignment in assignments %}
+                                {% if assignment.status == 1 %}
+                                    <div class="card mb-3" data-status="{{ assignment.status }}" 
+                                    data-ends-at="{{ assignment.ends_at|date:'c' }}" >
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ assignment.name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">Assigned by: {{ assignment.teacher }}</h6>
+                                            <p class="card-text">{{ assignment.description }}</p>
+                                            <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
+                                            
+                                            <form method="POST" action="/app/assignment/{{assignment.id}}">
+                                                {% csrf_token %}
+                                            
+                                                <button type='submit' name = "save" class="btn btn-outline-success btn-sm">Start Test</button>
+                                            </form>
+                            
+                                            <div class="countdown-timer card-text" id="timer-{{ assignment.id }}"><small class="text-muted">Time left: Calculating...</small></div>
+                    
+                                        </div>
                                     </div>
-                                </div>
-                            {% endif %}
-                        {% empty %}
-                            <p>No assignments yet.</p>
-                        {% endfor %}
+                                {% endif %}
+                            {% empty %}
+                                <p>No assignments yet.</p>
+                            {% endfor %}
                         </div>
                     {% endif %}
                     
@@ -83,10 +83,13 @@ homepage
                                         <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
                                         
                                             
-                                        <form hx-post="/app/{{ assignment.id }}/delete/assignment" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
-                                            {% csrf_token %}
-                                            <button type="submit" class=" btn-danger btn btn-sm">Delete</button>
-                                        </form>
+                                        <div class="btn-group" role="group" aria-label="Assignment Actions">
+                                            <form hx-post="/app/{{ assignment.id }}/delete/assignment" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                            <a href="/app/edit-assignment/{{assignment.id}}" class="btn btn-outline-dark btn-sm">Edit</a>
+                                        </div>
                                         
                             
                                         <!-- Countdown Timer -->

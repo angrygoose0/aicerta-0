@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}edit assignment{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class='exam'>
+        <div class="py-3">
+            
+            {% for userdocument in userdocuments %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ userdocument.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ userdocument.user }}</h6>
+        
+
+                    </div>
+                </div>
+            
+            {% empty %}
+                <p>No one yet.</p>
+
+            {%endfor%}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

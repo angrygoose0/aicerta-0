@@ -121,6 +121,8 @@ class Assignment(models.Model):
 
     status = models.IntegerField(default=0) #0, 1, 2 = pending, on-going, archived
 
+    strict = models.IntegerField(default=0) #0, 1, 2 = none, some, all
+
 
     def __str__(self):
         return "%s, %s, %s, %s" % (self.teacher, self.name, self.classroom, self.exam)
@@ -140,6 +142,11 @@ class NceaUserDocument(models.Model):
     assignment = models.ForeignKey(Assignment, on_delete=models.SET_NULL, null=True, blank=True)
 
     editable = models.BooleanField(default=True)
+    
+    started = models.BooleanField(default=False)
+    
+    #change above 2 to status for (locked, started, submitted, etc)
+    
     
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)

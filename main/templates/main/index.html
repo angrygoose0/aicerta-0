@@ -8,6 +8,8 @@
 
 {% block content %}
     <div class="container-fluid">
+        
+    
         <div class="row">
             
             <div class="col {% if doc.file %} scrolling-column {% endif %}">
@@ -21,7 +23,8 @@
                     </button>
                     <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 5rem;" data-bs-toggle="modal" data-bs-target="#latexModal">
                         <i class="fas fa-square-root-alt"></i>
-                    </button>   
+                    </button> 
+                
                     {% if doc.assignment.status == 1 %}
                         <div class="countdown-timer" id="timer-{{ doc.assignment.id }}" data-ends-at="{{ doc.assignment.ends_at|date:'c' }}" ><small class="text-muted">Time left: Calculating...</small></div>
                     {% endif %}          
@@ -34,6 +37,7 @@
                         </div>
                         
                         {% include "main/partials/forms.html" %}
+                        <button class="btn btn-outline-success" type="button">Submit</button>
                     </div>
                 </div>
             </div>
@@ -76,6 +80,7 @@
             {% endif %}
         </div> 
     </div>
+    
 
     <div class="modal fade" id="ResultsModal" tabindex="-1" aria-labelledby="ResultsModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl"> <!-- Increase modal size to modal-xl for better visibility -->
@@ -105,6 +110,59 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="Test1Modal" tabindex="-1" aria-labelledby="Test1ModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl"> <!-- Increase modal size to modal-xl for better visibility -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">test1</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                </div>
+    
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success" id="StartTest1Btn">Insert Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Test2Modal" tabindex="-1" aria-labelledby="Test2ModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl"> 
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3>Exam Rules and Consequences</h3>
+                    <p>Please read the following rules carefully before starting the exam:</p>
+                    <ul>
+                        <li><strong>Stay on the Exam Page</strong>: Do not navigate away from the exam page or reload it. Doing so will lock you out of the exam.</li>
+                        <li><strong>No External Assistance</strong>: The use of external materials or receiving assistance from others is strictly prohibited.</li>
+                        <li><strong>Timed Examination</strong>: Once started, the exam must be completed within the allotted time frame.</li>
+                        <li><strong>Submission</strong>: Ensure you submit all answers before the exam timer ends.</li>
+                        <li><strong>Full-Screen Mode</strong>: When you press 'Start Test', the exam will enter full-screen mode. Exiting full-screen mode will lock you out of the exam, requiring supervisor intervention to re-enter.</li>
+                        <!-- Add more rules as needed -->
+                    </ul>
+                    <p><strong>Consequences:</strong></p>
+                    <p>Violating any of these rules will result in immediate disqualification from the exam.</p>
+                </div>
+    
+                <div class="modal-footer">
+                    <div class="btn-group">
+                        <a href="/app/" class="btn btn-sm btn-outline-danger">Not ready?</a>
+                        <form id="testStartForm" method="post" hx-post="/app/start-test/{{doc.id}}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-success" id="StartTest2Btn">Start Test</button>
+                        </form>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
     
 
     <div class="modal fade" id="latexModal" tabindex="-1" aria-labelledby="latexModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -180,6 +238,7 @@
         </div>
     </div>
 
+
     
     
 
@@ -188,6 +247,39 @@
 {% endblock %}
 
 {% block scripts %}
+
+    <script>
+
+        document.getElementById('StartTest2Btn').addEventListener('click', function(){
+            $('#Test2Modal').modal('hide');
+
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+
+        });
+
+        document.addEventListener('fullscreenchange', (event) => {
+            const elementsToHide = document.querySelectorAll('.hide-in-fullscreen');
+        
+            if (document.fullscreenElement) {
+                // Entering fullscreen mode
+                elementsToHide.forEach(element => {
+                    element.style.display = 'none';
+                });
+            } else {
+                // Exiting fullscreen mode
+                console.log('Exited fullscreen mode');
+                elementsToHide.forEach(element => {
+                    element.style.display = ''; // Resets the display property
+                });
+            }
+        });        
+    </script>
     <script>
         {% if development_mode %}
             const url = "{{doc.file.file.url}}";         
@@ -196,37 +288,80 @@
         {% endif %}
     </script>
     <script src="{% static 'js/index.js' %}"></script>
+    {% if doc.assignment.status == 1%}
 
-    <script>
-        function calculateTimeLeft(endsAt) {
-            const now = new Date();
-            const endTime = new Date(endsAt);
-            const difference = endTime - now;
+        <script>
+            function calculateTimeLeft(endsAt) {
+                const now = new Date();
+                const endTime = new Date(endsAt);
+                const difference = endTime - now;
 
-            if (difference <= 0) {
-                return null;  // Past the end time
+                if (difference <= 0) {
+                    return null;  // Past the end time
+                }
+
+                const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((difference / 1000 / 60) % 60);
+                const seconds = Math.floor((difference / 1000) % 60);
+
+                return `${hours}h ${minutes}m ${seconds}s`;
             }
 
-            const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-            const minutes = Math.floor((difference / 1000 / 60) % 60);
-            const seconds = Math.floor((difference / 1000) % 60);
+            function updateTimer() {
+                const timerElement = document.getElementById('timer-{{ doc.assignment.id }}');
+                const endsAt = timerElement.getAttribute('data-ends-at');
 
-            return `${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        function updateTimer() {
-            const timerElement = document.getElementById('timer-{{ doc.assignment.id }}');
-            const endsAt = timerElement.getAttribute('data-ends-at');
-
-            const timeLeft = calculateTimeLeft(endsAt);
-            if (timeLeft) {
-                timerElement.innerHTML = `<small class="text-muted">Time left: ${timeLeft}</small>`;
-            } else {
-                timerElement.innerHTML = `<small class="text-muted">Ended at: ${endsAt}</small>`;
+                const timeLeft = calculateTimeLeft(endsAt);
+                if (timeLeft) {
+                    timerElement.innerHTML = `<small class="text-muted">Time left: ${timeLeft}</small>`;
+                } else {
+                    timerElement.innerHTML = `<small class="text-muted">Ended at: ${endsAt}</small>`;
+                }
             }
-        }
 
-        setInterval(updateTimer, 1000);  // Update every second
-    </script>
+            setInterval(updateTimer, 1000);  // Update every second
+        </script>
+            
+        <script>
+            window.addEventListener('blur', function() {
+                console.log('Tab/window has lost focus');
+                // Implement your logic here
+            });
 
+            document.addEventListener('copy', function(e) {
+                console.log('Copy operation detected');
+                // Implement your logic here
+                e.preventDefault(); // Optional: to prevent the default copy action
+            });
+
+            document.addEventListener('paste', function(e) {
+                console.log('Paste operation detected');
+                // Implement your logic here
+                e.preventDefault(); // Optional: to prevent the default paste action
+            });
+
+            
+            
+        </script>
+    
+        
+
+        {% if doc.assignment.strict == 1 %}
+            <script>
+                window.onload = function() {
+                    var modal = document.getElementById("Test1Modal");
+                    modal.style.display = "block";
+                }
+            </script>
+
+        {% elif doc.assignment.strict == 2 %}
+            <script>
+                window.onload = function() {
+                    var modal = document.getElementById("Test2Modal");
+                    $(modal).modal('show');
+                }
+            </script>
+
+        {% endif %}
+    {% endif %}
 {% endblock %}
