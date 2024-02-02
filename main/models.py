@@ -121,7 +121,7 @@ class Assignment(models.Model):
 
     status = models.IntegerField(default=0) #0, 1, 2 = pending, on-going, archived
 
-    strict = models.IntegerField(default=0) #0, 1, 2 = none, some, all
+    strict = models.IntegerField(default=2) #1, 2 = none, strict
 
 
     def __str__(self):
@@ -141,11 +141,9 @@ class NceaUserDocument(models.Model):
     file = models.ForeignKey(File, on_delete=models.SET_NULL, null = True, blank = True)
     assignment = models.ForeignKey(Assignment, on_delete=models.SET_NULL, null=True, blank=True)
 
-    editable = models.BooleanField(default=True)
+    status = models.CharField(max_length=100, null=True, blank=True)
     
-    started = models.BooleanField(default=False)
-    
-    #change above 2 to status for (locked, started, submitted, etc)
+    #pending, started, paused, locked, submitted.
     
     
     def __str__(self):

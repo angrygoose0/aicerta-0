@@ -631,7 +631,7 @@ def new_assignment_doc(response, id):
                 exam = assignment.exam
                 QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
             
-                user_exam = NceaUserDocument(user=response.user, exam=exam, name="", mark=0, assignment=assignment)
+                user_exam = NceaUserDocument(user=response.user, exam=exam, name="$", mark=0, assignment=assignment, status='pending')
                 user_exam.save()
 
                 for QUESTION in QUESTIONS:
@@ -671,9 +671,14 @@ def edit_assignment(response, id):
         return render(response, "main/edit_assignment.html", context)
     return HttpResponseRedirect("/app/")
 
+
 @require_POST
-def start_test(request, id):
+def update_status(request, id,):
     doc = NceaUserDocument.objects.get(id=id)
-    doc.started = True
+    status = request.POST.get('status')
+    print(status)
+    doc.status = status
     doc.save()
     return JsonResponse({'status': 'success',})
+
+

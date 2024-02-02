@@ -8,7 +8,6 @@
 
 {% block content %}
     <div class="container-fluid">
-        
     
         <div class="row">
             
@@ -150,12 +149,8 @@
                 <div class="modal-footer">
                     <div class="btn-group">
                         <a href="/app/" class="btn btn-sm btn-outline-danger">Not ready?</a>
-                        <form id="testStartForm" method="post" hx-post="/app/start-test/{{doc.id}}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-outline-success" id="StartTest2Btn">Start Test</button>
-                        </form>
-                        
-                        
+                        <button type="button" class="btn btn-sm btn-outline-success" id="StartTest2Btn">Start Test</button>
+
                     </div>
                 </div>
             </div>
@@ -194,6 +189,25 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="lockScreenModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exam Locked</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Your exam has been locked due to a rule violation. Please contact a supervisor to continue.</p>
+                    <div class="btn-group">
+                        <a href="/app/"class="btn btn-sm btn-outline-dark">Home</a>
+                        <button class="btn btn-sm btn-outline-success">Submit Exam</button>
+                    </div>
+                </div>
+                <!-- No footer or close button as this modal is unclosable -->
+            </div>
+        </div>
+    </div>
+    
     
     <div class="modal fade modal-lg" id="OCRModal" tabindex="-1" aria-labelledby="OCRModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
@@ -237,49 +251,10 @@
             </div>
         </div>
     </div>
-
-
-    
-    
-
-
-
 {% endblock %}
 
 {% block scripts %}
 
-    <script>
-
-        document.getElementById('StartTest2Btn').addEventListener('click', function(){
-            $('#Test2Modal').modal('hide');
-
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-
-        });
-
-        document.addEventListener('fullscreenchange', (event) => {
-            const elementsToHide = document.querySelectorAll('.hide-in-fullscreen');
-        
-            if (document.fullscreenElement) {
-                // Entering fullscreen mode
-                elementsToHide.forEach(element => {
-                    element.style.display = 'none';
-                });
-            } else {
-                // Exiting fullscreen mode
-                console.log('Exited fullscreen mode');
-                elementsToHide.forEach(element => {
-                    element.style.display = ''; // Resets the display property
-                });
-            }
-        });        
-    </script>
     <script>
         {% if development_mode %}
             const url = "{{doc.file.file.url}}";         
@@ -288,80 +263,131 @@
         {% endif %}
     </script>
     <script src="{% static 'js/index.js' %}"></script>
-    {% if doc.assignment.status == 1%}
 
-        <script>
-            function calculateTimeLeft(endsAt) {
-                const now = new Date();
-                const endTime = new Date(endsAt);
-                const difference = endTime - now;
+    <script>
 
-                if (difference <= 0) {
-                    return null;  // Past the end time
-                }
+        var assignmentStatus = parseInt("{{ doc.assignment.status }}");
+        var docStatus = "{{ doc.status }}";
+        var assignmentStrict = parseInt("{{ doc.assignment.strict }}");
 
-                const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-                const minutes = Math.floor((difference / 1000 / 60) % 60);
-                const seconds = Math.floor((difference / 1000) % 60);
+        console.log(docStatus)
 
-                return `${hours}h ${minutes}m ${seconds}s`;
+        function calculateTimeLeft(endsAt) {
+            const now = new Date();
+            const endTime = new Date(endsAt);
+            const difference = endTime - now;
+
+            if (difference <= 0) {
+                return null;  // Past the end time
             }
 
-            function updateTimer() {
-                const timerElement = document.getElementById('timer-{{ doc.assignment.id }}');
-                const endsAt = timerElement.getAttribute('data-ends-at');
+            const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((difference / 1000 / 60) % 60);
+            const seconds = Math.floor((difference / 1000) % 60);
 
-                const timeLeft = calculateTimeLeft(endsAt);
-                if (timeLeft) {
-                    timerElement.innerHTML = `<small class="text-muted">Time left: ${timeLeft}</small>`;
-                } else {
-                    timerElement.innerHTML = `<small class="text-muted">Ended at: ${endsAt}</small>`;
-                }
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        function updateTimer() {
+            const timerElement = document.getElementById('timer-{{ doc.assignment.id }}');
+            const endsAt = timerElement.getAttribute('data-ends-at');
+
+            const timeLeft = calculateTimeLeft(endsAt);
+            if (timeLeft) {
+                timerElement.innerHTML = `<small class="text-muted">Time left: ${timeLeft}</small>`;
+            } else {
+                timerElement.innerHTML = `<small class="text-muted">Ended at: ${endsAt}</small>`;
             }
+        }
 
-            setInterval(updateTimer, 1000);  // Update every second
-        </script>
-            
-        <script>
-            window.addEventListener('blur', function() {
-                console.log('Tab/window has lost focus');
-                // Implement your logic here
-            });
+        
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log(data);
 
-            document.addEventListener('copy', function(e) {
-                console.log('Copy operation detected');
-                // Implement your logic here
-                e.preventDefault(); // Optional: to prevent the default copy action
-            });
-
-            document.addEventListener('paste', function(e) {
-                console.log('Paste operation detected');
-                // Implement your logic here
-                e.preventDefault(); // Optional: to prevent the default paste action
-            });
-
-            
-            
-        </script>
-    
+            if (data.message_type === 'update_status') {
+                docStatus = data.status;
+            }
+        };
         
 
-        {% if doc.assignment.strict == 1 %}
-            <script>
-                window.onload = function() {
-                    var modal = document.getElementById("Test1Modal");
-                    modal.style.display = "block";
-                }
-            </script>
+        function updateStatus(status) {
+            var message = {
+                message_type: 'update_status',
+                document_id: '{{doc.id}}',
+                status: status,
+            }
+            socket.send(JSON.stringify(message));
+        };
 
-        {% elif doc.assignment.strict == 2 %}
-            <script>
-                window.onload = function() {
-                    var modal = document.getElementById("Test2Modal");
+        if (assignmentStatus === 1) {
+            setInterval(updateTimer, 1000);
+        }
+    
+        document.getElementById('StartTest2Btn').addEventListener('click', function() {
+            $('#Test2Modal').modal('hide');
+            updateStatus("started");
+
+    
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            }
+        });
+    
+        document.addEventListener('fullscreenchange', (event) => {
+            const elementsToHide = document.querySelectorAll('.hide-in-fullscreen');
+    
+            if (document.fullscreenElement) {
+                elementsToHide.forEach(element => {
+                    element.style.display = 'none';
+                });
+            } else {
+                elementsToHide.forEach(element => {
+                    element.style.display = '';
+                });
+
+                if (docStatus === "started") {
+                    $('#lockScreenModal').modal('show');
+                    updateStatus("locked");
+                    console.log('Exited fullscreen mode');
+                }
+            }
+        });
+    
+        if (docStatus === "started") {
+            window.addEventListener('blur', function() {
+                console.log('Tab/window has lost focus');
+            });
+    
+            document.addEventListener('copy', function(e) {
+                console.log('Copy operation detected');
+                e.preventDefault();
+            });
+    
+            document.addEventListener('paste', function(e) {
+                console.log('Paste operation detected');
+                e.preventDefault();
+            });
+        }
+
+        window.addEventListener('load', function() {
+        
+            if (docStatus === "locked") {
+                var lockScreenModal = document.getElementById("lockScreenModal");
+                $(lockScreenModal).modal('show');
+            } else if (docStatus === "pending") {
+                var modal;
+                if (assignmentStrict === 1) {
+                    modal = document.getElementById("Test1Modal");
+                } else if (assignmentStrict === 2) {
+                    modal = document.getElementById("Test2Modal");
+                }
+                if (modal) {
                     $(modal).modal('show');
                 }
-            </script>
-
-        {% endif %}
-    {% endif %}
+            }
+        });
+        
+    </script>
+    
 {% endblock %}

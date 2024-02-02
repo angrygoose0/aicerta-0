@@ -27,6 +27,5 @@ urlpatterns = [
     path('classroom/<int:id>', views.classroom, name="classroom"),
     path('assignment/<int:id>', views.new_assignment_doc, name="new_assignment_doc"),
     path("edit-assignment/<int:id>", views.edit_assignment, name="edit_assignment"),
-    path("start-test/<int:id>", views.start_test, name="start_test"),
-    
+    path("update-status/<int:id>", views.update_status, name="update_status"),
 ]

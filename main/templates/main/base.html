@@ -64,6 +64,7 @@
         </svg>
     </head>
     <body>
+
         
         <div class="sidenav hide-in-fullscreen">
             <a href="/app/" class="sidenav-brand">
@@ -152,8 +153,7 @@
 
 
         
-        {% block scripts%}
-        {% endblock %}
+        
         
         <script>
             function hideToastAndNavigate(event, toastId, url) {
@@ -367,6 +367,9 @@
             // Run the function to update timestamps every minute
             setInterval(updateTimestamps, 60 * 1000);
         </script>
+
+        {% block scripts%}
+        {% endblock %}
         
 
     </body>
