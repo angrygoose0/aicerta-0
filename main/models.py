@@ -121,7 +121,7 @@ class Assignment(models.Model):
 
     status = models.IntegerField(default=0) #0, 1, 2 = pending, on-going, archived
 
-    strict = models.IntegerField(default=2) #1, 2 = none, strict
+    strict = models.BooleanField(default=False)
 
 
     def __str__(self):

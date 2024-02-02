@@ -631,7 +631,10 @@ def new_assignment_doc(response, id):
                 exam = assignment.exam
                 QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
             
-                user_exam = NceaUserDocument(user=response.user, exam=exam, name="$", mark=0, assignment=assignment, status='pending')
+                user = str(response.user)
+                name = "%s %s" % (assignment.name, user.split('@')[0])
+                
+                user_exam = NceaUserDocument(user=response.user, exam=exam, name=name, mark=0, assignment=assignment, status='pending')
                 user_exam.save()
 
                 for QUESTION in QUESTIONS:

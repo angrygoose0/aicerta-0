@@ -29,7 +29,7 @@ class CreateClass(ModelForm):
 class CreateAssignment(ModelForm):
     class Meta:
         model = Assignment
-        fields = ['name', 'exam', 'description', 'classroom', 'ends_at']
+        fields = ['name', 'exam', 'description', 'classroom', 'ends_at', 'strict']
         widgets = {
             'ends_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
         }
