@@ -1,18 +1,55 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from .models import NceaUserDocument
+from .models import NceaUserDocument, Assignment
 from channels.db import database_sync_to_async
+
+
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user_id = self.scope['user'].id  # assuming the user is authenticated
-        self.room_name = f"user_{self.user_id}"
-        print(self.room_name)
+        self.groups = []
+        user = self.scope['user']
+        self.room_name = f"user_{user.id}"
+        self.groups.append(self.room_name)
         await self.channel_layer.group_add(self.room_name, self.channel_name)
+
+        if user.student:
+            documents = await self.get_student_documents(user)
+            
+            for document in documents:
+                group_name = self.teacher_student_group(document.assignment.teacher.id, user.id, document.id)
+                self.groups.append(group_name)
+                await self.channel_layer.group_add(group_name, self.channel_name)
+        else:  # Assuming non-students are teachers
+            documents = await self.get_teacher_documents(user)
+            for document in documents:
+                group_name = self.teacher_student_group(user.id, document.user.id, document.id)
+                self.groups.append(group_name)
+                await self.channel_layer.group_add(group_name, self.channel_name)
+
+        
+        print(f"User {user.id} is in groups: {self.groups}")
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.room_name, self.channel_name)
+        for group in self.groups:
+            await self.channel_layer.group_discard(group, self.channel_name)
+
+    @database_sync_to_async
+    def get_student_documents(self, user):
+        return list(NceaUserDocument.objects.filter(user=user, assignment__isnull=False).select_related('assignment__teacher'))
+
+    @database_sync_to_async
+    def get_teacher_documents(self, user):
+        assignments = Assignment.objects.filter(teacher=user)
+        return list(NceaUserDocument.objects.filter(assignment__in=assignments).select_related('user'))
+
+    @database_sync_to_async
+    def get_teacher_id(self, doc):
+        return doc.assignment.teacher.id
+    
+    def teacher_student_group(self, teacher_id, student_id, document_id):
+        return f"doc_{document_id}_teacher_{teacher_id}_student_{student_id}"
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -26,22 +63,44 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         document_id = data['document_id']
         status = data['status']
         
-        await self.update_document_status(document_id, status)
+        # Update document status and get the updated document
+        doc = await self.update_document_status(document_id, status)
         
+        teacher_id = await self.get_teacher_id(doc)
+        student_id = await self.get_student_id_from_doc(doc)
         
-        await self.send(text_data=json.dumps({
-            'message_type' : 'update_status',
-            'status' : status,
-        }))
+        group_name = self.teacher_student_group(teacher_id, student_id, document_id)
+
+        # Prepare the message
+        message = json.dumps({
+            'message_type': 'update_status',
+            'status': status,
+            'document_id': document_id,
+        })
+
+        # Send the message to the specific group
+        await self.channel_layer.group_send(
+            group_name,
+            {
+                'type': 'send.message',
+                'message': message
+            }
+        )
         
+    @database_sync_to_async
+    def get_student_id_from_doc(self, doc):
+        return doc.user.id
+    
     @database_sync_to_async
     def update_document_status(self, document_id, status):
         doc = NceaUserDocument.objects.get(id=document_id)
         doc.status = status
         doc.save()
-        
-        
-        
+        return doc
+    
+    async def send_message(self, event):
+        await self.send(text_data=event['message'])
+
     async def notification_message(self, event):
         task_id = event['task_id']
         user_document_name = event['user_document_name']

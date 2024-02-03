@@ -58,7 +58,6 @@ def number_to_word_upper(n):
     # Join the words together and return the result
     return " ".join(words)
 
-
 def saved(n):
     x = n // 5
     return x
@@ -67,9 +66,19 @@ def times(n):
     x = n * 100
     return x
 
+def status_class(status):
+    return {
+        'pending': 'bg-warning',
+        'started': 'bg-primary',
+        'locked': 'bg-danger',
+        'submitted': 'bg-success',
+    }.get(status, 'bg-secondary')  # Default to 'bg-secondary' if status is not recognized
+    
+
 register.filter('to_alphabet', number_to_alphabet)
 register.filter('to_roman', number_to_roman)
 register.filter('NUMBER', number_to_word_upper)
 register.filter('saved', saved)
 register.filter('times', times)
+register.filter('status_class', status_class)
 

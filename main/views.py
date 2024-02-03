@@ -40,6 +40,13 @@ mathpix = MathPix(app_id=settings.MATHPIX_APP_ID, app_key=settings.MATHPIX_APP_K
 from .tasks import mark_document, prepare_document, test, ocr_task
 from celery.result import AsyncResult
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+channel_layer = get_channel_layer()
+
+
+
+
 
 
 # Create your views here.
@@ -615,6 +622,20 @@ def classroom(response, id):
         }
     return render(response, "main/classroom.html", context)
 
+def send_socket_message(room_name, message):
+    async_to_sync(channel_layer.group_send)(
+        room_name,  # Group name
+        {   
+            'type': 'send.message',
+            'message' : message
+        }
+    )
+    
+def teacher_student_group(teacher_id, student_id, document_id):
+    return f"doc_{document_id}_teacher_{teacher_id}_student_{student_id}"
+
+
+
 @login_required(login_url="/login")
 def new_assignment_doc(response, id):
     if response.method == "POST":
@@ -654,8 +675,10 @@ def new_assignment_doc(response, id):
 
                     scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
                     scores.save()
+                    
+            
 
-                return HttpResponseRedirect("/app/%s/edit" % user_exam.id)
+                return HttpResponseRedirect("/app/%s/edit" % user_exam.pk)
 
 @login_required(login_url="/login")
 def edit_assignment(response, id):
@@ -675,13 +698,5 @@ def edit_assignment(response, id):
     return HttpResponseRedirect("/app/")
 
 
-@require_POST
-def update_status(request, id,):
-    doc = NceaUserDocument.objects.get(id=id)
-    status = request.POST.get('status')
-    print(status)
-    doc.status = status
-    doc.save()
-    return JsonResponse({'status': 'success',})
 
 

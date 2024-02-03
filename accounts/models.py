@@ -14,9 +14,7 @@ class CustomUser(AbstractUser):
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     
     student = models.BooleanField(default=False) #true for student accounts #false for teacher accounts
-    
-    
-    
+
     def __str__(self):
         return self.email
     

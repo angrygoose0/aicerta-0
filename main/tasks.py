@@ -20,6 +20,16 @@ from django.dispatch import receiver
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+channel_layer = get_channel_layer()
+
+def send_socket_message(room_name, message):
+    async_to_sync(channel_layer.group_send)(
+        room_name,  # Group name
+        {   
+            'type': 'send.message',
+            'message' : message
+        }
+    )
 
 from mathpix.mathpix import MathPix
 mathpix = MathPix(app_id="aicerta_dba064_cf8251", app_key="1edb871fea6133e08b718918bdfa84093d4bdeade502e3e0eb461d600ad9def7")
@@ -86,7 +96,7 @@ system="""
 
 
 
-channel_layer = get_channel_layer()
+
 
 
 logger = logging.getLogger(__name__)
@@ -220,9 +230,11 @@ def alert(room_name, message, alert, icon):
             'message': message,
             'alert': alert,
             'icon': icon,
-
         }
     )
+    
+
+
 @shared_task
 def test(id, user_id):
     try:   
@@ -530,7 +542,7 @@ def set_assignment_ended(assignment_id):
     assignment.status = 2
     assignment.save()
 
-    NceaUserDocument.objects.filter(assignment=assignment).update(editable=False)
+    #NceaUserDocument.objects.filter(assignment=assignment).update()
     
     users = CustomUser.objects.filter(nceadocument__assignment=assignment).distinct()
     assignment_name = assignment.name
@@ -549,7 +561,22 @@ def schedule_assignment_update(sender, instance, **kwargs):
         delay = (instance.ends_at - timezone.now()).total_seconds()
         if delay > 0:
             set_assignment_ended.apply_async((instance.id,), countdown=delay)
+            
 
 
+@shared_task
+def update_status(doc_id, status):
+    doc = NceaUserDocument.objects.get(id=doc_id)
+    status_socket(f"user_{doc.user.id}", status, doc_id)
+    status_socket(f"user_{doc.assignment.teacher.id}", status, doc_id)
+    
+    
+    
+    
+    doc.status = status
+    doc.save()
+    
+    
+    
 
 

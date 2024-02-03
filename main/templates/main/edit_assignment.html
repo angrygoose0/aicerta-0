@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load myfilters %}
 
 
 {% block title %}edit assignment{% endblock %}
@@ -8,24 +9,116 @@
 <div class="container">
     <div class='exam'>
         <div class="py-3">
+            <h1>{{assignment.name}}</h1>
             
-            {% for userdocument in userdocuments %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ userdocument.name }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ userdocument.user }}</h6>
+            
+                
+
+                <div class="list-group col-5">
+                    {% for userdocument in userdocuments %}
+                        <div class="card list-group-item">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ userdocument.user|truncatechars:26 }}</h5>
+                                
+                                <span id="{{ userdocument.id }}_status" class="position-absolute top-0 start-100 translate-middle badge rounded-pill {{ userdocument.status|status_class }}">
+                                    {{ userdocument.status|title }}
+                                    <span class="visually-hidden">doc status</span>
+                                </span>
+
+                                {% if userdocument.status == 'locked' %}
+                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('pending', {{userdocument.id}})" class="btn btn-sm btn-outline-secondary">Unlock</button>
+                                {% elif userdocument.status == 'started' %}
+                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('locked',{{userdocument.id}})" class="btn btn-sm btn-outline-primary">Lock</button>
+                                {% endif %}
+
+                                    
+
+                                <h6 class="card-subtitle text-muted"></h6>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No one yet.</p>
         
-
-                    </div>
+                    {%endfor%}
+                    
                 </div>
-            
-            {% empty %}
-                <p>No one yet.</p>
 
-            {%endfor%}
+            
+            
         </div>
     </div>
 </div>
+{% endblock %}
+
+{%block scripts%}
+    <script>
+        socket.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                console.log('Received data:', data); // Enhanced logging
+        
+                if (data.message_type === 'update_status') {
+                    const documentId = data.document_id;
+                    const statusElementId = documentId + '_status';
+                    const statusElement = document.getElementById(statusElementId);
+                    const lockButtonId = documentId + '_lock_button';
+                    const lockButton = document.getElementById(lockButtonId);
+        
+                    console.log('Updating status for:', statusElementId); // Enhanced logging
+        
+                    if (statusElement) {
+                        statusElement.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1); // Ensure the first letter is capitalized
+        
+                        statusElement.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill';
+                        switch(data.status) {
+                            case 'pending':
+                                statusElement.classList.add('bg-warning');
+                                break;
+                            case 'started':
+                                statusElement.classList.add('bg-primary');
+                                break;
+                            case 'locked':
+                                statusElement.classList.add('bg-danger');
+                                break;
+                            case 'submitted':
+                                statusElement.classList.add('bg-success');
+                                break;
+                            default:
+                                statusElement.classList.add('bg-secondary');
+                        }
+        
+                        // Update Lock/Unlock Button
+                        if (lockButton) {
+                            if (data.status === 'locked') {
+                                lockButton.textContent = 'Unlock';
+                                lockButton.onclick = function() { updateStatus('pending', documentId); };
+                                lockButton.classList.replace('btn-outline-primary', 'btn-outline-secondary');
+                            } else if (data.status === 'started') {
+                                lockButton.textContent = 'Lock';
+                                lockButton.onclick = function() { updateStatus('locked', documentId); };
+                                lockButton.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+                            }
+                        }
+                    } else {
+                        console.error('Status element not found for ID:', statusElementId);
+                    }
+                }
+            } catch (error) {
+                console.error('Error processing WebSocket message:', error);
+            }
+        };
+        
+        function updateStatus(status, document_id) {
+            var message = {
+                message_type: 'update_status',
+                document_id: document_id,
+                status: status,
+            }
+            socket.send(JSON.stringify(message));
+        };
+
+    </script>
+
 {% endblock %}
 
 

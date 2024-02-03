@@ -129,7 +129,7 @@ class Assignment(models.Model):
     
 
 class NceaUserDocument(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument", null = True, blank = True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument",)
     name = models.CharField(max_length=100)
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     
