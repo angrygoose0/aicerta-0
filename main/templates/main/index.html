@@ -314,37 +314,40 @@
         }
 
         
+
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            console.log(data.status);
+            console.log(data);
+            console.log("data" + data.document_id);
+            console.log('model {{doc.id}}')
 
-            if (data.message_type === 'update_status' && data.doc_id === '{{doc.id}}') {
+            if (data.message_type === 'update_status' && data.document_id === '{{doc.id}}') {
                 docStatus = data.status;
-                console.log(docStatus)
 
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) { /* Safari */
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { /* IE11 */
-                    document.msExitFullscreen();
-                }
-
-                $('#Test1Modal').modal('hide');
-                $('#Test2Modal').modal('hide');
-                $('#lockScreenModal').modal('hide');
-                $('#OCRModal').modal('hide');
-                $('#latexModal').modal('hide');
-                $('#ResultsModal').modal('hide');
-
-
-                if (docStatus === 'locked') {
-                    var lockScreenModal = document.getElementById('lockScreenModal');
-                    $(lockScreenModal).modal('show');
+                if (data.status === 'locked') {
+                    console.log("carrying out locked")
+                    $('#OCRModal').modal('hide');
+                    $('#latexModal').modal('hide');
+                    $('#ResultsModal').modal('hide');
+                    $('#Test1Modal').modal('hide'); 
+                    $('#Test2Modal').modal('hide'); 
+                    if (document.fullscreenElement) {
+                        exitFullscreen();
+                    }        
+                    $('#lockScreenModal').modal('show');
 
                 }
 
-                else if (docStatus === 'pending') {
+                else if (data.status === 'pending') {
+                    console.log("carrying out pending")
+                    $('#OCRModal').modal('hide');
+                    $('#latexModal').modal('hide');
+                    $('#ResultsModal').modal('hide');
+                    if (document.fullscreenElement) {
+                        exitFullscreen();
+                    }
+                    $('#lockScreenModal').modal('hide'); 
+
                     var modal;
                     if (assignmentStrict === 'False') {
                         modal = document.getElementById('Test1Modal');
@@ -410,6 +413,9 @@
                 });
 
                 if (docStatus === "started") {
+                    $('#OCRModal').modal('hide');
+                    $('#latexModal').modal('hide');
+                    $('#ResultsModal').modal('hide');
                     $('#lockScreenModal').modal('show');
                     updateStatus("locked");
                     console.log('Exited fullscreen mode');
@@ -424,6 +430,12 @@
     
         if (docStatus === "started" && assignmentStrict === "True") {
             window.addEventListener('blur', function() {
+                $('#OCRModal').modal('hide');
+                $('#latexModal').modal('hide');
+                $('#ResultsModal').modal('hide');
+                if (document.fullscreenElement) {
+                    exitFullscreen();
+                }
                 $('#lockScreenModal').modal('show');
                 updateStatus("locked");
                 console.log('Tab/window has lost focus');
