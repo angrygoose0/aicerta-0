@@ -26,9 +26,9 @@
                                 </span>
 
                                 {% if userdocument.status == 'locked' %}
-                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('pending', {{userdocument.id}})" class="btn btn-sm btn-outline-secondary">Unlock</button>
-                                {% elif userdocument.status == 'started' %}
-                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('locked',{{userdocument.id}})" class="btn btn-sm btn-outline-primary">Lock</button>
+                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('pending', {{userdocument.id}})" class="btn btn-sm btn-outline-success">Unlock</button>
+                                {% elif userdocument.status == 'started' or userdocument.status == 'pending' %}
+                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('locked',{{userdocument.id}})" class="btn btn-sm btn-outline-danger">Lock</button>
                                 {% endif %}
 
                                     
@@ -92,11 +92,11 @@
                             if (data.status === 'locked') {
                                 lockButton.textContent = 'Unlock';
                                 lockButton.onclick = function() { updateStatus('pending', documentId); };
-                                lockButton.classList.replace('btn-outline-primary', 'btn-outline-secondary');
-                            } else if (data.status === 'started') {
+                                lockButton.classList.replace('btn-outline-danger', 'btn-outline-success');
+                            } else if (data.status === 'started' || data.status == 'pending') {
                                 lockButton.textContent = 'Lock';
                                 lockButton.onclick = function() { updateStatus('locked', documentId); };
-                                lockButton.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+                                lockButton.classList.replace('btn-outline-success', 'btn-outline-danger');
                             }
                         }
                     } else {
