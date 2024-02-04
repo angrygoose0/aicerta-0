@@ -20,16 +20,7 @@ from django.dispatch import receiver
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-channel_layer = get_channel_layer()
 
-def send_socket_message(room_name, message):
-    async_to_sync(channel_layer.group_send)(
-        room_name,  # Group name
-        {   
-            'type': 'send.message',
-            'message' : message
-        }
-    )
 
 from mathpix.mathpix import MathPix
 mathpix = MathPix(app_id="aicerta_dba064_cf8251", app_key="1edb871fea6133e08b718918bdfa84093d4bdeade502e3e0eb461d600ad9def7")
@@ -483,6 +474,17 @@ def mark_document(id, user_id):
         websocket(room_name, task_id, document, 0, error_message)
 
         return str(error_message)
+   
+channel_layer = get_channel_layer()
+
+def send_socket_message(room_name, message):
+    async_to_sync(channel_layer.group_send)(
+        room_name,  # Group name
+        {   
+            'type': 'send.message',
+            'message': json.dumps(message)  # Convert the dictionary to a JSON string
+        }
+    )
     
 @shared_task
 def set_assignment_ended(assignment_id):
@@ -493,14 +495,23 @@ def set_assignment_ended(assignment_id):
     #NceaUserDocument.objects.filter(assignment=assignment).update()
     
     users = CustomUser.objects.filter(nceadocument__assignment=assignment).distinct()
-    assignment_name = assignment.name
     
     for user in users:
-        document_name = NceaUserDocument.name
-        message = f"<p><strong>Time's Up for Assignment: {assignment_name}</strong> - Please note that your document <strong>\"{document_name}\"</strong> for the assignment <strong>\"{assignment_name}\"</strong> has reached the deadline. <hr>Access to editing this document is now disabled.</p>"
+        doc = NceaUserDocument.objects.get(user=user, assignment=assignment)
+        doc.status = 'submitted'
+        message = f"<p><strong>Time's Up for Assignment: {assignment.name}</strong> - Please note that your document <strong>\"{doc.name}\"</strong> for the assignment <strong>\"{assignment.name}\"</strong> has reached the deadline. <hr>Access to editing this document is now disabled.</p>"
         
         alert(f"user_{user.pk}", message, "danger", "exclamation-triangle-fill")
+        
+        doc.save()
+        
+        message = {
+            'message_type': 'update_status',
+            'status': 'submitted',
+            'document_id': doc.pk,
+        }
 
+        send_socket_message(f"doc_{doc.id}_teacher_{doc.assignment.teacher.id}_student_{user.id}", message)
         
 
 @receiver(post_save, sender=Assignment)
@@ -512,17 +523,6 @@ def schedule_assignment_update(sender, instance, **kwargs):
             
 
 
-@shared_task
-def update_status(doc_id, status):
-    doc = NceaUserDocument.objects.get(id=doc_id)
-    status_socket(f"user_{doc.user.id}", status, doc_id)
-    status_socket(f"user_{doc.assignment.teacher.id}", status, doc_id)
-    
-    
-    
-    
-    doc.status = status
-    doc.save()
     
     
     

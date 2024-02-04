@@ -109,7 +109,7 @@
                 console.error('Error processing WebSocket message:', error);
             }
         };  
-    
+        // check for assignment id to see its the correct one.
         function addNewDocumentCard(documentId, status) {
             let cardHtml = `
                 <div class="card list-group-item" id="card_${documentId}">
@@ -129,12 +129,16 @@
         }
 
         function truncateString(str, num) {
+            // Convert 'str' to a string if it's not already
+            str = String(str);
+        
+            // Proceed with the original logic
             if (str.length <= num) {
                 return str;
             }
             return str.slice(0, num) + '...';
         }
-
+        
         function generateButtonsBasedOnStatus(documentId, status) {
             let buttonHtml = '';
             if (status === 'locked') {

@@ -16,9 +16,6 @@
         <!-- Styles for PDF viewer -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css">
 
-
-
-
         <!-- MathJax -->
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
         <script type="text/javascript" id="MathJax-script" async
@@ -110,18 +107,22 @@
                         <li><a class="dropdown-item" href="/app/createassignment">create assignment</a></li>
                     </ul>
                 </div>
-                <div class="dropdown">
-                    <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <!--img src="path_to_user_pfp.png" alt="" class="user-pfp"/-->
-                        {{user.email}}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
-                        <li><a href="/app/account">Account</a></li>
-                        <li><a href="/app/support">Support</a></li>
-                        <!-- Other menu items... -->
-                    </ul>
-                </div> 
+                
             {% endif %}
+            <div class="dropdown">
+                <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <!--img src="path_to_user_pfp.png" alt="" class="user-pfp"/-->
+                    {{user.email}}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
+                    {% if not user.student %}
+                        <li><a href="/app/account">Account</a></li> <!--no credit stuff for student. -->
+                    {% endif %}
+                    <li><a href="/app/support">Support</a></li>
+                    <li><a href="/logout/">Logout</a></li>
+                    <!-- Other menu items... -->
+                </ul>
+            </div> 
         </div>
 
         <div id="content", name="content", class="main">
@@ -318,11 +319,7 @@
                         renderToast(data);
                     }
                     //setup message queuing for messages sent super quick
-                }
-
-
-                else if (data.message_type === 'alert') {
-                    
+                } else if (data.message_type === 'alert') {
 
                     var alertHTML = `
                     <div class="alert alert-${data.alert} alert-dismissible fade show" role="alert">

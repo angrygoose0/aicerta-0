@@ -150,6 +150,9 @@ def upload(response, id):
 
 @login_required(login_url="/login")
 def create(response):
+    if response.user.student:
+        return HttpResponseForbidden
+    
     form = CreateNewDocument(user=response.user)
 
     if response.method == "POST":
@@ -194,6 +197,9 @@ def create(response):
 @login_required(login_url="/login/")
 def createclass(response):
     
+    if response.user.student:
+        return HttpResponseForbidden
+
     if response.method == "POST":
         form = CreateClass(response.POST)
         if form.is_valid():
@@ -212,6 +218,9 @@ def createclass(response):
 
 @login_required(login_url="/login/")
 def createassignment(response):
+    
+    if response.user.student:
+        return HttpResponseForbidden
     
     if response.method == "POST":
         form = CreateAssignment(response.POST)
@@ -540,6 +549,9 @@ def trigger_mark(response, id):
             return HttpResponseForbidden()
                     
         if credits < required_credits:
+            return HttpResponseForbidden()
+        
+        if doc.status != 'submitted':
             return HttpResponseForbidden()
 
         user_id = response.user.id
