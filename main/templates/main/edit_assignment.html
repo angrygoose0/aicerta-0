@@ -10,41 +10,45 @@
     <div class='exam'>
         <div class="py-3">
             <h1>{{assignment.name}}</h1>
-            
-            
-                
 
-                <div class="list-group col-5">
-                    {% for userdocument in userdocuments %}
-                        <div class="card list-group-item">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ userdocument.user|truncatechars:26 }}</h5>
-                                
-                                <span id="{{ userdocument.id }}_status" class="position-absolute top-0 start-100 translate-middle badge rounded-pill {{ userdocument.status|status_class }}">
-                                    {{ userdocument.status|title }}
-                                    <span class="visually-hidden">doc status</span>
-                                </span>
 
-                                {% if userdocument.status == 'locked' %}
-                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('pending', {{userdocument.id}})" class="btn btn-sm btn-outline-success">Unlock</button>
-                                {% elif userdocument.status == 'started' or userdocument.status == 'pending' %}
-                                    <button id="{{ userdocument.id }}_lock_button" onclick="updateStatus('locked',{{userdocument.id}})" class="btn btn-sm btn-outline-danger">Lock</button>
+            <div class="list-group col-5" id="userDocumentContainer">
+                {% for userdocument in userdocuments %}
+                    <div class="card list-group-item" id="card_{{userdocument.id}}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ userdocument.user|truncatechars:26 }}</h5>
+                            <span id="{{ userdocument.id }}_status" class="position-absolute top-0 start-100 translate-middle badge rounded-pill {{ userdocument.status|status_class }}">
+                                {{ userdocument.status|title }}
+                                <span class="visually-hidden">doc status</span>
+                            </span>
+
+                            {% if userdocument.status == 'locked' %}
+                                <button id="{{ userdocument.id }}_unlock_button" class="btn btn-sm btn-outline-success">Unlock</button>
+                            {% elif userdocument.status == 'started' or userdocument.status == 'pending' %}
+                                <button id="{{ userdocument.id }}_lock_button" class="btn btn-sm btn-outline-danger">Lock</button>
+                            {% elif userdocument.status == 'submitted' %}
+
+                                {% if userdocument.marked_before == 1 %}
+                                    <div class="btn-group">
+                                        <a class="btn btn-sm btn-outline-success" href="/app/{{ userdocument.id }}/view">View Marks</a>
+                                        <a class="btn btn-sm btn-outline-success" href="{% url 'prepare_mark' userdocument.id %}">Mark</a>
+                                    </div>
+                                {% elif userdocument.marked_before == 0 %}
+                                    <a class="btn btn-sm btn-outline-success" href="{% url 'prepare_mark' userdocument.id %}">Mark</a>
                                 {% endif %}
 
-                                    
+                            {% endif %}
 
-                                <h6 class="card-subtitle text-muted"></h6>
-                            </div>
+                            <a href="/app/{{userdocument.id}}/preview" class="btn btn-sm btn-outline-primary">View</a>
+
+                            
                         </div>
-                    {% empty %}
-                        <p>No one yet.</p>
-        
-                    {%endfor%}
-                    
-                </div>
-
-            
-            
+                    </div>
+                {% empty %}
+                    <p>No one yet.</p>
+                {%endfor%}
+                
+            </div>
         </div>
     </div>
 </div>
@@ -52,62 +56,111 @@
 
 {%block scripts%}
     <script>
+        let existingDocuments = new Set(); // To store existing document IDs
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeExistingDocuments();
+
+            // Attach event listeners for lock and unlock buttons
+            document.addEventListener('click', function(event) {
+                if (event.target && event.target.id.endsWith('_unlock_button')) {
+                    const documentId = event.target.id.replace(/_unlock_button$/, '');
+                    updateStatus('pending', documentId);
+                } else if (event.target && event.target.id.endsWith('_lock_button')) {
+                    const documentId = event.target.id.replace(/_lock_button$/, '');
+                    updateStatus('locked', documentId);
+                }
+            });
+        });
+        
+        function initializeExistingDocuments() {
+            const cards = document.querySelectorAll('.list-group-item');
+            cards.forEach(card => {
+                const idMatch = card.id.match(/^card_(.+)$/);
+                if (idMatch) {
+                    existingDocuments.add(idMatch[1]);
+                }
+            });
+        }
+
         socket.onmessage = function(event) {
             try {
-                const data = JSON.parse(event.data);
+                let data = JSON.parse(event.data);
                 console.log('Received data:', data); // Enhanced logging
         
                 if (data.message_type === 'update_status') {
-                    const documentId = data.document_id;
-                    const statusElementId = documentId + '_status';
-                    const statusElement = document.getElementById(statusElementId);
-                    const lockButtonId = documentId + '_lock_button';
-                    const lockButton = document.getElementById(lockButtonId);
+                    let documentId = data.document_id;
+                    let status = data.status;
         
-                    console.log('Updating status for:', statusElementId); // Enhanced logging
-        
-                    if (statusElement) {
-                        statusElement.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1); // Ensure the first letter is capitalized
-        
-                        statusElement.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill';
-                        switch(data.status) {
-                            case 'pending':
-                                statusElement.classList.add('bg-warning');
-                                break;
-                            case 'started':
-                                statusElement.classList.add('bg-primary');
-                                break;
-                            case 'locked':
-                                statusElement.classList.add('bg-danger');
-                                break;
-                            case 'submitted':
-                                statusElement.classList.add('bg-success');
-                                break;
-                            default:
-                                statusElement.classList.add('bg-secondary');
+                    if (existingDocuments.has(documentId)) {
+
+                        let existingCard = document.getElementById(`card_${documentId}`);
+                        if (existingCard) {
+                            existingCard.remove();
                         }
-        
-                        // Update Lock/Unlock Button
-                        if (lockButton) {
-                            if (data.status === 'locked') {
-                                lockButton.textContent = 'Unlock';
-                                lockButton.onclick = function() { updateStatus('pending', documentId); };
-                                lockButton.classList.replace('btn-outline-danger', 'btn-outline-success');
-                            } else if (data.status === 'started' || data.status == 'pending') {
-                                lockButton.textContent = 'Lock';
-                                lockButton.onclick = function() { updateStatus('locked', documentId); };
-                                lockButton.classList.replace('btn-outline-success', 'btn-outline-danger');
-                            }
-                        }
+                        addNewDocumentCard(documentId, status);
+
                     } else {
-                        console.error('Status element not found for ID:', statusElementId);
+                        addNewDocumentCard(documentId, status);
+                        existingDocuments.add(documentId);
                     }
                 }
             } catch (error) {
                 console.error('Error processing WebSocket message:', error);
             }
-        };
+        };  
+    
+        function addNewDocumentCard(documentId, status) {
+            let cardHtml = `
+                <div class="card list-group-item" id="card_${documentId}">
+                    <div class="card-body">
+                        <h5 class="card-title">${truncateString(documentId, 26)}</h5>
+                        <span id="${documentId}_status" class="position-absolute top-0 start-100 translate-middle badge rounded-pill ${statusToClass(status)}">
+                            ${status.charAt(0).toUpperCase() + status.slice(1)}
+                            <span class="visually-hidden">doc status</span>
+                        </span>
+                        ${generateButtonsBasedOnStatus(documentId, status)}
+                        <a href="/app/${documentId}/preview" class="btn btn-sm btn-outline-primary">View</a>
+                    </div>
+                </div>
+            `;
+    
+            document.querySelector("#userDocumentContainer").innerHTML += cardHtml;
+        }
+
+        function truncateString(str, num) {
+            if (str.length <= num) {
+                return str;
+            }
+            return str.slice(0, num) + '...';
+        }
+
+        function generateButtonsBasedOnStatus(documentId, status) {
+            let buttonHtml = '';
+            if (status === 'locked') {
+                buttonHtml = `<button id="${documentId}_unlock_button" class="btn btn-sm btn-outline-success">Unlock</button>`;
+            } else if (status === 'started' || status === 'pending') {
+                buttonHtml = `<button id="${documentId}_lock_button" class="btn btn-sm btn-outline-danger">Lock</button>`;
+            } else if (status === 'submitted') {
+                // Adjust this part based on your specific requirements for the 'submitted' status
+                buttonHtml = `<a class="btn btn-sm btn-outline-success" href="/app/${documentId}/mark">Mark</a>`;
+            }
+            return buttonHtml;
+        }
         
+        
+        
+
+        function statusToClass(status) {
+            switch (status) {
+                case 'locked': return 'bg-danger';
+                case 'started': return 'bg-primary';
+                case 'pending': return 'bg-warning';
+                case 'submitted': return 'bg-success';
+                default: return '';
+            }
+        }
+
         function updateStatus(status, document_id) {
             var message = {
                 message_type: 'update_status',
@@ -116,8 +169,10 @@
             }
             socket.send(JSON.stringify(message));
         };
-
     </script>
+
+    
+
 
 {% endblock %}
 

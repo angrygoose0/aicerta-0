@@ -13,13 +13,14 @@
             
             <div class="col {% if doc.file %} scrolling-column {% endif %}">
                 <div class="container position-relative">
-                    <!-- Eye Icon Button at the top right -->
-                    <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
-                        <i class="fas fa-upload"></i>
-                    </button>
+                    {% if not doc.assignment %}
+                        <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    {% endif %}
                     <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 5rem;" data-bs-toggle="modal" data-bs-target="#latexModal">
                         <i class="fas fa-square-root-alt"></i>
                     </button> 
@@ -36,7 +37,11 @@
                         </div>
                         
                         {% include "main/partials/forms.html" %}
-                        <button class="btn btn-outline-success" type="button">Submit</button>
+
+                        {% if doc.assignment %}
+                            
+                            <button class="btn btn-outline-success submit-btn btn" type="submit">Submit Exam</button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -208,7 +213,25 @@
                     <p>Your exam has been locked due to a rule violation. Please contact a supervisor to continue.</p>
                     <div class="btn-group">
                         <a href="/app/"class="btn btn-sm btn-outline-dark">Home</a>
-                        <button class="btn btn-sm btn-outline-success">Submit Exam</button>
+                        <button class="btn btn-outline-success submit-btn btn-sm" type="button">Submit Exam</button>
+                    </div>
+                </div>
+                <!-- No footer or close button as this modal is unclosable -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="submittedModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exam has been Submitted.</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Your exam has been submitted. You are no longer able to edit your document.</p>
+                    <div class="btn-group">
+                        <a href="/app/"class="btn btn-sm btn-outline-dark">Home</a>
+                        <a href="/app/{{doc.id}}/preview" class="btn btn-sm btn-outline-success">View Document</a>
                     </div>
                 </div>
                 <!-- No footer or close button as this modal is unclosable -->
@@ -313,7 +336,6 @@
             }
         }
 
-        
 
         socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
@@ -323,6 +345,7 @@
 
             if (data.message_type === 'update_status' && data.document_id === '{{doc.id}}') {
                 docStatus = data.status;
+                console.log("1st")
 
                 if (data.status === 'locked') {
                     console.log("carrying out locked")
@@ -331,6 +354,7 @@
                     $('#ResultsModal').modal('hide');
                     $('#Test1Modal').modal('hide'); 
                     $('#Test2Modal').modal('hide'); 
+                    $('#submittedModal').modal('hide');
                     if (document.fullscreenElement) {
                         exitFullscreen();
                     }        
@@ -343,10 +367,12 @@
                     $('#OCRModal').modal('hide');
                     $('#latexModal').modal('hide');
                     $('#ResultsModal').modal('hide');
+                    $('#lockScreenModal').modal('hide'); 
+                    $('#submittedModal').modal('hide');
                     if (document.fullscreenElement) {
                         exitFullscreen();
                     }
-                    $('#lockScreenModal').modal('hide'); 
+                    
 
                     var modal;
                     if (assignmentStrict === 'False') {
@@ -357,9 +383,22 @@
                     if (modal) {
                         $(modal).modal('show');
                     }
-        
-                    
+    
+                } else if (data.status === 'pending') {
+                    $('#OCRModal').modal('hide');
+                    $('#latexModal').modal('hide');
+                    $('#ResultsModal').modal('hide');
+                    $('#Test1Modal').modal('hide'); 
+                    $('#Test2Modal').modal('hide'); 
+                    $('#lockScreenModal').modal('hide');
+                    if (document.fullscreenElement) {
+                        exitFullscreen();
+                    }     
+
+                    $('#submittedModal').modal('show');
                 }
+
+
             }
         };
         
@@ -386,6 +425,36 @@
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
             }
+        });
+
+        function submitDoc() {
+            console.log('Submit button clicked');
+
+            
+            $('#OCRModal').modal('hide');
+            $('#latexModal').modal('hide');
+            $('#ResultsModal').modal('hide');
+            $('#Test1Modal').modal('hide'); 
+            $('#Test2Modal').modal('hide'); 
+            $('#lockScreenModal').modal('hide');
+
+            if (document.fullscreenElement) {
+                exitFullscreen();
+            }        
+            
+            $('#submittedModal').modal('show');
+            updateStatus("submitted")
+            
+        }
+
+
+        
+        // Select all elements with the class 'submit-btn'
+        const submitButtons = document.querySelectorAll('.submit-btn');
+        
+        // Attach the event listener to each button
+        submitButtons.forEach(button => {
+            button.addEventListener('click', submitDoc);
         });
 
         function exitFullscreen() {
@@ -455,8 +524,8 @@
         window.addEventListener('load', function() {
         
             if (docStatus === "locked") {
-                var lockScreenModal = document.getElementById("lockScreenModal");
-                $(lockScreenModal).modal('show');
+                
+                $('#lockScreenModal').modal('show');
             } else if (docStatus === "pending") {
                 var modal;
                 if (assignmentStrict === "False") {
@@ -467,6 +536,10 @@
                 if (modal) {
                     $(modal).modal('show');
                 }
+            } else if (docStatus === "submitted"){
+                $('#submittedModal').modal('show');
+
+
             }
         });
 

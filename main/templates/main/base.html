@@ -68,7 +68,7 @@
         
         <div class="sidenav hide-in-fullscreen">
             <a href="/app/" class="sidenav-brand">
-                <img src="path_to_your_logo.png" alt="" class="sidenav-logo"/>
+                <!--img src="path_to_your_logo.png" alt="" class="sidenav-logo"/-->
                 AICERTA
             </a>
             <a href="/app/">Home</a>
@@ -112,7 +112,7 @@
                 </div>
                 <div class="dropdown">
                     <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="path_to_user_pfp.png" alt="" class="user-pfp"/>
+                        <!--img src="path_to_user_pfp.png" alt="" class="user-pfp"/-->
                         {{user.email}}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
@@ -174,9 +174,33 @@
 
         <script>
             
-            const socket = new WebSocket(
-                'ws://' + window.location.host + '/ws/notifications/'
-            );
+            function setupWebSocket() {
+                const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
+            
+                socket.onopen = () => console.log("WebSocket connection opened.");
+                socket.onerror = error => console.error("WebSocket Error:", error);
+            
+                socket.onclose = event => {
+                    if (event.wasClean) {
+                        console.log(`WebSocket connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+                    } else {
+                        console.error("WebSocket connection died. Attempting to reconnect...");
+                        // Attempt to reconnect after a delay (e.g., 5 seconds)
+                        setTimeout(setupWebSocket, 5000);
+                    }
+                };
+            
+                // Handle other events like onmessage here
+            
+                return socket;
+            }
+            
+            // Initialize WebSocket connection
+            let socket = setupWebSocket();
+
+            socket.onopen = () => console.log("WebSocket connection opened.");
+            socket.onerror = error => console.error("WebSocket Error:", error);
+            socket.onclose = event => event.wasClean ? console.log(`WebSocket connection closed cleanly, code=${event.code}, reason=${event.reason}`) : console.error("WebSocket connection died");
         
             // Function to store toast data in localStorage
             function storeToastData(data) {
@@ -252,9 +276,7 @@
             
         
             // WebSocket handlers
-            socket.onopen = () => console.log("WebSocket connection opened.");
-            socket.onerror = error => console.error("WebSocket Error:", error);
-            socket.onclose = event => event.wasClean ? console.log(`WebSocket connection closed cleanly, code=${event.code}, reason=${event.reason}`) : console.error("WebSocket connection died");
+            
         
             socket.onmessage = function(event) {
                 const data = JSON.parse(event.data);

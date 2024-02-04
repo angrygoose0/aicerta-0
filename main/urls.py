@@ -13,7 +13,6 @@ urlpatterns = [
     path("createclass/", views.createclass, name="createclass"),
     path("createassignment/", views.createassignment, name="createassignment"),
     path("classroom-join/", views.classroom_join, name="classroom_join"),
-    path("<int:id>/delete/", views.delete_ncea_document, name="delete_ncea_document"),
     path("<int:id>/delete/assignment", views.delete_assignment, name="delete_assignment"),
     path("account/", views.settings_page, name="settings"),
     #path("standard/", views.standard, name="standard"),

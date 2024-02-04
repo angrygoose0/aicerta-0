@@ -129,7 +129,7 @@ class Assignment(models.Model):
     
 
 class NceaUserDocument(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument",)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="nceadocument")
     name = models.CharField(max_length=100)
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     
@@ -159,7 +159,7 @@ class NceaUserQuestions(models.Model):
     document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
     question = models.ForeignKey(NceaSecondaryQuestion, on_delete=models.CASCADE)  
     
-    answer = models.TextField(max_length=1500)
+    answer = models.TextField(max_length=1500, null=True, blank=True)
     
 
     def __str__(self):

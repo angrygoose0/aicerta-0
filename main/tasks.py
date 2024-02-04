@@ -235,79 +235,23 @@ def alert(room_name, message, alert, icon):
     
 
 
-@shared_task
-def test(id, user_id):
-    try:   
-        doc = NceaUserDocument.objects.get(id=id)
-        user = CustomUser.objects.get(id=user_id)
 
-        required_credits = doc.credit_price
-        credits = user.credits
-
-        room_name = f"user_{user_id}"
-        task_id = current_task.request.id
-
-        if doc.user != user:
-            error_message="Unauthorized attempt"
-            websocket(room_name, task_id, doc, 0, error_message)
-            return error_message
-
-        if credits < required_credits:
-            error_message="Not enough credits"
-            websocket(room_name, task_id, doc, 0, error_message)
-            return error_message
-        
-    except Exception as e:
-        print(e)
-        return str(e)
-    
-    
-
-    websocket(room_name, task_id, doc, 0, None)
-    time.sleep(1)
-    
-    websocket(room_name, task_id, doc, 10, None)
-    time.sleep(3)
-    
-    websocket(room_name, task_id, doc, 12, None)
-    time.sleep(4)
-    
-    websocket(room_name, task_id, doc, 34, None)
-    time.sleep(2)
-    
-    websocket(room_name, task_id, doc, 55, None)
-    time.sleep(6)
-    
-    websocket(room_name, task_id, doc, 78, None)
-    time.sleep(5)
-    
-    websocket(room_name, task_id, doc, 82, None)
-    time.sleep(1)
-    
-    websocket(room_name, task_id, doc, 88, None)
-    time.sleep(7)
-    
-    websocket(room_name, task_id, doc, 95, None)
-    time.sleep(2)
-    
-    websocket(room_name, task_id, doc, 100, None)
-
-    return
 
 @shared_task
 def mark_document(id, user_id): 
     
     try:   
         document = NceaUserDocument.objects.get(id=id)
+        
         user = CustomUser.objects.get(id=user_id)
 
         required_credits = document.credit_price
         credits = user.credits
-
+        
         room_name = f"user_{user_id}"
         task_id = current_task.request.id
-
-        if document.user != user:
+        
+        if document.assignment.teacher != user:
             error_message="Unauthorized attempt"
             websocket(room_name, task_id, document, 0, error_message)
             return error_message
@@ -318,8 +262,8 @@ def mark_document(id, user_id):
             return error_message
         
     except Exception as error_message:
-        print(e)
-        return str(e)
+        print(error_message)
+        return str(error_message)
 
     try:
         websocket(room_name, task_id, document, 0, None)
@@ -382,21 +326,23 @@ def mark_document(id, user_id):
             if any(criteria.image == 1 for criteria in criteria_list):
                 y=0
                 for criteria in criteria_list:
-                    bullet_point = bullet_points.get(criteria=criteria)
+                    bullet_point = bullet_points.filter(criteria=criteria)
                     
-                    bullet_point.confidence = 100
-                    bullet_point.explanation = "images as answers aren't supported, so the response has been marked correct as a placeholder."
-                    pastel_color(bullet_point)
-                    bullet_point.save()
+                    for bullet in bullet_point:
                     
-                    for question in common_questions:
-                        print(question)
-                        y+=1
-                        print(y)
-                        user_question = user_questions.get(question=question)
-                        
-                        quote = Quoted(bullet_point=bullet_point, secondary_question=question, quote=user_question.answer)
-                        quote.save()
+                        bullet.confidence = 100
+                        bullet.explanation = "images as answers aren't supported, so the response has been marked correct as a placeholder."
+                        pastel_color(bullet)
+                        bullet.save()
+                    
+                        for question in common_questions:
+                            print(question)
+                            y+=1
+                            print(y)
+                            user_question = user_questions.get(question=question)
+                            
+                            quote = Quoted(bullet_point=bullet, secondary_question=question, quote=user_question.answer)
+                            quote.save()
             else:
                 system_message = {"role":"system", "content": 
                     r"%s" % (system)}
@@ -458,22 +404,23 @@ def mark_document(id, user_id):
 
                     criteria = next((c for c in criteria_list if c.order == order), None)
                     if criteria is not None:
-                        bullet_point = bullet_points.get(criteria=criteria)                   
-                        bullet_point.confidence = confidence
-                        bullet_point.explanation = explanation
-                        pastel_color(bullet_point)
-                        bullet_point.save()
-                        
-                        for key, value in quotes.items():
-                            match = re.match(r"\((.*?)\)\((.*?)\)", key)
-                            if match:
-                                alphabet, roman = match.groups()
-                                primary = alphabet_to_number(alphabet)
-                                secondary = roman_to_number(roman)
-                                
-                                secondary_question = common_questions.get(primary=primary, secondary=secondary)  
-                                Quoted.objects.create(secondary_question=secondary_question, bullet_point=bullet_point, quote=value)
-                                
+                        bullet_point = bullet_points.filter(criteria=criteria)
+                        for bullet in bullet_point:  
+                            bullet.confidence = confidence
+                            bullet.explanation = explanation
+                            pastel_color(bullet)
+                            bullet.save()
+                            
+                            for key, value in quotes.items():
+                                match = re.match(r"\((.*?)\)\((.*?)\)", key)
+                                if match:
+                                    alphabet, roman = match.groups()
+                                    primary = alphabet_to_number(alphabet)
+                                    secondary = roman_to_number(roman)
+                                    
+                                    secondary_question = common_questions.get(primary=primary, secondary=secondary)  
+                                    Quoted.objects.create(secondary_question=secondary_question, bullet_point=bullet, quote=value)
+                                    
         QUESTIONS = NceaQUESTION.objects.filter(exam=document.exam)
         
         
@@ -490,16 +437,17 @@ def mark_document(id, user_id):
             )
             
             for criteria in criterias:
-                bulletpoint = BulletPoint.objects.get(document=document, criteria=criteria)
-                
-                if bulletpoint.confidence >= minimum_confidence:
-                    if criteria.type == "a":
-                        total_a += 1
-                    elif criteria.type == "m":
-                        total_m += 1
-                    elif criteria.type == "e":
-                        total_e += 1
-                        
+                bulletpoints = BulletPoint.objects.filter(document=document, criteria=criteria)
+                for bulletpoint in bulletpoints:
+    
+                    if bulletpoint.confidence >= minimum_confidence:
+                        if criteria.type == "a":
+                            total_a += 1
+                        elif criteria.type == "m":
+                            total_m += 1
+                        elif criteria.type == "e":
+                            total_e += 1
+                            
             conditions = [
                 (8, 'e', QUESTION.e8),
                 (7, 'e', QUESTION.e7),

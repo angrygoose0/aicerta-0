@@ -14,19 +14,9 @@
                         <ul class="dropdown-menu">
                             {% if td.marked_before == 1 %}
                                 <li><a class="dropdown-item btn-sm btn-outline-success" href="/app/{{ td.id }}/view">View Marks</a></li>
-                                <li><a class="dropdown-item btn-sm btn-outline-success" href="{% url 'prepare_mark' td.id %}">Mark</a></li>
-                            {% elif td.marked_before == 0 %}
-
-                                <li><a class="dropdown-item btn-outline-success" href="{% url 'prepare_mark' td.id %}">Mark</a></li>
                             {% endif %}
 
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form class="dropdown-item" hx-post="/app/{{ td.id }}/delete/" hx-trigger="submit" hx-swap="none" hx-response="myResponseHandler">
-                                    {% csrf_token %}
-                                    <button type="submit" class=" btn-danger btn btn-sm">Delete</button>
-                                </form>
-                            </li>
                         </ul>
                     </div>
                 </div>
