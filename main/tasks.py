@@ -368,9 +368,6 @@ def mark_document(id, user_id):
                 messages.append(user_message)
                 print(messages)
                 
-                file_name = f"message_{counter}.json"
-                with open(file_name, 'w') as f:
-                    json.dump(messages, f, indent=4)
 
                 temperature=0
                 res = client.chat.completions.create(
