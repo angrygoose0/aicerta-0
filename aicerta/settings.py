@@ -37,7 +37,13 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,127.0.0.1:8000").split(",")
 
-CSRF_TRUSTED_ORIGINS = ['https://aicerta.com', 'https://www.aicerta.com',]
+CSRF_TRUSTED_ORIGINS = [
+    'https://aicerta.com', 
+    'https://*.aicerta.com',
+    'https://orca-app-om52q.ondigitalocean.app',
+    'https://*.orca-app-om52q.ondigitalocean.app',
+    
+]
 
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
