@@ -263,7 +263,7 @@ MATHPIX_APP_ID=os.environ.get("MATHPIX_APP_ID")
 MATHPIX_APP_KEY=os.environ.get("MATHPIX_APP_KEY")
 
 
-
+"""
 if DEVELOPMENT_MODE is True:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
@@ -280,3 +280,4 @@ else:
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
     }
+"""
