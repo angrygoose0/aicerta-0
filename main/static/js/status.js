@@ -86,6 +86,30 @@ socket.onmessage = function(event) {
                 exitFullscreen();
             }     
             $('#submittedModal').modal('show');
+        } else if (data.status === 'started') {
+            if (assignmentStrict === "True") {
+                window.addEventListener('blur', function() {
+                    $('#OCRModal').modal('hide');
+                    $('#latexModal').modal('hide');
+                    $('#ResultsModal').modal('hide');
+                    if (document.fullscreenElement) {
+                        exitFullscreen();
+                    }
+                    $('#lockScreenModal').modal('show');
+                    updateStatus("locked");
+                    console.log('Tab/window has lost focus');
+                });
+            
+                document.addEventListener('copy', function(e) {
+                    console.log('Copy operation detected');
+                    e.preventDefault();
+                });
+            
+                document.addEventListener('paste', function(e) {
+                    console.log('Paste operation detected');
+                    e.preventDefault();
+                });
+            }
         }
     }
 };
@@ -96,6 +120,7 @@ function updateStatus(status) {
         message_type: 'update_status',
         document_id: docId,
         status: status,
+        assignment_id: docAssignmentId,
     }
     docStatus = status;
     socket.send(JSON.stringify(message));
@@ -184,30 +209,6 @@ document.getElementById('StartTest1Btn').addEventListener('click', function() {
     $('#Test1Modal').modal('hide');
     updateStatus("started");
 });
-
-if (docStatus === "started" && assignmentStrict === "True") {
-    window.addEventListener('blur', function() {
-        $('#OCRModal').modal('hide');
-        $('#latexModal').modal('hide');
-        $('#ResultsModal').modal('hide');
-        if (document.fullscreenElement) {
-            exitFullscreen();
-        }
-        $('#lockScreenModal').modal('show');
-        updateStatus("locked");
-        console.log('Tab/window has lost focus');
-    });
-
-    document.addEventListener('copy', function(e) {
-        console.log('Copy operation detected');
-        e.preventDefault();
-    });
-
-    document.addEventListener('paste', function(e) {
-        console.log('Paste operation detected');
-        e.preventDefault();
-    });
-}
 
 window.addEventListener('load', function() {
 

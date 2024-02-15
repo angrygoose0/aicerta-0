@@ -30,7 +30,6 @@ homepage
             <div class="tab-content" id="myTabsContent">
                 <!-- Assignments Tab Pane -->
                 <div class="tab-pane show active" id="assignments" role="tabpanel" aria-labelledby="assignments-tab">
-
                     <!-- Assignments List -->
                     {% if user.student == True %}
                         <div class="assignments">
@@ -65,10 +64,10 @@ homepage
                     {% if user.student == False %}
                         <!-- Assignment Status Filter -->
                         <div class="mb-3">
-                            <select class="form-select" onchange="filterAssignments(this.value)">
-                                <option value="all">All Assignments</option>
+                            <select class="form-select" id="assignmentFilter" onchange="filterAssignments(this.value)">
+                                <!-- Removed the All Assignments option -->
                                 <option value="0">Pending</option>
-                                <option value="1">On-going</option>
+                                <option value="1" selected>On-going</option> <!-- Set On-going as the default selected option -->
                                 <option value="2">Archived</option>
                             </select>
                         </div>
@@ -103,6 +102,7 @@ homepage
                             {% endfor %}
                         </div>
                     {% endif %}
+                </div>
 
                 <!-- People Tab Pane -->
                 <div class="tab-pane" id="people" role="tabpanel" aria-labelledby="people-tab">
@@ -112,8 +112,8 @@ homepage
                                 <div class="card mb-3">
                                     <!--img src="{{ person.profile_picture_url }}" class="card-img-top" alt="{{ person.name }}"-->
                                     <div class="card-body">
-                                        <h5 class="card-title">{{ person.name }}</h5>
-                                        <p class="card-text">{{ person.role }}</p>
+                                        <h5 class="card-title">{{person}}</h5>
+                                        <p class="card-text"></p>
                                     </div>
                                 </div>
                             </div>
@@ -127,6 +127,16 @@ homepage
     </div>
 
     <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the assignment filter element exists
+            const assignmentFilter = document.getElementById('assignmentFilter');
+            if (assignmentFilter) {
+                // Trigger the change event to apply the default filter
+                filterAssignments(assignmentFilter.value);
+            }
+        });
+
         function filterAssignments(status) {
             document.querySelectorAll('.assignments .card').forEach(card => {
                 if (status === 'all' || card.getAttribute('data-status') === status) {

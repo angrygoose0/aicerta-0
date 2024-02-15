@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
+from accounts.models import CustomUser
 from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
@@ -619,10 +620,12 @@ def classroom(response, id):
     classroom = Classroom.objects.get(id=id)
     
     assignments = Assignment.objects.filter(classroom=classroom)
+    people = classroom.students.all()
     
     context = {
         'classroom' : classroom,
         'assignments' : assignments,
+        'people' : people,
         }
     return render(response, "main/classroom.html", context)
 

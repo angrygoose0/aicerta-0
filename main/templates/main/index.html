@@ -295,6 +295,12 @@
     </script>
     <script src="{% static 'js/index.js' %}"></script>
 
+    <noscript>
+        <div style="background-color: #ffdddd; border-left: 6px solid #f44336; padding: 20px; position: fixed; bottom: 0; width: 100%; text-align: center;">
+            <strong>JavaScript is disabled.</strong> JavaScript is required to take this exam. Please enable JavaScript in your browser settings.
+        </div>
+    </noscript>
+
     <script type="text/javascript">
         let assignmentStatus = parseInt("{{ doc.assignment.status }}");
         let docStatus = "{{ doc.status }}";

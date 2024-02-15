@@ -62,6 +62,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def handle_status_update(self, data):
         document_id = data['document_id']
         status = data['status']
+        assignment_id = data['assignment_id']
         
         # Update document status and get the updated document
         doc = await self.update_document_status(document_id, status)
@@ -76,6 +77,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'message_type': 'update_status',
             'status': status,
             'document_id': document_id,
+            'assignment_id' : assignment_id
         })
 
         # Send the message to the specific group

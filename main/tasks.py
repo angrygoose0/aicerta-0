@@ -505,10 +505,11 @@ def set_assignment_ended(assignment_id):
         message = {
             'message_type': 'update_status',
             'status': 'submitted',
-            'document_id': doc.pk,
+            'document_id': f'{doc.pk}',
+            'assignment_id': f'{doc.assignment.id}'
         }
 
-        send_socket_message(f"doc_{doc.id}_teacher_{doc.assignment.teacher.id}_student_{user.id}", message)
+        send_socket_message(f"doc_{doc.pk}_teacher_{doc.assignment.teacher.id}_student_{user.pk}", message)
         
 
 @receiver(post_save, sender=Assignment)
