@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import pandas as pd
-from main.models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, AssesmentSchedule, Criteria
+from main.models import NceaExam, NceaQUESTION, NceaSecondaryQuestion, Criteria
 
 class Command(BaseCommand):
     help = 'import booms'
