@@ -54,6 +54,8 @@ socket.onmessage = function(event) {
                 exitFullscreen();
             }        
             $('#lockScreenModal').modal('show');
+
+            removeEventListeners();
         } else if (data.status === 'pending') {
             console.log("carrying out pending")
             $('#OCRModal').modal('hide');
@@ -74,6 +76,7 @@ socket.onmessage = function(event) {
             if (modal) {
                 $(modal).modal('show');
             }
+            removeEventListeners();
 
         } else if (data.status === 'submitted') {
             $('#OCRModal').modal('hide');
@@ -86,34 +89,46 @@ socket.onmessage = function(event) {
                 exitFullscreen();
             }     
             $('#submittedModal').modal('show');
+            removeEventListeners();
+
         } else if (data.status === 'started') {
             if (assignmentStrict === "True") {
-                window.addEventListener('blur', function() {
-                    $('#OCRModal').modal('hide');
-                    $('#latexModal').modal('hide');
-                    $('#ResultsModal').modal('hide');
-                    if (document.fullscreenElement) {
-                        exitFullscreen();
-                    }
-                    $('#lockScreenModal').modal('show');
-                    updateStatus("locked");
-                    console.log('Tab/window has lost focus');
-                });
-            
-                document.addEventListener('copy', function(e) {
-                    console.log('Copy operation detected');
-                    e.preventDefault();
-                });
-            
-                document.addEventListener('paste', function(e) {
-                    console.log('Paste operation detected');
-                    e.preventDefault();
-                });
+
+                window.addEventListener('blur', handleBlur);
+                document.addEventListener('copy', handleCopy);
+                document.addEventListener('paste', handlePaste);
             }
         }
     }
 };
 
+function removeEventListeners() {
+    window.removeEventListener('blur', handleBlur);
+    document.removeEventListener('copy', handleCopy);
+    document.removeEventListener('paste', handlePaste);
+}
+
+function handleBlur() {
+    $('#OCRModal').modal('hide');
+    $('#latexModal').modal('hide');
+    $('#ResultsModal').modal('hide');
+    if (document.fullscreenElement) {
+        exitFullscreen();
+    }
+    $('#lockScreenModal').modal('show');
+    updateStatus("locked");
+    console.log('Tab/window has lost focus');
+}
+
+function handleCopy(e) {
+    console.log('Copy operation detected');
+    e.preventDefault();
+}
+
+function handlePaste(e) {
+    console.log('Paste operation detected');
+    e.preventDefault();
+}
 
 function updateStatus(status) {
     var message = {

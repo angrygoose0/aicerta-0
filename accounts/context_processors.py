@@ -1,6 +1,7 @@
 from .models import CustomUser
 from main.models import Classroom
 from main.forms import ClassroomJoin
+from django.conf import settings
 
 def classroom_list(request):
     if request.user.is_authenticated:
@@ -23,3 +24,6 @@ def user(request):
         user = request.user
         return {'user': user}
     return {'user': []}
+
+def development_mode(request):
+    return {'development_mode': settings.DEVELOPMENT_MODE}        

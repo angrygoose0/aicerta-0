@@ -27,7 +27,7 @@
                                     {% for userquestion, criteria_list in userquestion_with_criteria %}
                                         <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 
                                         <br>
-                                        <p id="answer-{{ userquestion.id }}">{{userquestion.answer}}</p>
+                                        <p id="answer-{{ userquestion.id }}" >{{userquestion.answer}}</p>
                                     {% endfor%}
                                 </ul>
 
@@ -96,13 +96,12 @@
     <script>
         function highlightQuotes(bulletPointId) {
             quotesData.forEach(function(quote) {
-                
                 if (quote.bulletpoint_id == bulletPointId) {
                     var answerElement = document.getElementById('answer-' + quote.quote_question_id);
-                    console.log(quote.quote)
                     if (answerElement) {
                         var highlightedText = answerElement.innerHTML.replace(quote.quote, `<span id="quote-${quote.quote_id}" class="highlight">${quote.quote}</span>`);
                         answerElement.innerHTML = highlightedText;
+                        MathJax.typesetPromise([answerElement]); // Ask MathJax to re-process the updated content
                     }
                 }
             });
@@ -116,14 +115,12 @@
                         var quoteElement = document.getElementById('quote-' + quote.quote_id);
                         if (quoteElement) {
                             answerElement.innerHTML = answerElement.innerHTML.replace(quoteElement.outerHTML, quoteElement.innerHTML);
+                            MathJax.typesetPromise([answerElement]); // Re-process after removing highlight
                         }
                     }
                 }
             });
         }
-        
-        
-
         document.querySelectorAll('li[data-bullet]').forEach(function(bulletPointElement) {
             bulletPointElement.addEventListener('mouseenter', function() {
                 var bulletPointId = this.getAttribute('data-bullet');

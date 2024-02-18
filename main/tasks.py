@@ -377,12 +377,12 @@ def mark_document(id, user_id):
                     temperature=temperature
                 )
 
-                counter += 1
 
                 marks = res.choices[0].message.content
                 tokens += res.usage.total_tokens
                 processed_marks = backslash(marks)
                 data = json.loads(processed_marks)
+                
 
                 for criterion_data in data['criteria']:
                     order = criterion_data['no']

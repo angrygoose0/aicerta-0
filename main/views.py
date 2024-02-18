@@ -56,7 +56,6 @@ channel_layer = get_channel_layer()
 
 @login_required(login_url="/login/")
 def home(response):
-
     return render(response, "main/home.html")
         
 @login_required(login_url="/login/")
@@ -73,7 +72,8 @@ def prepare_mark(response, id):
             return render(response, "main/prepare_mark.html", context, status=202)
         
     return HttpResponseForbidden()
-        
+
+@login_required(login_url="login/")        
 def check_task(response, task_id,):
     task = AsyncResult(task_id)
     user = response.user
@@ -385,6 +385,7 @@ def detect_document(image_model):
             "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
 
+@login_required(login_url="login/")
 def serve_protected_file(request, file_id):
     file_instance = File.objects.get(pk=file_id)
     
@@ -399,6 +400,7 @@ def serve_protected_file(request, file_id):
 
     return HttpResponseRedirect(url)
 
+@login_required(login_url="login/")
 def save_image(request, id):
     if request.method == "POST":
         form = OCRImageForm(request.POST, request.FILES)
@@ -615,7 +617,7 @@ def support(response):
         }
     return render(response, "main/support.html", context)
 
-
+@login_required(login_url="login/")
 def classroom(response, id):
     classroom = Classroom.objects.get(id=id)
     
