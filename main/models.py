@@ -30,7 +30,7 @@ class NceaQUESTION(models.Model):
     ECHOICES = generate_choices('e')
 
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
-    QUESTION = models.IntegerField()
+    QUESTION = models.IntegerField(editable = False)
     
     n0 = models.IntegerField(default=0, choices=ACHOICES)
     n1 = models.IntegerField(default=1, choices=ACHOICES)
@@ -42,6 +42,12 @@ class NceaQUESTION(models.Model):
     e7 = models.IntegerField(default=1, choices=ECHOICES)
     e8 = models.IntegerField(default=2, choices=ECHOICES)
     
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Checking if this is a new instance
+            # Retrieve the highest QUESTION number for the current exam
+            last_question = NceaQUESTION.objects.filter(exam=self.exam).order_by('-QUESTION').first()
+            self.QUESTION = 1 if not last_question else last_question.QUESTION + 1
+        super(NceaQUESTION, self).save(*args, **kwargs)
     
     def __str__(self):
         return "%s, %s" % (self.exam, self.QUESTION)
@@ -52,8 +58,8 @@ class NceaQUESTION(models.Model):
 class NceaSecondaryQuestion(models.Model):
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
 
-    primary = models.IntegerField()
-    secondary = models.IntegerField()
+    primary = models.IntegerField() #a=1, b=2, c=3, d=4
+    secondary = models.IntegerField() #i=1, ii=2, iii=3, iv=4
     
     evidence = models.TextField(null=True, blank=True)
 
@@ -64,8 +70,6 @@ class NceaSecondaryQuestion(models.Model):
     class Meta:
         ordering = ['QUESTION', 'primary', 'secondary']
         
-    
-    
 class Criteria(models.Model):
     secondary_questions = models.ManyToManyField(NceaSecondaryQuestion, related_name="nceacriteria", blank=True)
     text = models.TextField(null=True, blank=True)
@@ -78,8 +82,6 @@ class Criteria(models.Model):
     def __str__(self):
         return "%s, %s, %s" % (self.secondary_questions, self.type, self.order)
 
-    
-    
 
 class File(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

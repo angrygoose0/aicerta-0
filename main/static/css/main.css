@@ -326,3 +326,54 @@ label {
     height: 16px;
 }
 
+/* Make input fields smaller and more compact */
+.compact-form input,
+.compact-form select,
+.compact-form textarea {
+    font-size: 12px; /* Smaller font size */
+    padding: 5px; /* Smaller padding */
+    margin-bottom: 5px; /* Reduce space between fields */
+}
+
+/* Optionally, adjust the size of labels and other elements as needed */
+.compact-form label {
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+/* Adjust form row or specific field classes if necessary */
+.compact-form .form-row,
+.compact-form .form-group {
+    margin-bottom: 10px; /* Less space between form groups */
+}
+
+/* Container for each form or question to apply flexbox */
+.question-form .form-row {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping if not enough space */
+    gap: 10px; /* Space between fields */
+}
+
+/* Style for input fields, select boxes, and textareas to make them square */
+.question-form input[type="number"],
+.question-form select,
+.question-form textarea {
+    width: 30px; /* Adjust based on your needs */
+    height: 30px; /* Equal height and width make a square */
+    padding: 5px;
+    text-align: center; /* Center the text/input */
+}
+
+/* Adjust label to display above the field or as needed */
+.question-form label {
+    display: block; /* Ensure labels are on their own line */
+    text-align: center; /* Center-align labels */
+    margin-bottom: 5px; /* Space between label and field */
+}
+
+/* Adjust the flex item to align content */
+.question-form .form-group {
+    display: flex;
+    flex-direction: column; /* Stack label and field vertically */
+    align-items: center; /* Center-align the flex items */
+}

@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title%}
+create new standard
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <div class='exam'>
+            <div class="py-3">
+                <h1>Your Standards</h1>
+            </div>
+
+            <div class="list-group col-5" id="standardContainer">
+                {% for standard in standards %}
+                    <div class="card list-group-item">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ standard.exam_name|truncatechars:26 }}</h5>
+
+                            <p class="card-subtitle mb-2 text-muted">Standard: {{standard.standard}}</p>
+                            <p class="card-subtitle mb-2 text-muted">Year: {{standard.year}}</p>
+                                            
+                            <a href="/app/{{standard.id}}/edit-standard/" class="btn btn-sm btn-outline-secondary">Edit</a>
+
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>None yet.</p>
+                {%endfor%}
+                
+            </div>
+
+
+            
+        </div>
+    </div>
+{% endblock %}

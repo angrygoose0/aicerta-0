@@ -1,0 +1,34 @@
+{% extends 'main/base.html' %}
+{% load myfilters %}
+{% load crispy_forms_tags %}
+
+{% block title %}Upload{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class='exam'>
+        <div class="py-3">
+
+            <h1>{{ standard.exam_name }}</h1>
+            <form method="post" class="compact-form" id="questionsForm">
+                {% csrf_token %}
+                {{ formset.management_form }}
+                <div id="formsetContainer">
+                    {% for form in formset %}
+                        <!-- Apply flex container to each form/question for its fields -->
+                        <div class="question-form" data-form-index="{{ forloop.counter0 }}">
+                            <h3>QUESTION {{ form.instance.QUESTION }}</h3>
+                            <div class="form-row"> <!-- This will act as a flex container -->
+                                {{ form|crispy }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-outline-success" type="submit">Save Changes</button>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}

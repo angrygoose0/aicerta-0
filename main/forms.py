@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, inlineformset_factory
 from django import forms
 from .models import NceaExam, Classroom, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage, Assignment
 import roman
@@ -109,3 +109,19 @@ class CreateNewStandard(forms.Form):
 
 class ClassroomJoin(forms.Form):
     code = forms.CharField(label="Join Code", max_length=10)
+    
+    
+
+class NceaQUESTIONForm(forms.ModelForm):
+    class Meta:
+        model = NceaQUESTION
+        fields = ['n0', 'n1', 'n2', 'a3', 'a4', 'm5', 'm6', 'e7', 'e8']
+
+NceaQUESTIONFormSet = inlineformset_factory(
+    parent_model=NceaExam,
+    model=NceaQUESTION,
+    form=NceaQUESTIONForm,
+    extra=0,
+    can_delete=True,
+    fk_name='exam',
+)

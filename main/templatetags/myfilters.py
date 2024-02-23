@@ -74,6 +74,21 @@ def status_class(status):
         'submitted': 'bg-success',
     }.get(status, 'bg-secondary')  # Default to 'bg-secondary' if status is not recognized
     
+def score(x):
+    # Define a dictionary mapping input values to output strings
+    score_map = {
+        0: "N0",
+        1: "N1",
+        2: "N2",
+        3: "A3",
+        4: "A4",
+        5: "M5",
+        6: "M6",
+        7: "E7",
+        8: "E8",
+    }
+    return score_map.get(x)
+    
 
 register.filter('to_alphabet', number_to_alphabet)
 register.filter('to_roman', number_to_roman)
@@ -81,4 +96,5 @@ register.filter('NUMBER', number_to_word_upper)
 register.filter('saved', saved)
 register.filter('times', times)
 register.filter('status_class', status_class)
+register.filter('score', score)
 

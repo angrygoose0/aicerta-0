@@ -1,15 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
 from accounts.models import CustomUser
-from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin
-from django.forms import modelformset_factory
+from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin, NceaQUESTIONForm, NceaQUESTIONFormSet
 from django.forms.widgets import TextInput
+from django.forms.models import inlineformset_factory
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from payment.models import ProductPrice
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
@@ -56,6 +57,8 @@ channel_layer = get_channel_layer()
 
 @login_required(login_url="/login/")
 def home(response):
+    user = response.user
+    
     return render(response, "main/home.html")
         
 @login_required(login_url="/login/")
@@ -239,6 +242,65 @@ def createassignment(response):
         'form': form
     }
     return render(response, "main/createassignment.html", context)
+
+@login_required(login_url="/login/")
+def standards(response):
+    user = response.user
+    if user.student:
+        return HttpResponseForbidden
+    
+    standards = NceaExam.objects.filter(users=user)
+    
+    context = {
+        'standards' : standards,
+        
+    }
+        
+    return render(response, "main/standards.html", context)
+
+@login_required(login_url="/login/")
+def edit_standard(request, id):
+    exam = get_object_or_404(NceaExam, pk=id)
+    
+    if request.method == 'POST':
+        formset = NceaQUESTIONFormSet(request.POST, instance=exam)
+        if formset.is_valid():
+            formset.save()
+            return render(request, 'main/edit_standard.html', {'formset': formset,})
+    else:
+        formset = NceaQUESTIONFormSet(instance=exam)
+
+    return render(request, 'main/edit_standard.html', {'formset': formset,})
+
+
+
+@login_required(login_url="/login/")
+def preview(response, id):
+    doc = NceaUserDocument.objects.get(id=id)
+    if doc.user == response.user or doc.assignment.teacher == response.user:
+        userquestions = NceaUserQuestions.objects.filter(document = doc)
+        #get how many QUESTIONS there are
+        QUESTIONS = NceaQUESTION.objects.filter(exam=doc.exam)
+        # for each QUESTION, the system message will be the system in the NceaQUESTION
+    
+        userquestion_groups = {}
+        for userquestion in userquestions:
+
+            question = userquestion.question.QUESTION.QUESTION
+            if question not in userquestion_groups:
+                userquestion_groups[question] = []
+            userquestion_groups[question].append(userquestion)
+
+        context ={
+            "doc": doc,
+            "userquestion_groups" : userquestion_groups,
+            "QUESTIONS" : QUESTIONS,
+        }
+
+        return render(response, "main/preview.html", context)
+    
+    return HttpResponseForbidden()
+
 
 
 

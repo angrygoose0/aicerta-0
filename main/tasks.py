@@ -327,9 +327,6 @@ def mark_document(id, user_id):
                         bullet.save()
                     
                         for question in common_questions:
-                            print(question)
-                            y+=1
-                            print(y)
                             user_question = user_questions.get(question=question)
                             
                             quote = Quoted(bullet_point=bullet, secondary_question=question, quote=user_question.answer)

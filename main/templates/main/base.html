@@ -68,7 +68,6 @@
                 <!--img src="path_to_your_logo.png" alt="" class="sidenav-logo"/-->
                 AICERTA
             </a>
-            <a href="/app/">Home</a>
             <div class="dropdown">
                 <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Classes
@@ -96,17 +95,18 @@
                 </ul>
             </div>
             {% if user.student == False %}
+                <a href="/app/standards/">Standards</a>
                 <div class="dropdown">
                     <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Create
                     </a>
                     <ul class="dropdown-menu" data-bs-theme="dark">
                         <li><a class="dropdown-item" href="/app/create/">create document</a></li>
-                        <li><a class="dropdown-item" href="#">create standard</a></li>
                         <li><a class="dropdown-item" href="/app/createclass/">create classroom</a></li>
                         <li><a class="dropdown-item" href="/app/createassignment/">create assignment</a></li>
                     </ul>
                 </div>
+                
                 
             {% endif %}
             <div class="dropdown">
@@ -117,6 +117,7 @@
                 <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
                     {% if not user.student %}
                         <li><a href="/app/account/">Account</a></li> <!--no credit stuff for student. -->
+                        
                     {% endif %}
                     <li><a href="/app/support/">Support</a></li>
                     <li><a href="/logout/">Logout</a></li>
