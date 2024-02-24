@@ -3,7 +3,6 @@ socket.addEventListener('open', function(event) {
     updateStatus(docStatus);
 });
 
-console.log(docStatus)
 
 function calculateTimeLeft(endsAt) {
     const now = new Date();
@@ -131,6 +130,7 @@ function handlePaste(e) {
 }
 
 function updateStatus(status) {
+
     var message = {
         message_type: 'update_status',
         document_id: docId,

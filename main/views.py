@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
 from accounts.models import CustomUser
-from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin, NceaQUESTIONForm, NceaQUESTIONFormSet
+from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin, NceaQUESTIONForm
+from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.forms.models import inlineformset_factory
 from django.core.exceptions import ObjectDoesNotExist
@@ -336,8 +337,6 @@ def index(response, id):
     doc = NceaUserDocument.objects.get(id=id)
     if doc.user == response.user:
 
-        
-        
         qs = NceaUserQuestions.objects.filter(document = doc)
         AnswerFormset = modelformset_factory(NceaUserQuestions, form=AnswerForm , extra = 0,)
         formset = AnswerFormset(queryset=qs,)
@@ -388,12 +387,10 @@ def index(response, id):
 
                 context['formset'] = formset
                 context['form_groups'] = form_groups
-                context['message'] = "Data Saved."
             else:
                 print(form.errors)  
         if response.htmx:
             return render(response, "main/partials/forms.html", context)    
-        doc.started = True
         doc.save()
         return render(response, "main/index.html", context)
     return HttpResponseRedirect("/app/")

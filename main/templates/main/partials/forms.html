@@ -27,13 +27,10 @@
                 </ul>
             </div>
         {% endfor %}
-        <button type="save" value="save" class="btn btn-secondary" hx-post="{% url 'index' id=doc.id %}" hx-target="#answer-formset" hx-swap="outerHTML">
-            Save
+        <button type="save" value="save" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;" class="btn btn-sm btn-outline-dark" hx-post="{% url 'index' id=doc.id %}" hx-target="#answer-formset" hx-swap="outerHTML">
+            <i class="fas fa-save"></i> Last saved: <small><span id="last-saved-time">just now</span><small>
         </button>
-        <!--div class ='htmx-indicator'>Loading...</div-->
-        {% if message %}
-            <p>{{ message}} </p>
-        {% endif %}
+
     </form>
 </div>
 

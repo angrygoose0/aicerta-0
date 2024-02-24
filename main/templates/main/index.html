@@ -29,7 +29,10 @@
                         <div class="countdown-timer" id="timer-{{ doc.assignment.id }}" data-ends-at="{{ doc.assignment.ends_at|date:'c' }}" ><small class="text-muted">Time left: Calculating...</small></div>
                     {% endif %}          
                     <div class='exam'>
+                        
+                        
                         <div class="py-3">
+                            
                             <h1>{{doc.name}}</h1>
                             <small><b>Standard: {{doc.exam.standard}}</b></small> 
                             <br>
@@ -282,9 +285,45 @@
             </div>
         </div>
     </div>
+
+    
+    
 {% endblock %}
 
 {% block scripts %}
+
+    <script>
+        document.body.addEventListener('htmx:afterSwap', function(event) {
+            if (event.target.id === 'answer-formset') {
+                updateLastSavedTime("just now");
+            }
+        });
+        
+        function updateLastSavedTime(text) {
+            document.getElementById('last-saved-time').innerText = text;
+        }
+        
+        // Update the "Last saved" time using Moment.js every minute
+        setInterval(function() {
+            let lastSavedElement = document.getElementById('last-saved-time');
+            if (lastSavedElement.innerText === "just now") {
+                // Update the time to 1 minute ago after 60 seconds
+                setTimeout(function() {
+                    lastSavedElement.innerText = moment().subtract(1, 'minutes').fromNow();
+                }, 60000);
+            } else {
+                // Update the time based on the current time minus the last saved time
+                let lastSavedTime = moment(lastSavedElement.getAttribute('data-last-saved'), 'YYYY-MM-DD HH:mm:ss');
+                lastSavedElement.innerText = lastSavedTime.fromNow();
+            }
+        }, 60000); // Check every minute
+        
+        // Call this function immediately to set the initial data-last-saved attribute
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('last-saved-time').setAttribute('data-last-saved', moment().format('YYYY-MM-DD HH:mm:ss'));
+        });
+    </script>
+    
 
     <script>
         {% if development_mode %}
@@ -307,6 +346,17 @@
         const docId = "{{ doc.id }}"
         const assignmentStrict = "{{ doc.assignment.strict }}";
         const docAssignmentId = "{{doc.assignment.id}}"
+
+    
+
+        {% if doc.assignment %}
+            // This will run if doc.assignment is not None (and not falsey in Python terms)
+            let docAssignment = true;
+        {% else %}
+            // This will run if doc.assignment is None or falsey
+            let docAssignment = false;
+
+        {% endif %}
     </script>
 
     <script src="{% static 'js/status.js' %}"></script>
