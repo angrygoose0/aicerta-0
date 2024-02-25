@@ -377,3 +377,24 @@ label {
     flex-direction: column; /* Stack label and field vertically */
     align-items: center; /* Center-align the flex items */
 }
+
+
+.bullet_point li {
+    position: relative; /* Ensure the <li> can contain a fully-sized button */
+    padding: 0; /* Remove padding to allow the button to fully expand */
+}
+
+.edit-mark-btn {
+    width: 100%; /* Make the button occupy the full width of the <li> */
+    height: 100%; /* Make the button occupy the full height of the <li> */
+    background-color: transparent; /* Remove any background color */
+    border: none; /* Remove border */
+    padding: 10px; /* Add padding to the button for spacing, adjust as needed */
+    text-align: left; /* Align the button text to the left */
+    color: inherit; /* Inherit the text color from the parent */
+}
+
+.edit-mark-btn:focus {
+    outline: none; /* Remove the focus outline */
+}
+

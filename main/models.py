@@ -196,7 +196,7 @@ class BulletPoint(models.Model):
     r = models.IntegerField(default=255)
     g = models.IntegerField(default=255)
     b = models.IntegerField(default=255)
-    no = models.IntegerField(default=0)
+    no = models.IntegerField(default=0) #0-100
     
     def __str__(self):
         return "%s, %s" % (self.document, self.criteria)
