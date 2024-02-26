@@ -139,7 +139,7 @@ logger = logging.getLogger(__name__)
 def backslash(text):
     processed_text = text.replace("\\", "\\\\")
     return processed_text
-system = backslash(system)
+
 
 
 from collections import defaultdict
