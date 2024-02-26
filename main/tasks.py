@@ -33,26 +33,39 @@ client = OpenAI(
     
 )
 
-system="""
+system = """
     You are tasked with marking exam answers.
 
     You will be given one or multiple criteria, and one or multiple user answers.
 
     For each criteria, your job is to figure out if the one or multiple answers fulfil the specific criteria.
 
-    You are also given a model answer for each question, this is a guideline that human markers use to ensure accurate marking. Keep in mind, one user answer might be trying to fulfil multiple criteria, ones you may or may not be given, and so the evidence may be more detailed than needed.
+    You are also given a model answer for each question, this is a guideline that human markers use to ensure accurate marking. Keep in mind, one answer might be trying to fulfil multiple criteria, ones you may or may not be given, and so the evidence may be more detailed than needed.
     Just focus on if the specific criteria you are on is fulfilled by the user answers you are given.
 
     When processing the input text, please pay special attention to patterns that match the LaTeX notation for inline and display equations, to ensure accurate processing of mathematical content.
 
-    Your response should be given as JSON.
-    {"criteria":[{"no":<criteria number>,"confidence":<confidence number>,"explanation":"<explanation>","quotes":{"<question id>":"<quote>"}}]}
+    Pay attention to A ND/OR in the criteria.
+    AND means both conditions must be met. For example, if the criteria say "A AND B," then both A and B must be true for the condition to be satisfied.
+
+    OR means only one condition needs to be met. If the criteria say "A OR B," then either A or B (or both) can be true for the condition to be satisfied.
+
+    An implied answer doesn't count. Criteria must be explicitly met—suggestions or implications are considered incorrect. Clarity and directness are key.
+    {
+    "criteria": [
+        {
+        "no":<criteria number>,
+        "confidence": <confidence number from 0 to 100>,
+        "explanation": "<explanation for the confidence number>",
+        "quotes": {
+            "<question identifier>": "<direct quote from the USER answer>
+        }
+        },
 
     - Criteria Number (no): The number of the criteria being evaluated.
-    - Confidence Number (confidence): A number from 0 to 100 representing how confident you are that the USER answer fulfills the criteria. A score of 0 means you are completely confident the answer is wrong, and a score of 100 means you are 100% confident the answer is correct.
+    - Confidence Number (confidence): A number from 0 to 100 representing how confident you are that the answer fulfills the criteria. A score of 0 means you are completely confident the answer is wrong, and a score of 100 means you are 100% confident the answer is correct.
     - Explanation (explanation): A detailed explanation of why you gave the confidence number you did.
     - Quotes (quotes): A dictionary where each key is a question identifier and each value is a direct quote from the USER answer that fulfills the criteria. This direct quote must be accurate(punctuation and spaces)
-    NOTE: if a quote in the answer is seperated (so there are mutliple parts in the answer that qualifies the criteria), create multiple seperate JSON quote objects.
 
     Here is an example of a possible user input:
     Model Answer:
@@ -63,27 +76,57 @@ system="""
     (b)(ii):
     Water boils at 100 degrees Celsius at standard atmospheric pressure.
     (c)(i):
-    The Earth revolves around the Sun.
+    \begin{aligned} &\frac{5}{5}\times\frac{2}{5}=\frac{10}{25} \\ &\frac{2}{5} \\ \end{aligned}
 
     User Answer:
     (a)(i):
     The capital of New Zealand is Tauranga.
     (b)(i):
-    At standard pressure, water freezes at 0°C.
+    At standard atmospheric pressure, water freezes at 0°C.
     (b)(ii): 
-    At standard pressure, water boils at 100°C.
-    (c)(i): The Earth likes to revolve.
+    At standard atmosphericpressure, water boils at 90°C.
+    (c)(i): \(\frac{5}{5}\cdot\frac{2}{5}=\frac{10}{25}\)
 
     Criteria:
     1: States that the capital of New Zealand is Auckland.
-    2: States that water boils at 100 degrees celsius, and freezes at 0 degreese celsius at standard atmospheric pressure.
-    3: States that the Earth revolves around the Sun.
+    2: States that water boils at 100 degrees celsius, AND freezes at 0 degrees celsius at standard atmospheric pressure.
+    3: Gets the answer to \begin{aligned} &\frac{5}{5}\times\frac{2}{5}=\frac{10}{25} \\ &\frac{2}{5} \\ \end{aligned} , AND simplifies
 
 
     Here is an example of the output:
-    {"criteria":[{"no":1,"confidence":0,"explanation":"The response was completely incorrect, as the capital of New Zealand is NOT Tauranga.","quotes":{"(a)(i)":"The capital of New Zealand is Tauranga."}},{"no":2,"confidence":100,"explanation":"The response was completely correct, as the user states that water boils at 100 degrees celsius, and freezes at 0 degrees celsius at standard atmospheric pressure.","quotes":{"(b)(i)":"At 0 degrees Celsius, water,",(b)(i)":"solidifying into ice under the influence of standard atmospheric pressure.","(b)(ii)":"At standard pressure, water boils at 100°C"}},{"no":3,"confidence":20,"explanation":"The response states that the earth revolves but doesn't state around what.","quotes":{"(c)(i)":"The Earth likes to revolve."}}]}
-    This JSON should be outputted as unformatted and with minimal whitespace.
-    """ 
+    {
+    "criteria": [
+        {
+        "no": 1,
+        "confidence":0 ,
+        "explanation": "The response was completely incorrect, as the capital of New Zealand is NOT Tauranga.",
+        "quotes": {
+            "(a)(i)": "The capital of New Zealand is Tauranga.",
+        }
+        },
+        {
+        "no":2 ,
+        "confidence": 40,
+        "explanation": " The response is partially correct because it mentions water freezes at 0°C but omits that water boils at 100°C at standard atmospheric pressure..",
+        "quotes": {
+            "(b)(i)": "At standard pressure, water freezes at 0°C.",
+            "(b)(ii)": "At standard pressure, water boils at 90°C"
+        }
+        },
+        {
+        "no": 3,
+        "confidence": 40,
+        "explanation": "The response gets the answer to \begin{aligned} &\frac{5}{5}\times\frac{2}{5}=\frac{10}{25} \\ &\frac{2}{5} \\ \end{aligned}, but doesnt simplify",
+        "quotes": {
+            "(c)(i)": "\(\frac{5}{5}\cdot\frac{2}{5}=\frac{10}{25}\).",
+        }
+        }
+    ]
+    }
+"""
+
+
+
 
 
 
@@ -96,13 +139,14 @@ logger = logging.getLogger(__name__)
 def backslash(text):
     processed_text = text.replace("\\", "\\\\")
     return processed_text
+system = backslash(system)
 
 
 from collections import defaultdict
 
 openai.api_key = settings.AI_API
 
-encoding = tiktoken.encoding_for_model("gpt-4")
+encoding = tiktoken.encoding_for_model("gpt-4-0125-preview")
 
 
 
@@ -242,7 +286,7 @@ def mark_document(id, user_id):
         room_name = f"user_{user_id}"
         task_id = current_task.request.id
         
-        if document.assignment.teacher != user:
+        if document.assignment and document.assignment.teacher != user:
             error_message="Unauthorized attempt"
             websocket(room_name, task_id, document, 0, error_message)
             return error_message
@@ -368,7 +412,7 @@ def mark_document(id, user_id):
 
                 temperature=0
                 res = client.chat.completions.create(
-                    model="gpt-4-1106-preview",
+                    model="gpt-4-0125-preview",
                     response_format={"type":"json_object"},
                     messages=messages,
                     temperature=temperature
