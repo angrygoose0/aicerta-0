@@ -51,16 +51,8 @@ system = """
     OR means only one condition needs to be met. If the criteria say "A OR B," then either A or B (or both) can be true for the condition to be satisfied.
 
     An implied answer doesn't count. Criteria must be explicitly met—suggestions or implications are considered incorrect. Clarity and directness are key.
-    {
-    "criteria": [
-        {
-        "no":<criteria number>,
-        "confidence": <confidence number from 0 to 100>,
-        "explanation": "<explanation for the confidence number>",
-        "quotes": {
-            "<question identifier>": "<direct quote from the USER answer>
-        }
-        },
+    {"criteria":[{"no":<criteria number>,"confidence":<confidence number from 0 to 100>,"explanation":"<explanation for the confidence number>","quotes":{"<question identifier>":"<direct quote from the USER answer>"}}]}
+
 
     - Criteria Number (no): The number of the criteria being evaluated.
     - Confidence Number (confidence): A number from 0 to 100 representing how confident you are that the answer fulfills the criteria. A score of 0 means you are completely confident the answer is wrong, and a score of 100 means you are 100% confident the answer is correct.
@@ -94,35 +86,7 @@ system = """
 
 
     Here is an example of the output:
-    {
-    "criteria": [
-        {
-        "no": 1,
-        "confidence":0 ,
-        "explanation": "The response was completely incorrect, as the capital of New Zealand is NOT Tauranga.",
-        "quotes": {
-            "(a)(i)": "The capital of New Zealand is Tauranga.",
-        }
-        },
-        {
-        "no":2 ,
-        "confidence": 40,
-        "explanation": " The response is partially correct because it mentions water freezes at 0°C but omits that water boils at 100°C at standard atmospheric pressure..",
-        "quotes": {
-            "(b)(i)": "At standard pressure, water freezes at 0°C.",
-            "(b)(ii)": "At standard pressure, water boils at 90°C"
-        }
-        },
-        {
-        "no": 3,
-        "confidence": 40,
-        "explanation": "The response gets the answer to \begin{aligned} &\frac{5}{5}\times\frac{2}{5}=\frac{10}{25} \\ &\frac{2}{5} \\ \end{aligned}, but doesnt simplify",
-        "quotes": {
-            "(c)(i)": "\(\frac{5}{5}\cdot\frac{2}{5}=\frac{10}{25}\).",
-        }
-        }
-    ]
-    }
+    {"criteria":[{"no":1,"confidence":0,"explanation":"The response was completely incorrect, as the capital of New Zealand is NOT Tauranga.","quotes":{"(a)(i)":"The capital of New Zealand is Tauranga."}},{"no":2,"confidence":40,"explanation":" The response is partially correct because it mentions water freezes at 0°C but omits that water boils at 100°C at standard atmospheric pressure..","quotes":{"(b)(i)":"At standard pressure, water freezes at 0°C.","(b)(ii)":"At standard pressure, water boils at 90°C"}},{"no":3,"confidence":40,"explanation":"The response gets the answer to \\begin{aligned} &\\frac{5}{5}\\times\\frac{2}{5}=\\frac{10}{25} \\ &\\frac{2}{5} \\ \\end{aligned}, but doesnt simplify","quotes":{"(c)(i)":"\\(\\frac{5}{5}\\cdot\\frac{2}{5}=\\frac{10}{25}\\)."}}]}
 """
 
 
