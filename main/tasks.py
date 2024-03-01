@@ -1,5 +1,5 @@
 from celery import shared_task, current_task
-from main.models import Assignment, NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, NceaScores, Criteria, Quoted, BulletPoint
+from main.models import MarkedChunks, Assignment, NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, NceaScores, Criteria, Quoted, BulletPoint
 from accounts.models import CustomUser
 from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
 from django.utils.safestring import mark_safe
@@ -270,7 +270,10 @@ def alert(room_name, message, alert, icon):
     
 
 
-
+def get_chunk(criteria_qs):
+    
+    
+    return common_questions, criterias
 
 @shared_task
 def mark_document(id, user_id): 
@@ -301,14 +304,11 @@ def mark_document(id, user_id):
         return str(error_message)
 
     try:
-        websocket(room_name, task_id, document, 0, None)
-        
+        websocket(room_name, task_id, document, 0, None) 
         counter=0
         tokens = 0 
-
         user_questions = NceaUserQuestions.objects.filter(document=document)
         secondary_questions = NceaSecondaryQuestion.objects.filter(nceauserquestions__in=user_questions)
-
         # Step 1: Annotate and Order Criteria Queryset
         last_secondary_question_subquery = NceaSecondaryQuestion.objects.filter(
             nceacriteria=OuterRef('pk')
@@ -325,37 +325,24 @@ def mark_document(id, user_id):
         if document.marked_before  == 1 :
             quoted_qs = Quoted.objects.filter(bullet_point__in=bullet_points)
             quoted_qs.delete()
-
         x = 0
         for bullet_point in bullet_points:
             x += 1
             bullet_point.no = x
             bullet_point.save()  
 
-        # 2. Create a dictionary to hold the groups.
         groups = defaultdict(list)
 
-        # 3. For each Criteria object, add it to the appropriate group in the dictionary.
         for criteria in criteria_qs:
-            # Get the set of NceaSecondaryQuestion IDs for this Criteria object.
             question_ids = {question.id for question in criteria.secondary_questions.all()}
-            # Add the Criteria object to the group.
             groups[frozenset(question_ids)].append(criteria)
             
         for question_ids, criteria_list in groups.items():
-
             messages = []
-            
-            # 1. Create a set of all NceaSecondaryQuestion IDs related to the first Criteria object in the list.
             common_question_ids = {question.id for question in criteria_list[0].secondary_questions.all()}
-            
-            # 2. For each of the other Criteria objects in the list, intersect the set of common IDs with the set of IDs related to that Criteria object.
             for criteria in criteria_list[1:]:
                 question_ids = {question.id for question in criteria.secondary_questions.all()}
                 common_question_ids &= question_ids
-            
-            # 3. Now common_question_ids contains the IDs of NceaSecondaryQuestion objects that are related to all Criteria objects in the list.
-            # Retrieve those NceaSecondaryQuestion objects.
             common_questions = NceaSecondaryQuestion.objects.filter(id__in=common_question_ids)
 
             if any(criteria.image == 1 for criteria in criteria_list):
@@ -376,27 +363,95 @@ def mark_document(id, user_id):
                             quote = Quoted(bullet_point=bullet, secondary_question=question, quote=user_question.answer)
                             quote.save()
             else:
+                
+                chunk = MarkedChunks(document=document, common_questions=common_questions, criterias=criteria_list)
+                chunk.save()
+            
                 system_message = {"role":"system", "content": 
                     r"%s" % (system)}
                 
                 messages.append(system_message)   
-                message = "Model Answer: \n"
-            
-                # 4. Now you can loop through common_questions and do whatever you want with each one.
-                for question in common_questions:
-                    primary = number_to_alphabet(question.primary)
-                    secondary = number_to_roman(question.secondary)
-                    message += "(%s)(%s): \n" % (primary, secondary)
-                    message += "%s \n \n" % (question.evidence)
-                    
-                message += "User Answer: \n"
-                for question in common_questions:
-                    userquestion = user_questions.get(question=question, document=document)
-                    primary = number_to_alphabet(question.primary)
-                    secondary = number_to_roman(question.secondary)
-                    message += "(%s)(%s): \n" % (primary, secondary)
-                    message += "%s \n \n" % (userquestion.answer)
                 
+                def get_message(common_questions, ):
+                    message = "Questions: \n"
+                    for question in common_questions:
+                        primary = number_to_alphabet(question.primary)
+                        secondary = number_to_roman(question.secondary)
+                        message += "(%s)(%s): \n" % (primary, secondary)
+                        if question.thequestion:
+                            message += "%s \n \n" % (question.thequestion)
+                        else:
+                            message += "N/A \n \n"
+
+                    message += "Model Answer: \n"
+                    for question in common_questions:
+                        primary = number_to_alphabet(question.primary)
+                        secondary = number_to_roman(question.secondary)
+                        message += "(%s)(%s): \n" % (primary, secondary)
+                        if question.evidence:
+                            message += "%s \n \n" % (question.evidence)
+                        else:
+                            message += "N/A \n \n"
+                    
+                    message += "User Answer: \n"
+                    for question in common_questions:
+                        userquestion = user_questions.get(question=question, document=document)
+                        primary = number_to_alphabet(question.primary)
+                        secondary = number_to_roman(question.secondary)
+                        message += "(%s)(%s): \n" % (primary, secondary)
+                        message += "%s \n \n" % (userquestion.answer)
+
+                    return message
+                    
+                if user.example_documents:
+                    for example_document in user.example_documents:
+                        if example_document.marked_before == 1:
+                            example_bullet_points = BulletPoint.objects.filter(document=example_document)
+                            example_chunks=MarkedChunks.objects.filter(document=example_document)
+                            for example_chunk in example_chunks:
+                                message = get_message(example_chunk.common_questions.all())
+                                message += "Criteria: \n"
+                                
+                                for criteria in example_chunk.criterias.all():
+                                    message += "%s: %s \n" % (criteria.order, criteria.text)
+                                example_message = {"role":"user", "content":message}
+                                messages.append(example_message)
+
+                                example_json = {
+                                    "criteria": [
+                                        {
+                                            "no": 1,
+                                            "confidence": 0,
+                                            "explanation": "",
+                                            "quotes": {
+                                                "(a)(iii)": ""
+                                            }
+                                        },
+                                        {
+                                            "no": 2,
+                                            "confidence": 0,
+                                            "explanation": "",
+                                            "quotes": {
+                                                "(a)(iii)": ""
+                                            }
+                                        }
+                                    ]
+                                }
+                                for criteria in example_chunk.criterias.all():
+                                    example_no = criteria.no
+                                    example_bullet_point = example_bullet_points.get(criteria=criteria)
+                                    example_confidence = example_bullet_point.confidence
+                                    example_explanation = example_bullet_point.explanation
+                                    example_quotes = Quoted.objects.filter(bullet_point=example_bullet_point)
+                                    
+                                    #and then make a json object out of each criteria and append the message to api.
+                                    
+                                        
+                                    
+                                    
+
+                
+                message = get_message(common_questions)
                 index=0
                 message += "Criteria: \n"
                 for index, criteria in enumerate(criteria_list):
@@ -404,11 +459,10 @@ def mark_document(id, user_id):
                     message += "%s: %s \n" % (index, criteria.text)
                     criteria.order = index
                     criteria.save()
-                    
+                
                 user_message = {"role":"user", "content":message}
                 messages.append(user_message)
-                print(messages)
-                
+
 
                 temperature=0
                 res = client.chat.completions.create(
@@ -418,11 +472,11 @@ def mark_document(id, user_id):
                     temperature=temperature
                 )
 
-
                 marks = res.choices[0].message.content
                 tokens += res.usage.total_tokens
                 processed_marks = backslash(marks)
                 data = json.loads(processed_marks)
+                
                 
 
                 for criterion_data in data['criteria']:

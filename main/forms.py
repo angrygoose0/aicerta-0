@@ -83,10 +83,14 @@ class AnswerForm(ModelForm):
         super(AnswerForm, self).__init__(*args, **kwargs)
         primary =self.instance.question.primary
         secondary =self.instance.question.secondary
+        thequestion = self.instance.question.thequestion
         primary_alpha = int_to_alpha(primary)
         secondary_roman = roman.toRoman(secondary).lower()
         self.fields['answer'].label = (
-            f"({primary_alpha})({secondary_roman}):"
+            f"""
+            ({primary_alpha})({secondary_roman}):
+            {thequestion}
+            """
         )
         self.fields['answer'].required = False  # Set required to False for the field
 

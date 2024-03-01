@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from payment.models import ProductPrice
+from main.models import NceaUserDocument
 from decimal import Decimal
 from django.conf import settings
 
@@ -15,8 +16,11 @@ class CustomUser(AbstractUser):
     
     student = models.BooleanField(default=True) #true for student accounts #false for teacher accounts
 
+    example_documents = models.ManyToManyField(NceaUserDocument, related_name="examplemark", blank=True)
+    
     def __str__(self):
         return self.email
     
     def get_display_credits(self):
         return "{0:2f}".format(self.credits / 100)
+    

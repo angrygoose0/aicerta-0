@@ -25,6 +25,7 @@ class Command(BaseCommand):
                     NceaSecondaryQuestion.objects.update_or_create(
                         QUESTION = question,
                         primary = row["Primary"],
+                        thequestion=row["TheQuestion"],
                         secondary = row["Secondary"],
                         evidence = row["Evidence"],
                     )

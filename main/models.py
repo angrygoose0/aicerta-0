@@ -57,6 +57,8 @@ class NceaQUESTION(models.Model):
     
 class NceaSecondaryQuestion(models.Model):
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
+    
+    thequestion = models.TextField(null=True, blank=True)
 
     primary = models.IntegerField() #a=1, b=2, c=3, d=4
     secondary = models.IntegerField() #i=1, ii=2, iii=3, iv=4
@@ -77,6 +79,9 @@ class Criteria(models.Model):
     image = models.IntegerField(default=0) #1 for image, 0 for not image
     
     order = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order']
 
 
     def __str__(self):
@@ -145,13 +150,15 @@ class NceaUserDocument(models.Model):
 
     status = models.CharField(max_length=100, null=True, blank=True)
     
+    
+    
     #pending, started, paused, locked, submitted.
     
     
     def __str__(self):
         return "%s, %s" % (self.name, self.exam)
-
     
+
 class OCRImage(models.Model):
     document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
     image = models.ImageField()
@@ -191,12 +198,12 @@ class HelpMessage(models.Model):
 class BulletPoint(models.Model):
     document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE, null = True, blank = True)
     criteria = models.ForeignKey(Criteria, on_delete=models.CASCADE, related_name="criteria", null = True, blank = True)
-    confidence = models.IntegerField(default=0)
+    confidence = models.IntegerField(default=0) #0-100
     explanation = models.TextField(null=True, blank=True)
     r = models.IntegerField(default=255)
     g = models.IntegerField(default=255)
     b = models.IntegerField(default=255)
-    no = models.IntegerField(default=0) #0-100
+    no = models.IntegerField(default=0) 
     
     def __str__(self):
         return "%s, %s" % (self.document, self.criteria)
@@ -211,4 +218,11 @@ class Quoted(models.Model):
         return "%s, %s" % (self.secondary_question, self.bullet_point)
 
 
+class MarkedChunks(models.Model):
+    document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
+    
+    common_questions = models.ManyToManyField(NceaUserQuestions, related_name="chunkquestions")
+    criterias = models.ManyToManyField(Criteria, related_name="chunkcriteria")
+    
+    
     
