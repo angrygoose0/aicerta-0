@@ -18,6 +18,8 @@ class CustomUser(AbstractUser):
 
     example_documents = models.ManyToManyField(NceaUserDocument, related_name="examplemark", blank=True)
     
+    tester = models.BooleanField(default=False)
+    
     def __str__(self):
         return self.email
     
