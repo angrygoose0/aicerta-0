@@ -326,9 +326,10 @@ def mark_document(id, user_id):
                             quote.save()
             else:
                 
-                chunk = MarkedChunks(document=document, criterias=criteria_list)
+                chunk = MarkedChunks(document=document)
                 chunk.save()
                 chunk.common_questions.set(common_questions)
+                chunk.criterias.set(criteria_list)
             
                 system_message = {"role":"system", "content": 
                     r"%s" % (system)}
