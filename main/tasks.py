@@ -366,9 +366,9 @@ def mark_document(id, user_id):
                         message += "%s \n \n" % (userquestion.answer)
 
                     return message
-                    
+                """
                 if user.example_documents:
-                    for example_document in user.example_documents:
+                    for example_document in user.example_documents.all():
                         if example_document.marked_before == 1:
                             example_bullet_points = BulletPoint.objects.filter(document=example_document)
                             example_chunks=MarkedChunks.objects.filter(document=example_document)
@@ -410,7 +410,7 @@ def mark_document(id, user_id):
                                     
                                     #and then make a json object out of each criteria and append the message to api.
                                     
-                                        
+                """   
                                     
                                     
 
