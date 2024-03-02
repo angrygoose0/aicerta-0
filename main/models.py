@@ -221,7 +221,7 @@ class Quoted(models.Model):
 class MarkedChunks(models.Model):
     document = models.ForeignKey(NceaUserDocument, on_delete=models.CASCADE)
     
-    common_questions = models.ManyToManyField(NceaUserQuestions, related_name="chunkquestions")
+    common_questions = models.ManyToManyField(NceaSecondaryQuestion, related_name="chunkquestions")
     criterias = models.ManyToManyField(Criteria, related_name="chunkcriteria")
     
     
