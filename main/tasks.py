@@ -235,11 +235,6 @@ def alert(room_name, message, alert, icon):
     
 
 
-def get_chunk(criteria_qs):
-    
-    
-    return common_questions, criterias
-
 @shared_task
 def mark_document(id, user_id): 
     
@@ -290,6 +285,8 @@ def mark_document(id, user_id):
         if document.marked_before  == 1 :
             quoted_qs = Quoted.objects.filter(bullet_point__in=bullet_points)
             quoted_qs.delete()
+            chunks_qs =MarkedChunks.objects.filter(document=document)
+            chunks_qs.delete()
         x = 0
         for bullet_point in bullet_points:
             x += 1
@@ -329,8 +326,9 @@ def mark_document(id, user_id):
                             quote.save()
             else:
                 
-                chunk = MarkedChunks(document=document, common_questions=common_questions, criterias=criteria_list)
+                chunk = MarkedChunks(document=document, criterias=criteria_list)
                 chunk.save()
+                chunk.common_questions.set(common_questions)
             
                 system_message = {"role":"system", "content": 
                     r"%s" % (system)}
