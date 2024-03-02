@@ -11,7 +11,7 @@ class CustomUserAdmin(UserAdmin):
     list_display = ['email', 'username', 'credits', 'plan', 'student', 'tester']
 
     fieldsets = UserAdmin.fieldsets + (
-        ("Additional Info", {'fields': ('plan', 'credits', 'stripe_customer_id', 'student')}),
+        ("Additional Info", {'fields': ('plan', 'credits', 'stripe_customer_id', 'student', 'tester')}),
     )
     
 admin.site.register(CustomUser, CustomUserAdmin)
