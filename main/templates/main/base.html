@@ -177,7 +177,7 @@
         <script>
             function setupWebSocket() {
                 
-                const socket = new WebSocket('wss://' + window.location.host + '/ws/notifications/');
+                const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
 
             
                 socket.onopen = () => console.log("WebSocket connection opened.");
@@ -398,6 +398,14 @@
                     }
                 }
             };
+            
+            // This function should be called after dynamically adding or updating content that includes LaTeX
+            function updateMathJaxContent() {
+                console.log("da");
+                MathJax.typesetPromise().then(() => {
+                    console.log("New content has been typeset by MathJax.");
+                }).catch((err) => console.error("MathJax typesetting failed: ", err));
+            }
 
         </script>
         

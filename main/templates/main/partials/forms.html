@@ -13,8 +13,10 @@
                     {% for form in forms %}
                         <!-- Render your form here -->
                         <li class="list-group-item">
+                            
                         
                             {{ form.answer|as_crispy_field }}
+                            <small class="previewAnswer">{{form.instance.answer}}</small>
                             {% for hidden in form.hidden_fields %}
                                 {{ hidden }}
                             {% endfor %}

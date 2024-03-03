@@ -110,9 +110,7 @@
 
                         </div>
                     {% endfor %}
-                    <button id="toggleMath">Toggle Math</button>
-                    <p id="mathContent">dasa$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</p>
-                    
+
                 </div>
             </div>
         </div>
@@ -201,25 +199,6 @@
                 });
             });
         }
-    </script>
-
-    <script>
-        document.getElementById('toggleMath').addEventListener('click', function() {
-            var mathContent = document.getElementById('mathContent');
-            var isRendered = mathContent.getAttribute('data-rendered');
-        
-            if (isRendered !== 'true') {
-                // If not rendered, render it using MathJax
-                MathJax.typesetPromise([mathContent]).then(() => {
-                    mathContent.setAttribute('data-rendered', 'true');
-                });
-            } else {
-                // If already rendered, revert to raw LaTeX
-                
-                mathContent.setAttribute('data-rendered', 'false');
-            }
-        });
-
     </script>
 {% endblock %}
 

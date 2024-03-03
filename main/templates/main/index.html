@@ -3,8 +3,9 @@
 {% load crispy_forms_tags %}
 
 
-{% block title %}Document{% endblock %}
 
+{% block title %}Edit Document{% endblock %}
+FIX INDEX.HTML, has something to do with doc.assignment being false when not connected to assignment and time
 
 {% block content %}
     <div class="container-fluid">
@@ -294,7 +295,10 @@
 
     <script>
         document.body.addEventListener('htmx:afterSwap', function(event) {
+            console.log("blabla")
             if (event.target.id === 'answer-formset') {
+                console.log("abc");
+                updateMathJaxContent();
                 updateLastSavedTime("just now");
             }
         });
