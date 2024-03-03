@@ -58,7 +58,8 @@ system = """
     - Criteria Number (no): The number of the criteria being evaluated.
     - Confidence Number (confidence): A number from 0 to 100 representing how confident you are that the answer fulfills the criteria. A score of 0 means you are completely confident the answer is wrong, and a score of 100 means you are 100% confident the answer is correct.
     - Explanation (explanation): A detailed explanation of why you gave the confidence number you did.
-    - Quotes (quotes): A dictionary where each key is a question identifier and each value is a direct quote from the USER answer that fulfills the criteria. This direct quote must be accurate(punctuation and spaces)
+    - Quotes (quotes): Provide a dictionary with keys as question identifiers and values as direct, continuous quotes from USER answers, preserving original punctuation and spaces. Do not include ellipses ("...") between sentences; quotes must be unbroken for dynamic text highlighting in code.
+    NOTE: If an answer contains several separate quotes or has several parts that answer the question, create INDIVIDUAL JSON objects for each. Avoid connecting them with ellipses ("...").
 
     Here is an example of a possible user input:
     Model Answer:
@@ -75,9 +76,9 @@ system = """
     (a)(i):
     The capital of New Zealand is Tauranga.
     (b)(i):
-    At standard atmospheric pressure, water freezes at 0°C.
+    Under conditions of standard atmospheric pressure, H2O, also known as water, freezes at 0°C.
     (b)(ii): 
-    At standard atmosphericpressure, water boils at 90°C.
+    Under conditions of standard atmospheric pressure, H2O, also known as water, boils at 90°C.
     (c)(i): \(\frac{5}{5}\cdot\frac{2}{5}=\frac{10}{25}\)
 
     Criteria:
@@ -87,7 +88,9 @@ system = """
 
 
     Here is an example of the JSON output:
-    {"criteria":[{"no":1,"confidence":0,"explanation":"The response was completely incorrect, as the capital of New Zealand is NOT Tauranga.","quotes":{"(a)(i)":"The capital of New Zealand is Tauranga."}},{"no":2,"confidence":40,"explanation":" The response is partially correct because it mentions water freezes at 0°C but omits that water boils at 100°C at standard atmospheric pressure..","quotes":{"(b)(i)":"At standard pressure, water freezes at 0°C.","(b)(ii)":"At standard pressure, water boils at 90°C"}},{"no":3,"confidence":40,"explanation":"The response gets the answer to \\begin{aligned} &\\frac{5}{5}\\times\\frac{2}{5}=\\frac{10}{25} \\ &\\frac{2}{5} \\ \\end{aligned}, but doesnt simplify","quotes":{"(c)(i)":"\\(\\frac{5}{5}\\cdot\\frac{2}{5}=\\frac{10}{25}\\)."}}]}
+    
+{"criteria":[{"no":1,"confidence":0,"explanation":"The response was completely incorrect, as the capital of New Zealand is NOT Tauranga.","quotes":{"(a)(i)":"The capital of New Zealand is Tauranga."}},{"no":2,"confidence":40,"explanation":" The response is partially correct because it mentions water freezes at 0°C but omits that water boils at 100°C at standard atmospheric pressure..","quotes":{"(b)(i)":"standard atmospheric pressure,","(b)(i)":"water, freezes at 0°C.","(b)(ii)":"standard atmospheric pressure,","(b)(ii)":"water, boils at 90°C."}},{"no":3,"confidence":40,"explanation":"The response gets the answer to \begin{aligned} &\frac{5}{5}\times\frac{2}{5}=\frac{10}{25} \ &\frac{2}{5} \ \end{aligned}, but doesn't simplify","quotes":{"(c)(i)":"\(\frac{5}{5}\cdot\frac{2}{5}=\frac{10}{25}\)."}}]}
+Notice how there are individual json objects because multiple seperate parts answered the criteria.
 """
 
 
@@ -438,7 +441,7 @@ def mark_document(id, user_id):
 
                 marks = res.choices[0].message.content
                 tokens += res.usage.total_tokens
-                processed_marks = backslash(marks)
+                processed_marks = marks
                 data = json.loads(processed_marks)
                 
                 
@@ -465,7 +468,8 @@ def mark_document(id, user_id):
                                     primary = alphabet_to_number(alphabet)
                                     secondary = roman_to_number(roman)
                                     
-                                    secondary_question = common_questions.get(primary=primary, secondary=secondary)  
+                                    secondary_question = common_questions.get(primary=primary, secondary=secondary)
+                                    print(value)
                                     Quoted.objects.create(secondary_question=secondary_question, bullet_point=bullet, quote=value)
                                     
         QUESTIONS = NceaQUESTION.objects.filter(exam=document.exam)

@@ -59,7 +59,7 @@
                                     {% for userquestion, criteria_list in userquestion_with_criteria %}
                                         <b>({{userquestion.question.primary|to_alphabet}})({{userquestion.question.secondary|to_roman}})</b>: 
                                         <br>
-                                        <p id="answer-{{ userquestion.id }}" >{{userquestion.answer}}</p>
+                                        <p id="answer-{{ userquestion.id }}" data-answer="{{userquestion.answer}}">{{userquestion.answer}}</p>
                                     {% endfor%}
                                 </ul>
 
@@ -103,15 +103,16 @@
                                             
                                         {% endfor %}
 
-                                        
-
                                     {% endfor %}
                                 </ul>
-            
+
                             {% endfor%}
 
                         </div>
                     {% endfor %}
+                    <button id="toggleMath">Toggle Math</button>
+                    <p id="mathContent">dasa$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</p>
+                    
                 </div>
             </div>
         </div>
@@ -133,6 +134,8 @@
                 if (quote.bulletpoint_id == bulletPointId) {
                     var answerElement = document.getElementById('answer-' + quote.quote_question_id);
                     if (answerElement) {
+                        rawAnswer = answerElement.getAttribute('data-answer')
+                        answerElement.innerHTML = rawAnswer;
                         var highlightedText = answerElement.innerHTML.replace(quote.quote, `<span id="quote-${quote.quote_id}" class="highlight">${quote.quote}</span>`);
                         answerElement.innerHTML = highlightedText;
                     }
@@ -145,6 +148,8 @@
                 if (quote.bulletpoint_id == bulletPointId) {
                     var answerElement = document.getElementById('answer-' + quote.quote_question_id);
                     if (answerElement) {
+                        MathJax.typesetPromise([answerElement]);
+
                         var quoteElement = document.getElementById('quote-' + quote.quote_id);
                         if (quoteElement) {
                             answerElement.innerHTML = answerElement.innerHTML.replace(quoteElement.outerHTML, quoteElement.innerHTML);
@@ -196,6 +201,25 @@
                 });
             });
         }
+    </script>
+
+    <script>
+        document.getElementById('toggleMath').addEventListener('click', function() {
+            var mathContent = document.getElementById('mathContent');
+            var isRendered = mathContent.getAttribute('data-rendered');
+        
+            if (isRendered !== 'true') {
+                // If not rendered, render it using MathJax
+                MathJax.typesetPromise([mathContent]).then(() => {
+                    mathContent.setAttribute('data-rendered', 'true');
+                });
+            } else {
+                // If already rendered, revert to raw LaTeX
+                
+                mathContent.setAttribute('data-rendered', 'false');
+            }
+        });
+
     </script>
 {% endblock %}
 
