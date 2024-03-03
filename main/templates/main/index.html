@@ -119,7 +119,37 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
         </div>
     </div>
 
-    <div class="modal fade" id="Test1Modal" tabindex="-1" aria-labelledby="Test1ModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="latexModal" tabindex="-1" aria-labelledby="latexModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="latexModalLabel">Insert LaTex</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="row">
+                        <!--div class="col-md-6">
+                            <img id="croppedLatexImage" src="" alt="Cropped Latex Image" class="img-fluid"> <!-- Image will be loaded dynamically -->
+                        <!--/div-->
+                        <div class="col">
+                            <div class="mathquill-container py-2">
+
+                                {% include "main/partials/math-btns.html" %}
+                                <p><span class="mathquill-input"></span></p>
+                                <button type="button" class="btn btn-outline-success add-mathquill-btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success" id="insertLatexBtn">Insert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade"  id="Test1Modal" tabindex="-1" aria-labelledby="Test1ModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl"> <!-- Increase modal size to modal-xl for better visibility -->
             <div class="modal-content">
                 <div class="modal-body">
@@ -144,7 +174,7 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
         </div>
     </div>
 
-    <div class="modal fade" id="Test2Modal" tabindex="-1" aria-labelledby="Test2ModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade"  id="Test2Modal" tabindex="-1" aria-labelledby="Test2ModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl"> 
             <div class="modal-content">
                 <div class="modal-body">
@@ -177,37 +207,9 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
     
     
 
-    <div class="modal fade" id="latexModal" tabindex="-1" aria-labelledby="latexModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="latexModalLabel">Insert LaTex</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <div class="modal-body">
-                    <div class="row">
-                        <!--div class="col-md-6">
-                            <img id="croppedLatexImage" src="" alt="Cropped Latex Image" class="img-fluid"> <!-- Image will be loaded dynamically -->
-                        <!--/div-->
-                        <div class="col">
-                            <div class="mathquill-container py-2">
+    
 
-                                {% include "main/partials/math-btns.html" %}
-                                <p><span class="mathquill-input"></span></p>
-                                <button type="button" class="btn btn-outline-success add-mathquill-btn">+</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-success" id="insertLatexBtn">Insert</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="lockScreenModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="lockScreenModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -225,7 +227,7 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
         </div>
     </div>
 
-    <div class="modal fade" id="submittedModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="submittedModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
