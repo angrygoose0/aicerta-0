@@ -135,7 +135,7 @@
                     var answerElement = document.getElementById('answer-' + quote.quote_question_id);
                     if (answerElement) {
                         rawAnswer = answerElement.getAttribute('data-answer')
-                        answerElement.innerHTML = rawAnswer;
+                        //answerElement.innerHTML = rawAnswer;
                         var highlightedText = answerElement.innerHTML.replace(quote.quote, `<span id="quote-${quote.quote_id}" class="highlight">${quote.quote}</span>`);
                         answerElement.innerHTML = highlightedText;
                     }
@@ -148,7 +148,7 @@
                 if (quote.bulletpoint_id == bulletPointId) {
                     var answerElement = document.getElementById('answer-' + quote.quote_question_id);
                     if (answerElement) {
-                        MathJax.typesetPromise([answerElement]);
+                        //MathJax.typesetPromise([answerElement]);
 
                         var quoteElement = document.getElementById('quote-' + quote.quote_id);
                         if (quoteElement) {
