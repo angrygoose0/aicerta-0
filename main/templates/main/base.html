@@ -177,7 +177,7 @@
         <script>
             function setupWebSocket() {
                 
-                const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
+                const socket = new WebSocket('wss://' + window.location.host + '/ws/notifications/');
 
             
                 socket.onopen = () => console.log("WebSocket connection opened.");
