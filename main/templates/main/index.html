@@ -401,36 +401,46 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
     <script src="{% static 'js/status.js' %}"></script>
 
     <script>
-        
+        const drawingContainer = document.getElementById('drawing-container');
+        const drawingModal = document.getElementById('drawingModal');
+        let drawingCanvas; // Declare drawingCanvas outside to ensure it's accessible globally within this script
 
-        const drawingModal = document.getElementById('drawingModal')
-
-        drawingModal.addEventListener('shown.bs.modal', () => {
-            var drawingContainer = document.getElementById('drawing-container');
-            var drawingCanvas = new fabric.Canvas('drawing-canvas');
-            // Function to resize canvas
-            function resizeCanvas() {
+        // Function to resize canvas, defined in the outer scope to be accessible everywhere
+        function resizeCanvas() {
+            if (drawingCanvas) {
                 drawingCanvas.setWidth(drawingContainer.clientWidth);
                 drawingCanvas.setHeight(drawingContainer.clientHeight);
                 drawingCanvas.calcOffset(); // Recalculate canvas offset
                 drawingCanvas.renderAll(); // Re-render the canvas to apply changes
             }
+        }
+
+        drawingModal.addEventListener('shown.bs.modal', () => {
+            var drawingContainer = document.getElementById('drawing-container');
+            if (!drawingCanvas) {
+                // Initialize the canvas only if it has not been initialized before
+                drawingCanvas = new fabric.Canvas('drawing-canvas');
+                // Resize listener for window resize events, added only once during the first initialization
+                window.addEventListener('resize', resizeCanvas);
+            } else {
+                // Clear the canvas if it was already initialized
+                drawingCanvas.clear();
+            }
+
             // Initial resize to fit the container
             resizeCanvas();
             
             drawingCanvas.isDrawingMode = true;
             drawingCanvas.freeDrawingBrush.width = 5;
-            drawingCanvas.freeDrawingBrush.color = "#0fa0fa"; // Corrected typo here
-        
-            // Resize listener for window resize events
-            window.addEventListener('resize', resizeCanvas);
+            drawingCanvas.freeDrawingBrush.color = "#0fa0fa";
         });
-        
+
         // Optional: Remove the event listener if the modal is closed or not needed anymore to prevent memory leaks
         drawingModal.addEventListener('hidden.bs.modal', () => {
-            window.removeEventListener('resize', resizeCanvas);
+            // The event listener for resize is not removed here because it is tied to the window, not the modal.
+            // If you still need to remove it, consider doing so under certain conditions or keeping it as it shouldn't cause issues if handled correctly.
         });
-        
+
     </script>
 
     

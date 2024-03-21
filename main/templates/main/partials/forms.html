@@ -1,5 +1,6 @@
 {% load crispy_forms_tags %}
 {% load myfilters %}
+{% load static %}
 
 <div>
     <form action ="{% url 'index' id=doc.id %}" id="answer-formset" method="POST" hx-post="{% url 'index' id=doc.id %}" hx-swap='outerHTML' hx-trigger='change delay:500ms'>
@@ -16,6 +17,16 @@
                             
                         
                             {{ form.answer|as_crispy_field }}
+                            <div class="user-images">
+                                {% for image in form.instance.nceauserimages_set.all %}
+                                    <div class="image-wrapper">
+                                        <img src="{% static 'barney.jpg' %}" class="user-answer-image">
+                                        <button class="close-btn">
+                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">&times;</span>  
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
                             <small class="previewAnswer">{{form.instance.answer}}</small>
                             {% for hidden in form.hidden_fields %}
                                 {{ hidden }}

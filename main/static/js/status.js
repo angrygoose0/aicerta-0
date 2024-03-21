@@ -45,6 +45,7 @@ socket.onmessage = function(event) {
             console.log("carrying out locked")
             $('#OCRModal').modal('hide');
             //$('#latexModal').modal('hide');
+            //$('#drawingModal').modal('hide');
             $('#ResultsModal').modal('hide');
             $('#Test1Modal').modal('hide'); 
             $('#Test2Modal').modal('hide'); 
@@ -59,6 +60,7 @@ socket.onmessage = function(event) {
             console.log("carrying out pending")
             $('#OCRModal').modal('hide');
             //$('#latexModal').modal('hide');
+            //$('#drawingModal').modal('hide');
             $('#ResultsModal').modal('hide');
             $('#lockScreenModal').modal('hide'); 
             $('#submittedModal').modal('hide');
@@ -80,6 +82,7 @@ socket.onmessage = function(event) {
         } else if (data.status === 'submitted') {
             $('#OCRModal').modal('hide');
             $('#latexModal').modal('hide');
+            $('#drawingModal').modal('hide');
             $('#ResultsModal').modal('hide');
             $('#Test1Modal').modal('hide'); 
             $('#Test2Modal').modal('hide'); 
@@ -110,6 +113,7 @@ function removeEventListeners() {
 function handleBlur() {
     $('#OCRModal').modal('hide');
     //$('#latexModal').modal('hide');
+    //$('#drawingModal').modal('hide');
     $('#ResultsModal').modal('hide');
     if (document.fullscreenElement) {
         exitFullscreen();
@@ -161,6 +165,7 @@ function submitDoc() {
     
     $('#OCRModal').modal('hide');
     $('#latexModal').modal('hide');
+    $('#drawingModal').modal('hide');
     $('#ResultsModal').modal('hide');
     $('#Test1Modal').modal('hide'); 
     $('#Test2Modal').modal('hide'); 
@@ -212,6 +217,7 @@ document.addEventListener('fullscreenchange', (event) => {
         if (docStatus === "started") {
             $('#OCRModal').modal('hide');
             //$('#latexModal').modal('hide');
+            //$('#drawingModal').modal('hide');
             $('#ResultsModal').modal('hide');
             $('#lockScreenModal').modal('show');
             updateStatus("locked");
