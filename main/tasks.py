@@ -269,7 +269,8 @@ def mark_document(id, user_id):
     try:
         websocket(room_name, task_id, document, 0, None) 
         counter=0
-        tokens = 0 
+        input_tokens=0
+        res_tokens = 0 
         user_questions = NceaUserQuestions.objects.filter(document=document)
         secondary_questions = NceaSecondaryQuestion.objects.filter(nceauserquestions__in=user_questions)
         # Step 1: Annotate and Order Criteria Queryset
@@ -336,6 +337,8 @@ def mark_document(id, user_id):
             
                 system_message = {"role":"system", "content": 
                     r"%s" % (system)}
+                
+                input_tokens += len(encoding.encode(system))
                 
                 messages.append(system_message)   
                 
@@ -426,6 +429,8 @@ def mark_document(id, user_id):
                     message += "%s: %s \n" % (index, criteria.text)
                     criteria.order = index
                     criteria.save()
+
+                input_tokens += len(encoding.encode(message))
                 
                 user_message = {"role":"user", "content":message}
                 messages.append(user_message)
@@ -440,7 +445,7 @@ def mark_document(id, user_id):
                 )
 
                 marks = res.choices[0].message.content
-                tokens += res.usage.total_tokens
+                res_tokens += res.usage.total_tokens
                 processed_marks = marks
                 data = json.loads(processed_marks)
                 
@@ -529,6 +534,7 @@ def mark_document(id, user_id):
         document.save()
         
         websocket(room_name, task_id, document, 100, None)
+        return(return_tokens, input_tokens)
     except Exception as error_message:
         print(error_message)
         websocket(room_name, task_id, document, 0, error_message)
