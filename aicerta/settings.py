@@ -35,7 +35,9 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,127.0.0.1:8000,aicerta.com,www.aicerta.com").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,127.0.0.1:8000").split(",")
+print(ALLOWED_HOSTS)
+
 
 CSRF_TRUSTED_ORIGINS = [
     'https://aicerta.com', 
