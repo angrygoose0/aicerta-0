@@ -398,3 +398,10 @@ label {
     outline: none; /* Remove the focus outline */
 }
 
+.drawing-canvas {
+    width: 100% !important; /* Make the canvas width responsive */
+    height: 600px !important; /* Adjust based on your needs */
+    display: block; /* Remove extra space below the canvas */
+    margin: auto;
+    border: 1px solid black;
+}

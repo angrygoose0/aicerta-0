@@ -43,13 +43,13 @@ html {
 }
 
 .header-bg {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)), url('../images/background.webp');
+    background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.7)), url('../images/background.webp');
     background-size: cover;
     background-position: center;
 }
 
 .parallax {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)), url("../images/background.webp");
+    background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.7)), url("../images/background.webp");
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -452,6 +452,15 @@ form input[type="submit"] {
     transition: all 0.3s ease; /* Smooth transition for hover effect */
     color: #FFFFFF; /* Initial color of text */
     background-color: #000000; /* Initial background color */
+}
+
+.gradient-header-text {
+    font-weight: bold; /* Optional: makes the gradient more visible */
+    background-image: linear-gradient(to right, #376d4d, #4cffa1); /* Gradient from #376d4d to a lighter green */
+    -webkit-background-clip: text;
+    color: transparent; /* Hide the text color so the gradient is visible */
+    background-clip: text;
+    display: inline-block; /* Necessary for the gradient to apply correctly */
 }
 
 

@@ -15,15 +15,19 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
             <div class="col {% if doc.file %} scrolling-column {% endif %}">
                 <div class="container position-relative">
                     {% if not doc.assignment %}
-                        <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 end-0 m-2" title="View">
+                        <a href="/app/{{doc.id}}/preview" class="btn btn-icon position-absolute top-0 m-2" style="right: 5rem;" title="View">
                             <i class="fas fa-eye"></i>
                         </a>
-                        <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
+                        <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 7.5rem;" data-bs-toggle="modal" data-bs-target="#OCRModal">
                             <i class="fas fa-upload"></i>
                         </button>
                     {% endif %}
-                    <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 5rem;" data-bs-toggle="modal" data-bs-target="#latexModal">
+                    <button type="button" class="btn btn-icon position-absolute top-0 end-0 m-2" data-bs-toggle="modal" data-bs-target="#latexModal">
                         <i class="fas fa-square-root-alt"></i>
+                    </button> 
+
+                    <button type="button" class="btn btn-icon position-absolute top-0 m-2" style="right: 2.5rem;" data-bs-toggle="modal" data-bs-target="#drawingModal">
+                        <i class="fas fa-paint-brush"></i>
                     </button> 
                 
                     {% if doc.assignment.status == 1 %}
@@ -144,6 +148,35 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-success" id="insertLatexBtn">Insert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="drawingModal" tabindex="-1" aria-labelledby="drawingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" >
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="drawingModalLabel">Insert Drawing</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="btn-toolbar mb-2 " role="toolbar" aria-label="Toolbar with button groups">
+                        <!-- Art Group -->
+                        <div class="btn-group me-2" role="group" aria-label="Art">
+                            <button type="button" class="btn btn-sm btn-light">brush</button>
+                            <button type="button" class="btn btn-sm btn-light">-</button>
+                        </div>
+
+                    </div>
+                    <div id="drawing-container" class="drawing-canvas">
+                        <canvas id="drawing-canvas"class=""></canvas>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-success" id="insertDrawingBtn">Insert</button>
                 </div>
             </div>
         </div>
@@ -366,6 +399,39 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
     </script>
 
     <script src="{% static 'js/status.js' %}"></script>
+
+    <script>
+        
+
+        const drawingModal = document.getElementById('drawingModal')
+
+        drawingModal.addEventListener('shown.bs.modal', () => {
+            var drawingContainer = document.getElementById('drawing-container');
+            var drawingCanvas = new fabric.Canvas('drawing-canvas');
+            // Function to resize canvas
+            function resizeCanvas() {
+                drawingCanvas.setWidth(drawingContainer.clientWidth);
+                drawingCanvas.setHeight(drawingContainer.clientHeight);
+                drawingCanvas.calcOffset(); // Recalculate canvas offset
+                drawingCanvas.renderAll(); // Re-render the canvas to apply changes
+            }
+            // Initial resize to fit the container
+            resizeCanvas();
+            
+            drawingCanvas.isDrawingMode = true;
+            drawingCanvas.freeDrawingBrush.width = 5;
+            drawingCanvas.freeDrawingBrush.color = "#0fa0fa"; // Corrected typo here
+        
+            // Resize listener for window resize events
+            window.addEventListener('resize', resizeCanvas);
+        });
+        
+        // Optional: Remove the event listener if the modal is closed or not needed anymore to prevent memory leaks
+        drawingModal.addEventListener('hidden.bs.modal', () => {
+            window.removeEventListener('resize', resizeCanvas);
+        });
+        
+    </script>
 
     
 {% endblock %}

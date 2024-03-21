@@ -176,6 +176,16 @@ class NceaUserQuestions(models.Model):
         
     class Meta:
         ordering = ['document', 'question']
+        
+class NceaUserImages(models.Model):
+    user_question = models.ForeignKey(NceaUserQuestions, on_delete=models.CASCADE)
+    image = models.ImageField()
+    
+    def __str__(self):
+        return "%s image" % (self.user_question,)
+    
+    class Meta:
+        ordering = ['user_question']
     
     
 class NceaScores(models.Model):
