@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import NceaExam, Classroom, Assignment, NceaScores, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, File, OCRImage, HelpMessage, Criteria, BulletPoint, Quoted
+from .models import NceaUserImages, NceaExam, Classroom, Assignment, NceaScores, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, File, OCRImage, HelpMessage, Criteria, BulletPoint, Quoted
 
 # Register your models here.
 
@@ -56,6 +56,7 @@ admin.site.register(NceaScores)
 admin.site.register(File)
 admin.site.register(OCRImage)
 admin.site.register(HelpMessage)
+admin.site.register(NceaUserImages)
 
 
 

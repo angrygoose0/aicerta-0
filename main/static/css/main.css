@@ -407,6 +407,13 @@ label {
     border: 1px solid black;
 }
 
+.user-images {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next line */
+    gap: 10px; /* Space between the items */
+}
+
+
 .image-wrapper {
     position: relative;
     width: 50px;

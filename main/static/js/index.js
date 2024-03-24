@@ -130,21 +130,6 @@ $("#insertOCRBtn").on("click", function() {
 
 
 
-// Using event delegation for dynamically added content
-$("body").on("click focus", "form input, form textarea", function(event) {
-    if (formattedText) {
-        insertAtCursor(this, formattedText);
-        formattedText = null;
-
-        $(".overlay").fadeOut(function() {
-            $(this).remove();
-        });
-
-        event.stopPropagation();  // Prevent other click handlers from interfering
-        
-    }
-});
-
 
 
 

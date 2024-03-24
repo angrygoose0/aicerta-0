@@ -330,7 +330,6 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
 
     <script>
         document.body.addEventListener('htmx:afterSwap', function(event) {
-            console.log("blabla")
             if (event.target.id === 'answer-formset') {
                 console.log("abc");
                 updateMathJaxContent();
@@ -433,14 +432,81 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
             drawingCanvas.isDrawingMode = true;
             drawingCanvas.freeDrawingBrush.width = 5;
             drawingCanvas.freeDrawingBrush.color = "#0fa0fa";
+
+
+            insertDrawingBtn.addEventListener('click', function() {
+                // Save the canvas content as a Base64-encoded image
+                savedImage = drawingCanvas.toDataURL();
+
+                $('#drawingModal').modal('hide');
+
+                $("body").append('<div class="overlay"></div>');
+                $(".overlay").fadeIn();
+            });
         });
 
-        // Optional: Remove the event listener if the modal is closed or not needed anymore to prevent memory leaks
-        drawingModal.addEventListener('hidden.bs.modal', () => {
-            // The event listener for resize is not removed here because it is tied to the window, not the modal.
-            // If you still need to remove it, consider doing so under certain conditions or keeping it as it shouldn't cause issues if handled correctly.
-        });
+        // Using event delegation for dynamically added content
+        $("body").on("click focus", "form input, form textarea", function(event) {
 
+            if (savedImage) {
+
+                var formInstanceId = $(this).closest('.form-field').data('form-instance-id');
+                if (formInstanceId) {
+            
+                    insertImageAtCursor(formInstanceId, savedImage);
+                    savedImage = null;
+        
+                    $(".overlay").fadeOut(function() {
+                        $(this).remove();
+                    });
+        
+                    event.stopPropagation();  // Prevent other click handlers from interfering
+                        
+                }
+                
+            }
+            
+        });
+        
+
+        function insertImageAtCursor(userquestionid, base64Image) {
+            console.log("inserting");
+            
+            // Extracting contentType and binary data from base64Image
+            const contentType = base64Image.match(/data:(.*);base64,/)[1];
+            const b64Data = base64Image.replace(/data:.*;base64,/, '');
+            const byteCharacters = atob(b64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            
+            // Create a Blob from the base64 data
+            const imageBlob = new Blob([byteArray], {type: contentType});
+        
+            // Convert the Blob to a File
+            const imageFile = new File([imageBlob], 'uploaded_image.png', {type: contentType});
+    
+            // Prepare the data to be sent in a FormData object
+            console.log(imageFile);
+            console.log(userquestionid);
+            
+
+            const form = document.getElementById('userImageForm');
+
+            const formData = new FormData(form);
+            formData.append('image', imageFile);
+            formData.append('user_question_id', userquestionid);
+            $.ajax({
+                url: form.action,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+            })
+            submitForm();
+        }
     </script>
 
     

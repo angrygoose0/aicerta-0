@@ -16,17 +16,24 @@
                         <li class="list-group-item">
                             
                         
-                            {{ form.answer|as_crispy_field }}
-                            <div class="user-images">
-                                {% for image in form.instance.nceauserimages_set.all %}
-                                    <div class="image-wrapper">
-                                        <img src="{% static 'barney.jpg' %}" class="user-answer-image">
-                                        <button class="close-btn">
-                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">&times;</span>  
-                                        </button>
-                                    </div>
-                                {% endfor %}
+                            <div class="form-field" data-form-instance-id="{{ form.instance.id }}">
+                                {{ form.answer|as_crispy_field }}
                             </div>
+                            <div class="user-images">
+                                {% if form.instance.nceauserimages_set.all %}
+                                    {% for image in form.instance.nceauserimages_set.all %}
+                                        <div class="image-wrapper">
+                                            <img src="{{image.image.url}}" class="user-answer-image">
+
+                                            <button class="close-btn">
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">&times;</span>  
+                                            </button>
+                                        
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
                             <small class="previewAnswer">{{form.instance.answer}}</small>
                             {% for hidden in form.hidden_fields %}
                                 {{ hidden }}
@@ -45,6 +52,18 @@
         </button>
 
     </form>
+
+    <form action="{% url 'add-image-to-question' %}" 
+        id="userImageForm" 
+        method="POST" 
+        enctype="multipart/form-data"
+        style="display: none;"
+        >
+        {% csrf_token %}
+        {{ user_image_form.image|as_crispy_field }}
+        {{ user_image_form.user_question_id|as_crispy_field }}
+    </form>
+    
 </div>
 
 

@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
-from .models import NceaExam, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
+from .models import NceaExam, NceaUserImages, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
 from accounts.models import CustomUser
-from .forms import CreateAssignment, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin, NceaQUESTIONForm
+from .forms import CreateAssignment, UserImageForm, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin, NceaQUESTIONForm
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.forms.models import inlineformset_factory
@@ -342,6 +342,7 @@ def index(response, id):
         formset = AnswerFormset(queryset=qs,)
         
         OCRform = OCRImageForm()
+        user_image_form = UserImageForm() 
 
         form_groups = {}
         for form in formset:
@@ -356,7 +357,6 @@ def index(response, id):
         if doc.file:
             if development_mode == False:
                 signed_url = generate_signed_url(doc.file.file.name)
-                print("a")
                 
         
         context = {
@@ -367,10 +367,10 @@ def index(response, id):
             'files': files,
             "ocrform": OCRform,
             "signed_url" : signed_url,
+            'user_image_form' : user_image_form,
             }
 
         if response.method == "POST":
-            print(response.POST)
             form = AnswerFormset(response.POST)
             if form.is_valid():
                 form.save()
@@ -766,6 +766,36 @@ def edit_assignment(response, id):
         return render(response, "main/edit_assignment.html", context)
     return HttpResponseRedirect("/app/")
 
+@login_required(login_url="/login")
+def add_image_to_question(response):
+    print("added_image")
+    if response.method == "POST":
+        print(1)
+        form = UserImageForm(response.POST, response.FILES)
+        if form.is_valid():
+            print(2)
+            user_question_id = form.cleaned_data['user_question_id']
+            user_question = NceaUserQuestions.objects.get(id=user_question_id)
+            if response.user == user_question.document.user:
+                image = form.cleaned_data['image']
+                new_image = NceaUserImages(image=image, user_question=user_question)
+                new_image.save()
+                return HttpResponseRedirect("/app/%s/edit" % user_question.document.pk)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    print(f"- {field}: {error}")
+        return HttpResponseForbidden()
 
 
-
+@login_required(login_url="/login")
+def remove_image_from_question(response, id):
+    if response.method == "POST":
+        user_image = NceaUserImages.objects.get(id=id)
+        if user_image.user_question.document.user == response.user:
+            user_image.delete()
+            return HttpResponseRedirect("/app/%s/edit" % user_image.user_question.document.pk)
+        return HttpResponseForbidden()
+    
+    
+    

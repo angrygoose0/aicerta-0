@@ -1,6 +1,6 @@
 from django.forms import ModelForm, inlineformset_factory
 from django import forms
-from .models import NceaExam, Classroom, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage, Assignment
+from .models import NceaExam, NceaUserImages, Classroom, NceaQUESTION, NceaSecondaryQuestion, HelpMessage, NceaUserDocument, NceaUserQuestions, File, OCRImage, Assignment
 import roman
 from django.db.models import Q
 import datetime
@@ -64,8 +64,16 @@ class OCRImageForm(ModelForm):
     class Meta:
         model = OCRImage
         fields = ['image']
-
+        
+class UserImageForm(ModelForm):
+    user_question_id = forms.IntegerField(
+        widget=forms.HiddenInput(),
+    )
     
+    class Meta:
+        model = NceaUserImages
+        fields = ['image',]
+
 class AnswerForm(ModelForm):
     class Meta:
         model = NceaUserQuestions

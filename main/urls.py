@@ -27,4 +27,7 @@ urlpatterns = [
     path('classroom/<int:id>', views.classroom, name="classroom"),
     path('assignment/<int:id>', views.new_assignment_doc, name="new_assignment_doc"),
     path("edit-assignment/<int:id>", views.edit_assignment, name="edit_assignment"),
+    path("add-image/", views.add_image_to_question, name="add-image-to-question"),
+    path("remove-image-from-question/<int:id>", views.remove_image_from_question, name="remove-image-from-question")
+    
 ]
