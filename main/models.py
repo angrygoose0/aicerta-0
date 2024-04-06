@@ -22,26 +22,13 @@ class NceaExam(models.Model):
     def __str__(self):
         return "%s - %s - %s" % (self.exam_name, self.standard, self.year)
 
-def generate_choices(letter):
-        return [(i, f"{i}{letter}") for i in range(1, 11)]  
-class NceaQUESTION(models.Model):
-    ACHOICES = generate_choices('a')
-    MCHOICES = generate_choices('m')
-    ECHOICES = generate_choices('e')
 
+
+
+class NceaQUESTION(models.Model):
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     QUESTION = models.IntegerField(editable = False)
-    
-    n0 = models.IntegerField(default=0, choices=ACHOICES)
-    n1 = models.IntegerField(default=1, choices=ACHOICES)
-    n2 = models.IntegerField(default=2, choices=ACHOICES)
-    a3 = models.IntegerField(default=3, choices=ACHOICES)
-    a4 = models.IntegerField(default=4, choices=ACHOICES)
-    m5 = models.IntegerField(default=2, choices=MCHOICES)
-    m6 = models.IntegerField(default=3, choices=MCHOICES)
-    e7 = models.IntegerField(default=1, choices=ECHOICES)
-    e8 = models.IntegerField(default=2, choices=ECHOICES)
-    
+
     def save(self, *args, **kwargs):
         if not self.pk:  # Checking if this is a new instance
             # Retrieve the highest QUESTION number for the current exam
@@ -51,9 +38,20 @@ class NceaQUESTION(models.Model):
     
     def __str__(self):
         return "%s, %s" % (self.exam, self.QUESTION)
-
+    
     class Meta:
             ordering = ['exam', 'QUESTION']
+    
+class NceaQUESTIONcalc(models.Model):
+    
+    QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)
+    type = models.IntegerField(default=0) #n0,n1,n2,a3,a4,m5,m6,e7,e8
+
+    a = models.IntegerField(default=0, null=True, blank=True)
+    m = models.IntegerField(default=0, null=True, blank=True)
+    e = models.IntegerField(default=0, null=True, blank=True)
+
+    
     
 class NceaSecondaryQuestion(models.Model):
     QUESTION = models.ForeignKey(NceaQUESTION, on_delete=models.CASCADE)

@@ -20,15 +20,6 @@ class Command(BaseCommand):
                     NceaQUESTION.objects.update_or_create(
                         exam=ncea_exam_instance,
                         QUESTION=row["QUESTION"],
-                        n0 = row["n0"],
-                        n1 = row["n1"],
-                        n2 = row["n2"],
-                        a3 = row["a3"],
-                        a4 = row["a4"],
-                        m5 = row["m5"],
-                        m6 = row["m6"],
-                        e7 = row["e7"],
-                        e8 = row["e8"],
                         )  
                     self.stdout.write(self.style.SUCCESS(f'Created NceaQUESTION'))
                 except NceaExam.DoesNotExist:

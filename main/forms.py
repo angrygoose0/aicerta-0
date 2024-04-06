@@ -124,16 +124,3 @@ class ClassroomJoin(forms.Form):
     
     
 
-class NceaQUESTIONForm(forms.ModelForm):
-    class Meta:
-        model = NceaQUESTION
-        fields = ['n0', 'n1', 'n2', 'a3', 'a4', 'm5', 'm6', 'e7', 'e8']
-
-NceaQUESTIONFormSet = inlineformset_factory(
-    parent_model=NceaExam,
-    model=NceaQUESTION,
-    form=NceaQUESTIONForm,
-    extra=0,
-    can_delete=True,
-    fk_name='exam',
-)

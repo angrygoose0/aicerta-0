@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import NceaUserImages, NceaExam, Classroom, Assignment, NceaScores, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, File, OCRImage, HelpMessage, Criteria, BulletPoint, Quoted
+from .models import NceaQUESTIONcalc, NceaUserImages, NceaExam, Classroom, Assignment, NceaScores, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, File, OCRImage, HelpMessage, Criteria, BulletPoint, Quoted
 
 # Register your models here.
 
@@ -45,6 +45,7 @@ class ClassroomAdmin(admin.ModelAdmin):
 
 admin.site.register(Classroom, ClassroomAdmin)
 admin.site.register(Assignment)
+admin.site.register(NceaQUESTIONcalc)
 
 
 admin.site.register(NceaExam)

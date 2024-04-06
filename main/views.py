@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from .models import NceaExam, NceaUserImages, HelpMessage, NceaQUESTION, NceaSecondaryQuestion, NceaUserDocument, NceaUserQuestions, NceaScores, File, OCRImage, Criteria, BulletPoint, Quoted, Assignment
 from accounts.models import CustomUser
-from .forms import CreateAssignment, UserImageForm, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin, NceaQUESTIONForm
+from .forms import CreateAssignment, UserImageForm, CreateNewDocument, AnswerForm, CreateNewStandard, SupportForm, FileForm, OCRImageForm, CreateClass, Classroom, ClassroomJoin
 from django.forms import modelformset_factory
 from django.forms.widgets import TextInput
 from django.forms.models import inlineformset_factory
@@ -263,15 +263,9 @@ def standards(response):
 def edit_standard(request, id):
     exam = get_object_or_404(NceaExam, pk=id)
     
-    if request.method == 'POST':
-        formset = NceaQUESTIONFormSet(request.POST, instance=exam)
-        if formset.is_valid():
-            formset.save()
-            return render(request, 'main/edit_standard.html', {'formset': formset,})
-    else:
-        formset = NceaQUESTIONFormSet(instance=exam)
 
-    return render(request, 'main/edit_standard.html', {'formset': formset,})
+    return HttpResponseBadRequest()
+
 
 
 
