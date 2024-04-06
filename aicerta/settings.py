@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'allauth', 
     'allauth.account', 
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'accounts',
     'django_htmx',
     'website',
@@ -212,6 +213,23 @@ AUTHENTICATION_BACKENDS = (
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE' : [
+            'profile',
+            'email'
+        ],
+        'APP': {
+            'client_id': os.getenv("CLIENT_ID"),
+            'secret': os.getenv("CLIENT_SECRET"),
+        },
+        'AUTH_PARAMS': {
+            'access_type':'online',
+        }
+    }
+}
+
 
 SITE_ID = 1
 

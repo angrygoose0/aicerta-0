@@ -1,4 +1,6 @@
 {% extends "account/base.html"%}
+
+{% load socialaccount%}
 {% load crispy_forms_tags %}
 
 {% block title%} Sign Up {% endblock %}
@@ -7,6 +9,8 @@
   <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
+    <br>
+    <a class="google-btn" href="{% provider_login_url 'google' %}">Signup with Google</a>
     <br>
     <small>
       <p style="display: inline-block;">Have an account?</p>
