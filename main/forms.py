@@ -29,9 +29,10 @@ class CreateClass(ModelForm):
 class CreateAssignment(ModelForm):
     class Meta:
         model = Assignment
-        fields = ['name', 'exam', 'description', 'classroom', 'ends_at', 'strict']
+        fields = ['name', 'exam', 'description', 'classroom', 'starts_at', 'ends_at', 'strict']
         widgets = {
             'ends_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+            'starts_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),  # Added widget for starts_at
         }
 
     def __init__(self, *args, user=None, **kwargs):
@@ -43,17 +44,27 @@ class CreateAssignment(ModelForm):
 
         # Set default value for ends_at field to now
         self.fields['ends_at'].initial = timezone.now()
+        self.fields['starts_at'].initial = timezone.now()
+
+    def clean_starts_at(self):
+        starts_at = self.cleaned_data.get('starts_at')
+        now = timezone.now()  # Use the same timezone as your 'starts_at' field
+
+        # Check if 'starts_at' is in the past
+        if starts_at and starts_at <= now:
+            raise ValidationError("The start date and time must be in the future.")
+
+        return starts_at
+
     def clean_ends_at(self):
         ends_at = self.cleaned_data.get('ends_at')
-        # Get the current time
-        now = timezone.now() # Make sure to use the same timezone as your 'ends_at' field
+        now = timezone.now()  # Use the same timezone as your 'ends_at' field
 
         # Check if 'ends_at' is in the past
         if ends_at and ends_at < now:
             raise ValidationError("The end date and time cannot be in the past.")
 
         return ends_at
-
 class FileForm(ModelForm):
     class Meta:
         model = File

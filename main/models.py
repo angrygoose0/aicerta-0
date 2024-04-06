@@ -121,7 +121,8 @@ class Assignment(models.Model):
     exam = models.ForeignKey(NceaExam, on_delete=models.CASCADE)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
+    starts_at= models.DateTimeField(null=True, blank=True)
     ends_at= models.DateTimeField(null=True, blank=True)
 
     status = models.IntegerField(default=0) #0, 1, 2 = pending, on-going, archived

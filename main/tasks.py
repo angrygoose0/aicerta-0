@@ -580,14 +580,34 @@ def set_assignment_ended(assignment_id):
 
         send_socket_message(f"doc_{doc.pk}_teacher_{doc.assignment.teacher.id}_student_{user.pk}", message)
         
+        
+@shared_task
+def set_assignment_started(assignment_id):
+    assignment = Assignment.objects.get(id=assignment_id)
+    assignment.status = 1
+    assignment.save()
+
+    classroom = assignment.classroom
+
+    students = classroom.students.all()
+    
+    for student in students:
+        
+        message = f"<p><strong>Assignment: {assignment.name} has started in Classroom: {classroom}</strong><hr><a href='/app/classroom/{classroom.pk}'>Click here to start exam.</a></p>"
+        
+        alert(f"user_{student.pk}", message, "primary", "info-fill")
 
 @receiver(post_save, sender=Assignment)
 def schedule_assignment_update(sender, instance, **kwargs):
-    if instance.ends_at and instance.status == 1:
-        delay = (instance.ends_at - timezone.now()).total_seconds()
-        if delay > 0:
-            set_assignment_ended.apply_async((instance.id,), countdown=delay)
-            
+    
+    start_delay = (instance.starts_at - timezone.now()).total_seconds()
+    if start_delay > 0:
+        set_assignment_started.apply_async((instance.id,), countdown=start_delay)
+
+    end_delay = (instance.ends_at - timezone.now()).total_seconds()
+    if end_delay > 0:
+        set_assignment_ended.apply_async((instance.id,), countdown=end_delay)
+        
 
 
     

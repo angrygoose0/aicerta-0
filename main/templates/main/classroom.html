@@ -74,12 +74,15 @@ homepage
                         <div class="assignments">
                             {% for assignment in assignments %}
                                 <div class="card mb-3" data-status="{{ assignment.status }}" 
-                                    {% if assignment.status == 1 %} data-ends-at="{{ assignment.ends_at|date:'c' }}" {% endif %}>
+                                    {% if assignment.status == 1 %} data-ends-at="{{ assignment.ends_at|date:'c' }}"
+                                    {% elif assignment.status == 0 %} data-starts-at="{{ assignment.starts_at|date:'c' }}" {% endif %}>
+                                    
                                     <div class="card-body">
                                         <h5 class="card-title">{{ assignment.name }}</h5>
                                         <h6 class="card-subtitle mb-2 text-muted">Assigned by: {{ assignment.teacher }}</h6>
                                         <p class="card-text">{{ assignment.description }}</p>
                                         <p class="card-text"><small class="text-muted">Created on: {{ assignment.created_at|date:"D, d M Y H:i" }}</small></p>
+                                        {% if assignment.status == 2 %}<p class="card-text"><small class="text-muted">Ended at: {{ assignment.ends_at|date:"D, d M Y H:i" }}</small></p>{% endif %}
                                         
                                             
                                         <div class="btn-group" role="group" aria-label="Assignment Actions">
@@ -92,7 +95,7 @@ homepage
                                         
                             
                                         <!-- Countdown Timer -->
-                                        {% if assignment.status == 1 %}
+                                        {% if assignment.status == 1 or assignment.status == 0 %}
                                             <div class="countdown-timer card-text" id="timer-{{ assignment.id }}"><small class="text-muted">Time left: Calculating...</small></div>
                                         {% endif %}
                                     </div>
@@ -177,6 +180,20 @@ homepage
                     // If the assignment has ended, ensure the original "Ended at" text is displayed
                     const endedText = `Ended at: ${new Date(endsAt).toLocaleString()}`;
                     timerElement.innerHTML = `<small class="text-muted">${endedText}</small>`;
+                }
+            });
+
+            document.querySelectorAll('.card[data-status="0"]').forEach(card => {
+                const startsAt = card.getAttribute('data-starts-at');
+                const timerElement = card.querySelector('.countdown-timer');
+
+                const timeLeft = calculateTimeLeft(startsAt);
+                if (timeLeft) {
+                    timerElement.innerHTML = `<small class="text-muted">Starts in: ${timeLeft}</small>`;
+                } else {
+                    // If the assignment has started,
+                    const startedText = `Started at: ${new Date(startsAt).toLocaleString()}`;
+                    timerElement.innerHTML = `<small class="text-muted">${startedText}</small>`;
                 }
             });
         }
