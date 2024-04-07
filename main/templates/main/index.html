@@ -403,6 +403,7 @@ FIX INDEX.HTML, has something to do with doc.assignment being false when not con
         const drawingContainer = document.getElementById('drawing-container');
         const drawingModal = document.getElementById('drawingModal');
         let drawingCanvas; // Declare drawingCanvas outside to ensure it's accessible globally within this script
+        let savedImage;
 
         // Function to resize canvas, defined in the outer scope to be accessible everywhere
         function resizeCanvas() {

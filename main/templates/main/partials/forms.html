@@ -2,7 +2,7 @@
 {% load myfilters %}
 {% load static %}
 
-<div>
+<div id="answer-div">
     <form action ="{% url 'index' id=doc.id %}" id="answer-formset" method="POST" hx-post="{% url 'index' id=doc.id %}" hx-swap='outerHTML' hx-trigger='change delay:500ms'>
 
         {% csrf_token %}

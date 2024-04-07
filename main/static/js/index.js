@@ -71,8 +71,9 @@ document.addEventListener('DOMContentLoaded', initializeMathQuill);
 
 // Reinitialize after HTMX swaps in new content
 document.body.addEventListener('htmx:afterSwap', function(event) {
-    if (event.detail.elt.id === "answer-formset") {
-        initializeMathQuill();
+    if (event.target.id === "answer-div") {
+        console.log("mathquill");
+        updateMathJaxContent()
     }
 });
 
