@@ -409,15 +409,6 @@
                     }
                 }
             };
-            
-            // This function should be called after dynamically adding or updating content that includes LaTeX
-            function updateMathJaxContent() {
-                console.log("da");
-                MathJax.typesetPromise().then(() => {
-                    console.log("New content has been typeset by MathJax.");
-                }).catch((err) => console.error("MathJax typesetting failed: ", err));
-            }
-
         </script>
         
 

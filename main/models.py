@@ -50,6 +50,9 @@ class NceaQUESTIONcalc(models.Model):
     a = models.IntegerField(default=0, null=True, blank=True)
     m = models.IntegerField(default=0, null=True, blank=True)
     e = models.IntegerField(default=0, null=True, blank=True)
+    
+    class Meta:
+        ordering = ['QUESTION', '-type']
 
     
     

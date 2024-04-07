@@ -69,13 +69,6 @@ function initializeMathQuill() {
 // Call the function on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', initializeMathQuill);
 
-// Reinitialize after HTMX swaps in new content
-document.body.addEventListener('htmx:afterSwap', function(event) {
-    if (event.target.id === "answer-div") {
-        console.log("mathquill");
-        updateMathJaxContent()
-    }
-});
 
 
 // Using event delegation for dynamically added content

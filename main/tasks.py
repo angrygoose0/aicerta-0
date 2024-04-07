@@ -1,5 +1,5 @@
 from celery import shared_task, current_task
-from main.models import MarkedChunks, Assignment, NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, NceaScores, Criteria, Quoted, BulletPoint
+from main.models import NceaQUESTIONcalc, MarkedChunks, Assignment, NceaUserDocument, NceaQUESTION, NceaUserQuestions, NceaSecondaryQuestion, NceaScores, Criteria, Quoted, BulletPoint
 from accounts.models import CustomUser
 from .helpers import number_to_alphabet, alphabet_to_number, number_to_roman, roman_to_number
 from django.utils.safestring import mark_safe
@@ -504,24 +504,17 @@ def mark_document(id, user_id):
                         elif criteria.type == "e":
                             total_e += 1
                             
-            conditions = [
-                (8, 'e', QUESTION.e8),
-                (7, 'e', QUESTION.e7),
-                (6, 'm', QUESTION.m6),
-                (5, 'm', QUESTION.m5),
-                (4, 'a', QUESTION.a4),
-                (3, 'a', QUESTION.a3),
-                (2, 'a', QUESTION.n2),
-                (1, 'a', QUESTION.n1),
-                (0, 'a', QUESTION.n0),
-            ]
+            ncea_calcs = NceaQUESTIONcalc.objects.filter(QUESTION=QUESTION)
             
             score = 0
-            total_values = {'e': total_e, 'm': total_m, 'a': total_a}
-            for s, var, condition in conditions:
-                if total_values[var] >= condition:
-                    score = s
-                    break
+            
+            for ncea_calc in ncea_calcs:
+                ncea_calc.type
+                if total_a >= ncea_calc.a:
+                    if total_m >= ncea_calc.m:
+                        if total_e >= ncea_calc.e:
+                            score = ncea_calc.type
+                            break
                 
             ncea_score = NceaScores.objects.get(document=document, QUESTION=QUESTION)
             ncea_score.score = score
