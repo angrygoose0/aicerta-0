@@ -709,40 +709,38 @@ def new_assignment_doc(response, id):
                 assessment = NceaUserDocument.objects.filter(user=response.user, assignment=assignment).first()         
                 if assessment:
                     return HttpResponseRedirect("/app/%s/edit" % assessment.id)
-                else:
-                    pass
                 
-            else:
-                exam = assignment.exam
-                QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
             
-                user = str(response.user)
-                name = "%s %s" % (assignment.name, user.split('@')[0])
+            exam = assignment.exam
+            QUESTIONS = NceaQUESTION.objects.filter(exam=exam)
+        
+            user = str(response.user)
+            name = "%s %s" % (assignment.name, user.split('@')[0])
+            
+            user_exam = NceaUserDocument(user=response.user, exam=exam, name=name, mark=0, assignment=assignment, status='pending')
+            user_exam.save()
+
+            for QUESTION in QUESTIONS:
+                secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
                 
-                user_exam = NceaUserDocument(user=response.user, exam=exam, name=name, mark=0, assignment=assignment, status='pending')
-                user_exam.save()
+                criterias = Criteria.objects.filter(
+                    secondary_questions__in=secondaryquestions
+                ).prefetch_related('secondary_questions')
+                
+                for criteria in criterias:
+                    bulletpoint = BulletPoint(criteria=criteria, document=user_exam)
+                    bulletpoint.save()                   
 
-                for QUESTION in QUESTIONS:
-                    secondaryquestions = NceaSecondaryQuestion.objects.filter(QUESTION=QUESTION)
-                    
-                    criterias = Criteria.objects.filter(
-                        secondary_questions__in=secondaryquestions
-                    ).prefetch_related('secondary_questions')
-                    
-                    for criteria in criterias:
-                        bulletpoint = BulletPoint(criteria=criteria, document=user_exam)
-                        bulletpoint.save()                   
+                for secondaryquestion in secondaryquestions:
+                    nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
+                    nceauserexamquestion.save()
 
-                    for secondaryquestion in secondaryquestions:
-                        nceauserexamquestion = NceaUserQuestions(document=user_exam, question=secondaryquestion, answer="")
-                        nceauserexamquestion.save()
+                scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
+                scores.save()
+                
+        
 
-                    scores = NceaScores(document=user_exam, QUESTION=QUESTION, score=0)
-                    scores.save()
-                    
-            
-
-                return HttpResponseRedirect("/app/%s/edit" % user_exam.pk)
+            return HttpResponseRedirect("/app/%s/edit" % user_exam.pk)
 
 @login_required(login_url="/login")
 def edit_assignment(response, id):
