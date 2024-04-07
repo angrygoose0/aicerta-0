@@ -704,12 +704,13 @@ def new_assignment_doc(response, id):
         assignment = Assignment.objects.get(id=id)
         if response.user in assignment.classroom.students.all():
             #one more if to check if the student has already made an assignment doc.
-            
-            assessment = NceaUserDocument.objects.filter(user=response.user, assignment=assignment).first() 
             if response.user.tester == False:
+                
+                assessment = NceaUserDocument.objects.filter(user=response.user, assignment=assignment).first()         
                 if assessment:
-                    
                     return HttpResponseRedirect("/app/%s/edit" % assessment.id)
+                else:
+                    pass
                 
             else:
                 exam = assignment.exam

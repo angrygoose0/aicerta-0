@@ -42,6 +42,7 @@ print(ALLOWED_HOSTS)
 CSRF_TRUSTED_ORIGINS = [
     'https://aicerta.com', 
     'https://www.aicerta.com',
+    'https://orca-app-om52q.ondigitalocean.app'
     
 ]
 
