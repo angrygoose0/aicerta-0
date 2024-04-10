@@ -188,7 +188,7 @@
         <script>
             function setupWebSocket() {
                 
-                const socket = new WebSocket('wss://' + window.location.host + '/ws/notifications/');
+                const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
 
             
                 socket.onopen = () => console.log("WebSocket connection opened.");
@@ -406,6 +406,9 @@
                         console.log('MathJax is loaded, but not yet initialized');
                         MathJax.startup.defaultReady();
                         console.log('MathJax is initialized, and the initial typeset is queued');
+    
+                        // Setting a global flag to indicate readiness
+                        window.isMathJaxReady = true;
                     }
                 }
             };
